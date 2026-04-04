@@ -1,6 +1,9 @@
 /* eslint-disable */
-import { saveAs } from 'file-saver'
-import XLSX from 'xlsx'
+import {
+  saveAs
+} from 'file-saver'
+//import XLSX from 'xlsx'
+import XLSX from "xlsx-style";
 
 function generateArray(table) {
   var out = [];
@@ -120,7 +123,7 @@ export function export_table_to_excel(id) {
 
   /* original data */
   var data = oo[0];
-  var ws_name = "SheetJS";
+  var ws_name = "Sheet1";
 
   var wb = new Workbook(),
     ws = sheet_from_array_of_arrays(data);
@@ -150,7 +153,8 @@ export function export_json_to_excel({
   data,
   filename,
   merges = [],
-  autoWidth = true,
+  autoWidth = false,
+  maxWidth = 300,
   bookType = 'xlsx'
 } = {}) {
   /* original data */
@@ -162,7 +166,7 @@ export function export_json_to_excel({
     data.unshift(multiHeader[i])
   }
 
-  var ws_name = "SheetJS";
+  var ws_name = "Sheet1";
   var wb = new Workbook(),
     ws = sheet_from_array_of_arrays(data);
 
@@ -184,12 +188,21 @@ export function export_json_to_excel({
       }
       /*再判断是否为中文*/
       else if (val.toString().charCodeAt(0) > 255) {
+
+        let len = val.toString().length * 2;
+        if (len > maxWidth) {
+          len = maxWidth;
+        }
         return {
-          'wch': val.toString().length * 2
+          'wch': len
         };
       } else {
+        let len = val.toString().length ;
+        if (len > maxWidth) {
+          len = maxWidth;
+        }
         return {
-          'wch': val.toString().length
+          'wch': len
         };
       }
     }))
@@ -209,6 +222,23 @@ export function export_json_to_excel({
   wb.SheetNames.push(ws_name);
   wb.Sheets[ws_name] = ws;
 
+  var dataInfo = wb.Sheets[wb.SheetNames[0]];
+  // console.log(dataInfo)
+  // 设置单元格框线
+  // setExlStyle(ws)
+
+  // dataInfo["A1"].s = {
+  //   //border: borderAll,
+  //   alignment: {
+  //     horizontal: "center",
+  //     vertical: "center"
+  //   },
+  //   font: {
+  //     name: "宋体",
+  //     sz: 20
+  //   }
+  // }
+
   var wbout = XLSX.write(wb, {
     bookType: bookType,
     bookSST: false,
@@ -217,4 +247,60 @@ export function export_json_to_excel({
   saveAs(new Blob([s2ab(wbout)], {
     type: "application/octet-stream"
   }), `${filename}.${bookType}`);
+}
+
+function setExlStyle(data) {
+  // 定义好边框样式
+  const border = {
+    top: {
+      style: "thin"
+    },
+    bottom: {
+      style: "thin"
+    },
+    left: {
+      style: "thin"
+    },
+    right: {
+      style: "thin"
+    }
+  }
+  // 字体
+  const font = {
+    sz: 10,
+    // bold: true,
+    // color: {  rgb: "FFFFFF" } //白色
+  }
+  // 居中
+  const alignment = {
+    horizontal: "center",
+    vertical: "center",
+    wrapText: true
+  }
+
+  // 获取表格的有效范围
+  const range = XLSX.utils.decode_range(data['!ref']);
+  // cellList：xlsx自动创建的excel单元格，去掉带！开头的就是所有单元格
+  const cellList = Object.keys(data).filter(item => item.indexOf('!') < 0)
+
+  // 遍历表格
+  for (let row = range.s.r; row <= range.e.r; row++) {
+    if (row < 2) {
+      var _alignment = '';
+    } else {
+      var _alignment = alignment;
+
+    };
+    for (let col = range.s.c; col <= range.e.c; col++) {
+      // 通过行列转成excle的单元格索引
+      const cell = XLSX.utils.encode_cell({ r: row, c: col });
+      // 查找一下单元格是否已经存在，不存在：创建一个单元格并设置边框，存在：直接修改样式
+      if (cellList.indexOf(cell) < 0) {
+        data[cell] = { t: '', v: '', s: { border, font, _alignment } }
+      } else {
+        data[cell].s = { border, font, _alignment }
+      }
+    }
+  }
+  return data;
 }

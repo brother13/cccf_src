@@ -1,7 +1,7 @@
 import { login, logout, getInfo } from '@/api/user'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 import router, { resetRouter } from '@/router'
-
+import md5 from 'js-md5'
 const state = {
   token: getToken(),
   name: '',
@@ -25,15 +25,24 @@ const mutations = {
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles
+  },
+  SET_DEPTNAME: (state, deptname) => {
+    state.deptname = deptname
+  },
+  SET_AHMC: (state, ahmc) => {
+    state.ahmc = ahmc
   }
 }
 
 const actions = {
   // user login
   login({ commit }, userInfo) {
-    const { username, password } = userInfo
+    const { username, password, dwid } = userInfo
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
+      //const newpass = md5(password + '_RLF2020')//登录不加密
+      const newpass = password
+
+      login({ username: username.trim(), password: newpass, dwid: dwid }).then(response => {
         const { data } = response
         commit('SET_TOKEN', data.token)
         setToken(data.token)
@@ -54,7 +63,7 @@ const actions = {
           reject('Verification failed, please Login again.')
         }
 
-        const { roles, name, avatar, introduction } = data
+        const { roles, username, avatar, introduction, deptname,ahmc } = data
 
         // roles must be a non-empty array
         if (!roles || roles.length <= 0) {
@@ -62,9 +71,11 @@ const actions = {
         }
 
         commit('SET_ROLES', roles)
-        commit('SET_NAME', name)
+        commit('SET_NAME', username)
+        commit('SET_DEPTNAME', deptname)
         commit('SET_AVATAR', avatar)
         commit('SET_INTRODUCTION', introduction)
+        commit('SET_AHMC', ahmc)
         resolve(data)
       }).catch(error => {
         reject(error)
