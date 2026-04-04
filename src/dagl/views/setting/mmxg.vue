@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-<!--      <el-input
+      <!--      <el-input
         v-model="listQuery.keyword"
         clearable
         placeholder="请输入关键字，如姓名,手机号码"
@@ -11,7 +11,7 @@
       >
         <i slot="prefix" class="el-input__icon el-icon-search" />
       </el-input> -->
-<!--      <el-select
+      <!--      <el-select
         v-model="listQuery.deptcode"
         placeholder="请选择部门"
         clearable
@@ -20,7 +20,7 @@
         class="filter-item"
         @change="handleFilter"
       > -->
-<!--        <el-option
+      <!--        <el-option
           v-for="item in DeptList"
           :key="item.deptid"
           :label="item.fullname"
@@ -69,7 +69,7 @@
       style="width: 100%"
       @sort-change="sortChange"
     >
-      <el-table-column type="index"  align="center" label="序号">
+      <el-table-column type="index" align="center" label="序号">
         <template slot-scope="{ $index }">
           {{ $index + listQuery.pagesize * (listQuery.page - 1) + 1 }}
         </template>
@@ -79,15 +79,13 @@
         label="部门"
         prop="deptname"
         align="center"
-
       />
       <el-table-column
         label="姓名"
         prop="username"
         align="center"
-
       />
-<!--      <el-table-column label="头像" prop="avatar" align="center"  >
+      <!--      <el-table-column label="头像" prop="avatar" align="center"  >
         <template slot-scope="{ row }">
           <template v-if="row.avatar">
             <el-image :src="row.avatar" style="avatar" />
@@ -95,18 +93,18 @@
           <template v-else> - </template>
         </template>
       </el-table-column> -->
-      <el-table-column label="电话" prop="mobile" align="center"  >
+      <el-table-column label="电话" prop="mobile" align="center">
         <template slot-scope="{ row }">
           <ul>
             <template v-if="row.mobile">
-                <span>{{ row.mobile }}</span>
+              <span>{{ row.mobile }}</span>
 
             </template>
           </ul>
         </template>
       </el-table-column>
 
-      <el-table-column label="状态" class-name="status-col"  >
+      <el-table-column label="状态" class-name="status-col">
         <template slot-scope="{ row }">
           <el-tag :type="row.isvoid== '0' ? 'success' : 'danger'">{{
             row.isvoid == '0' ? '正常' : '停用'
@@ -114,7 +112,8 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="操作" align="center"
+        label="操作"
+        align="center"
       >
         <template slot-scope="{ row }">
           <el-button
@@ -123,7 +122,6 @@
             icon="el-icon-edit"
             @click="handleUpdate(row)"
           >修改密码</el-button>
-
 
         </template>
       </el-table-column>
@@ -149,7 +147,7 @@
         <el-form-item label="用户姓名" prop="username">
           <el-input v-model="temp.username" />
         </el-form-item>
-<!--        <el-form-item label="用户代码" prop="usercode">
+        <!--        <el-form-item label="用户代码" prop="usercode">
           <el-input v-model="temp.usercode" />
         </el-form-item>
         <el-form-item label="性别" prop="gender">
@@ -211,7 +209,7 @@
             >{{ item.deptname }}</el-option>
           </el-select>
         </el-form-item>
-<!--        <el-form-item label="用户权限" prop="usergroup">
+        <!--        <el-form-item label="用户权限" prop="usergroup">
           <el-select
             v-model="temp.usergroup"
             style="width: 100%"
@@ -229,8 +227,7 @@
           </el-select>
         </el-form-item> -->
 
-
-<!--        <el-form-item label="头像" prop="">
+        <!--        <el-form-item label="头像" prop="">
           <el-upload
             class="avatar-uploader"
             action="./index.php/dagl/index/uploadfile"
@@ -339,7 +336,7 @@ export default {
         pagesize: 10,
         keyword: undefined,
         deptcode: [],
-        myusername:this.$store.getters.name
+        myusername: this.$store.getters.name
       },
       thumbdata: {
         caseid: '',
@@ -491,7 +488,7 @@ export default {
       })
     },
     getAllUser() {
-      userlist({ page: 1, pagesize: 10000}).then((response) => {
+      userlist({ page: 1, pagesize: 10000 }).then((response) => {
         this.allUserList = response.data.items
       })
     },
@@ -607,7 +604,7 @@ export default {
           newpass = this.temp.userpass
 
           if (newpass !== '') {
-            //newpass = md5(newpass + '_RLF2020')
+            // newpass = md5(newpass + '_RLF2020')
           }
 
           console.log(newpass)
@@ -662,11 +659,11 @@ export default {
       })
     },
     updateData() {
-      console.log(123);
+      console.log(123)
 
       this.$refs['dataForm'].validate((valid) => {
         const newtemp = Object.assign({}, this.temp) // 复制一个新组件出来，避免修改数据
-        if (newtemp.userpass.length<6) {
+        if (newtemp.userpass.length < 6) {
           this.$message.error('密码不能少于6位')
           return
         }
@@ -675,7 +672,7 @@ export default {
           return
         }
         if (newtemp.userpass !== '') {
-          //newtemp.userpass = md5(newtemp.userpass + '_RLF2020')
+          // newtemp.userpass = md5(newtemp.userpass + '_RLF2020')
           newtemp.userpass2 = newtemp.userpass
         }
 

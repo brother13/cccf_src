@@ -29,19 +29,19 @@ var obj = {
    * 获取日志更新记录
    */
   async getUpdateLog() {
-    let loglist = []
+    const loglist = []
 
     loglist.push({
       date: '2025-06-13',
       log: [
-        '【调整】沈阳简化版本',
+        '【调整】沈阳简化版本'
 
       ]
     })
     loglist.push({
       date: '2025-06-23',
       log: [
-        '【调整】修正直接开票的问题',
+        '【调整】修正直接开票的问题'
 
       ]
     })
@@ -49,7 +49,7 @@ var obj = {
     loglist.push({
       date: '2026-01-16',
       log: [
-        '【调整】增加代管款台账模块',
+        '【调整】增加代管款台账模块'
 
       ]
     })

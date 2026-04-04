@@ -116,7 +116,7 @@ export default {
   methods: {
     init() {
       this.typeMap = {}
-      for (let i in typeList) {
+      for (const i in typeList) {
         const type = typeList[i]
         const code = type.code
         this.typeMap[code] = type
@@ -143,8 +143,8 @@ export default {
     },
 
     insertHtml(id, html) {
-      let obj = document.getElementById(id)
-      let doc = obj.contentDocument || obj.contentWindow.document
+      const obj = document.getElementById(id)
+      const doc = obj.contentDocument || obj.contentWindow.document
 
       // console.log('insertHTML', doc)
       if (doc) {
@@ -162,13 +162,13 @@ export default {
     // 以下是pdf相关处理界面
     getPdfCheckList(type) {
       this.pdflist = []
-      let pdflist = []
+      const pdflist = []
       let pdf_checked = []
       const pdftype = this.typeMap[type]
       const page = pdftype['page'] ?? 1
 
       for (let i = 1; i <= page; i++) {
-        let file = {}
+        const file = {}
         file['type'] = type
         file['value'] = type + '_' + i
         file['page'] = i
@@ -176,7 +176,7 @@ export default {
         pdflist.push(file)
       }
       // 添加三者材料
-      let other = {
+      const other = {
         type: 'other',
         value: 'other',
         page: 1,
@@ -194,8 +194,8 @@ export default {
         const defaultPage = pdftype['default'] ?? []
         if (defaultPage && Array.isArray(defaultPage) && defaultPage.length) {
           // 添加记录
-          for (let i in defaultPage) {
-            let text = type + '_' + defaultPage[i]
+          for (const i in defaultPage) {
+            const text = type + '_' + defaultPage[i]
             pdf_checked.push(text)
           }
           // 添加第三方材料
@@ -203,7 +203,7 @@ export default {
         } else {
           // 如果没有设置，全部添加
           for (let i = 1; i <= page; i++) {
-            let text = type + '_' + i
+            const text = type + '_' + i
             pdf_checked.push(text)
           }
         }
@@ -241,7 +241,7 @@ export default {
       const pdfNewDoc = await PDFDocument.create() // 创建空白页
       // const pdfEmpty = await PDFDocument.create() // 创建空白页
 
-      for (let i in filelist) {
+      for (const i in filelist) {
         this.pdfinfo.done++
         const file = filelist[i]
         const type = file['type']
@@ -261,7 +261,7 @@ export default {
 
         if (pdffile) {
           // 文件存在，添加页数
-          for (let c in checkedList) {
+          for (const c in checkedList) {
             const check = checkedList[c]
             const arr = check.split('_')
             const checktype = arr[0]
@@ -273,7 +273,7 @@ export default {
               // 直接全部添加
               const pages = pdffileObj.getPages()
 
-              for (let p in pages) {
+              for (const p in pages) {
                 const page = pages[p]
                 pdfNewDoc.addPage(page)
               }
@@ -285,7 +285,7 @@ export default {
 
               for (let p = 0; p < pages.length; p++) {
                 // console.log(p)
-                let page = pages[p]
+                const page = pages[p]
 
                 pdfNewDoc.addPage(page)
               }
@@ -296,10 +296,10 @@ export default {
 
       // 添加文字
 
-      let pages = pdfNewDoc.getPages()
+      const pages = pdfNewDoc.getPages()
       const printtime = caseapi.util.getTodayDate('{yyyy}-{mm}-{dd} {hh}:{min}:{ss}')
       for (let i = 0; i < pages.length; i++) {
-        let page = pages[i]
+        const page = pages[i]
         const { height } = page.getSize()
         const helveticaFont = await pdfNewDoc.embedFont(StandardFonts.Helvetica)
 
@@ -321,12 +321,12 @@ export default {
     },
     // 获取所有的pdf文件，并填充至key为url的变量中
     async getAllPdf(filelist) {
-      let allpdf = {}
+      const allpdf = {}
 
       this.pdfinfo.total = filelist.length
       this.pdfinfo.done = 0
       this.pdfinfo.loading = true
-      for (let i in filelist) {
+      for (const i in filelist) {
         const file = filelist[i]
         const url = file['url']
         if (!allpdf[url]) {

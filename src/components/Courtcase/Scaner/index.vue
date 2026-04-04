@@ -1,8 +1,8 @@
 <template>
   <el-dialog
     v-dialogDrag
-    append-to-body
     v-loading="loading"
+    append-to-body
     title="扫描文件"
     :visible.sync="showWindow"
     :close-on-click-modal="false"
@@ -15,7 +15,7 @@
         <!-- 以下是相关的图片资源 -->
 
         <div class="scan-title">
-          <span>标题：</span><el-input v-model="pdftitle" placeholder="文件名"></el-input>
+          <span>标题：</span><el-input v-model="pdftitle" placeholder="文件名" />
         </div>
 
         <div style="imageList">
@@ -26,35 +26,33 @@
                   <el-image
                     :src="item"
                     style="width: 150px; height: 200px"
-                    :previewSrcList="imageListPreview"
-                  >
-                  </el-image>
+                    :preview-src-list="imageListPreview"
+                  />
                 </el-col>
                 <el-col :span="6">
                   <el-popconfirm
-                    @confirm="removeImage(index)"
                     title="是否删除图片？此操作不可逆，请谨慎操作！"
+                    @confirm="removeImage(index)"
                   >
                     <el-button
+                      slot="reference"
                       icon="el-icon-delete"
                       size="mini"
                       type="danger"
-                      slot="reference"
                       class="removeBtn"
-                    >
-                    </el-button>
+                    />
                   </el-popconfirm>
                 </el-col>
               </el-row>
             </div>
           </template>
           <div v-if="imageList.length < 1">
-            <el-empty description="请扫描图片"></el-empty>
+            <el-empty description="请扫描图片" />
           </div>
         </div>
       </el-col>
       <el-col :span="18">
-        <div id="CameraCtl" style="width: 1000px; height: 800px"></div>
+        <div id="CameraCtl" style="width: 1000px; height: 800px" />
       </el-col>
     </el-row>
     <div slot="footer" class="dialog-footer">
@@ -63,8 +61,8 @@
         <el-select
           v-model="info.scan"
           placeholder="请选择"
-          @change="changeScaner"
           style="width: 200px"
+          @change="changeScaner"
         >
           <el-option
             v-for="(item, index) in basedata.scanerList"
@@ -78,8 +76,8 @@
         <el-select
           v-model="info.resolution"
           placeholder="请选择"
-          @change="changeScaner"
           style="width: 200px"
+          @change="changeScaner"
         >
           <el-option
             v-for="(item, index) in basedata.ResolutionList"
@@ -92,8 +90,8 @@
         <el-select
           v-model="info.ColorMode"
           placeholder="请选择"
-          @change="changeScaner"
           style="width: 200px"
+          @change="changeScaner"
         >
           <el-option
             v-for="(item, index) in basedata.colorModeList"
@@ -106,8 +104,8 @@
         <el-select
           v-model="info.autocut"
           placeholder="请选择"
-          @change="setAutoCutAndBlack"
           style="width: 200px"
+          @change="setAutoCutAndBlack"
         >
           <el-option
             v-for="(item, index) in basedata.autoCutList"
@@ -120,8 +118,8 @@
         <el-select
           v-model="info.removeBlack"
           placeholder="请选择"
-          @change="setAutoCutAndBlack"
           style="width: 200px"
+          @change="setAutoCutAndBlack"
         >
           <el-option
             v-for="(item, index) in basedata.removeBlackList"
@@ -135,22 +133,22 @@
       <el-button-group>
         <el-button
           icon="el-icon-setting"
-          @click="showSetting = !showSetting"
           class="form-input"
+          @click="showSetting = !showSetting"
         >
           设置
         </el-button>
         <el-button
           icon="el-icon-refresh-left"
-          @click="changeDirect('left')"
           class="form-input"
+          @click="changeDirect('left')"
         >
           左转
         </el-button>
         <el-button
           icon="el-icon-refresh-right"
-          @click="changeDirect('right')"
           class="form-input"
+          @click="changeDirect('right')"
         >
           右转
         </el-button>
@@ -159,8 +157,8 @@
       <el-button
         icon="el-icon-close"
         :disabled="loading"
-        @click="closeWin"
         class="form-input"
+        @click="closeWin"
       >
         取消
       </el-button>
@@ -170,12 +168,12 @@
       <el-button
         type="primary"
         icon="el-icon-printer"
-        @click="savePdf"
         :disabled="imageList.length < 1"
+        @click="savePdf"
       >
-        生成pdf<template v-if="imageList.length > 0"
-          >(共{{ imageList.length }}页)</template
-        >
+        生成pdf<template
+          v-if="imageList.length > 0"
+        >(共{{ imageList.length }}页)</template>
       </el-button>
 
       <canvas id="pdf-canvas" style="width: 10px; height: 10px" />
@@ -183,7 +181,7 @@
   </el-dialog>
 </template>
 <script>
-import caseapi from "@/courtcase/api";
+import caseapi from '@/courtcase/api'
 // import $ from 'jquery'
 // import printPreview from './preview'
 
@@ -192,48 +190,39 @@ import caseapi from "@/courtcase/api";
 // import * as scaner from "./gpyhsapi.js";
 
 // hiPrintPlugin.disAutoConnect()
-const scanapi_win = "./assets/js/gpyhs_win.js";
-const scanapi_linux = "./assets/js/gpyhs_linux.js";
-import load from "./dynamicLoadScript";
+const scanapi_win = './assets/js/gpyhs_win.js'
+const scanapi_linux = './assets/js/gpyhs_linux.js'
+import load from './dynamicLoadScript'
 // import { showSettings } from "@/settings";
 
 const colorModeList = [
-  { label: "彩色", value: 0 },
-  { label: "灰度", value: 1 },
-  { label: "黑白", value: 2 },
-];
+  { label: '彩色', value: 0 },
+  { label: '灰度', value: 1 },
+  { label: '黑白', value: 2 }
+]
 const autoCutList = [
-  { label: "不裁剪", value: 0 },
-  { label: "自动裁剪", value: 1 },
-];
+  { label: '不裁剪', value: 0 },
+  { label: '自动裁剪', value: 1 }
+]
 const removeBlackList = [
-  { label: "不移除", value: 0 },
-  { label: "去黑色背景", value: 1 },
-];
-import { PDFDocument } from "pdf-lib";
+  { label: '不移除', value: 0 },
+  { label: '去黑色背景', value: 1 }
+]
+import { PDFDocument } from 'pdf-lib'
 // import {
 //   saveAs
 // } from 'file-saver'
 
 export default {
-  name: "Scaner",
+  name: 'Scaner',
   // components: { printPreview },
 
   props: {},
-  computed: {
-    imageListPreview() {
-      let arr = [];
-      for (let i = 0; i < this.imageList.length; i++) {
-        arr.push("data:;base64," + this.imageList[i]);
-      }
-      return arr;
-    },
-  },
   data() {
     return {
       showWindow: false,
 
-      pdftitle: "扫描文件",
+      pdftitle: '扫描文件',
 
       showSetting: false, // 是否显示设置
       loading: false,
@@ -245,7 +234,7 @@ export default {
 
         colorModeList: colorModeList,
         autoCutList: autoCutList,
-        removeBlackList: removeBlackList,
+        removeBlackList: removeBlackList
       },
 
       info: {
@@ -253,7 +242,7 @@ export default {
         resolution: 0,
         ColorMode: 0,
         autocut: 0,
-        removeBlack: 0,
+        removeBlack: 0
       },
 
       imageList: [], // 图片列表
@@ -261,74 +250,83 @@ export default {
       temp: {
         templateid: undefined,
         typeid: 0,
-        id: 0,
+        id: 0
       },
       printinfo: {
-        lastprint: "",
-        printnum: 0,
+        lastprint: '',
+        printnum: 0
       },
-      config: null,
-    };
+      config: null
+    }
+  },
+  computed: {
+    imageListPreview() {
+      const arr = []
+      for (let i = 0; i < this.imageList.length; i++) {
+        arr.push('data:;base64,' + this.imageList[i])
+      }
+      return arr
+    }
   },
 
   mounted() {
     // disAutoConnect()
-    this.init();
+    this.init()
   },
   methods: {
     getOs() {
-      const plat = navigator.platform;
+      const plat = navigator.platform
 
-      console.log(plat);
-      if (plat.indexOf("Win") > -1) {
-        return "win";
-      } else if (plat.indexOf("Linux") > -1) {
-        return "linux";
+      console.log(plat)
+      if (plat.indexOf('Win') > -1) {
+        return 'win'
+      } else if (plat.indexOf('Linux') > -1) {
+        return 'linux'
       }
 
-      return "other";
+      return 'other'
     },
     init() {},
 
     resetTemp() {
-      this.imageList = [];
-      this.info.scan = 0;
+      this.imageList = []
+      this.info.scan = 0
 
-      const obj = document.getElementById("CameraCtl");
+      const obj = document.getElementById('CameraCtl')
       if (obj) {
-        obj.innerHTML = "";
+        obj.innerHTML = ''
       }
       // Cam_Close();
 
       this.pdftitle =
-        "扫描文件" + caseapi.util.formatDate(new Date(), "{yyyy}{mm}{dd}_{hh}{min}{ss}");
+        '扫描文件' + caseapi.util.formatDate(new Date(), '{yyyy}{mm}{dd}_{hh}{min}{ss}')
     },
     showWin() {
-      this.showWindow = true;
-      this.loading = true;
-      this.resetTemp();
+      this.showWindow = true
+      this.loading = true
+      this.resetTemp()
       setTimeout(() => {
-        this.showScaner();
-      }, 100);
+        this.showScaner()
+      }, 100)
     },
 
     showScaner() {
-      console.log("showScaner > ");
+      console.log('showScaner > ')
 
       // scaner.ConnectServer();
 
-      let apiurl = scanapi_win;
-      const os = this.getOs();
-      if (os == "linux") {
-        apiurl = scanapi_linux;
+      let apiurl = scanapi_win
+      const os = this.getOs()
+      if (os == 'linux') {
+        apiurl = scanapi_linux
       }
       load(apiurl, (err) => {
         if (err) {
-          this.$message.error(err.message);
-          return;
+          this.$message.error(err.message)
+          return
         }
-        this.initScaner();
-      });
+        this.initScaner()
+      })
     },
 
     /**
@@ -337,19 +335,19 @@ export default {
      */
     async getBasedata() {
       // 获取模板列表
-      return true;
+      return true
     },
 
     ShowInfo(text) {
-      this.$message.info(text);
+      this.$message.info(text)
     },
 
     initScaner() {
-      var obj = document.getElementById("CameraCtl");
+      var obj = document.getElementById('CameraCtl')
       // scaner.ConnectServer();
 
-      console.log("initScaner", obj);
-      Cam_ControlInit(obj, 0, 0, 800, 800, this.scanCallback);
+      console.log('initScaner', obj)
+      Cam_ControlInit(obj, 0, 0, 800, 800, this.scanCallback)
 
       // reconnect();
 
@@ -364,32 +362,32 @@ export default {
     },
 
     GetDevCountAndNameResultCB(param) {
-      this.basedata.scanerList = param.camName;
+      this.basedata.scanerList = param.camName
       // console.log("all device",this.basedata.scanerList);
       if (param.camName.length > 0) {
-        this.info.scan = 0;
-        Cam_GetDevResolution(0);
+        this.info.scan = 0
+        Cam_GetDevResolution(0)
       }
     },
     async GetResolutionResultCB(param) {
-      console.log("GetResolutionResultCB", param);
-      const { resCount, resArr } = param;
-      this.basedata.ResolutionList = resArr;
+      console.log('GetResolutionResultCB', param)
+      const { resCount, resArr } = param
+      this.basedata.ResolutionList = resArr
 
       if (resCount > 0) {
-        let selectIndex = 0;
+        let selectIndex = 0
 
         for (var i = 0; i < resArr.length; i++) {
-          //默认500万分辨率打开
-          if (resArr[i] == "2592*1944") {
-            selectIndex = i;
-            break;
+          // 默认500万分辨率打开
+          if (resArr[i] == '2592*1944') {
+            selectIndex = i
+            break
           }
         }
 
-        this.info.resolution = selectIndex;
+        this.info.resolution = selectIndex
 
-        this.changeScaner();
+        this.changeScaner()
 
         // //打开摄像头
         // Cam_Close();
@@ -401,156 +399,156 @@ export default {
         // var height = parseInt(restr.substring(pos + 1, restr.length));
         // Cam_Open(this.info.scaner, width, height);
       } else {
-        this.ShowInfo("获取分辨率信息失败！");
+        this.ShowInfo('获取分辨率信息失败！')
       }
     },
 
     async changeScaner() {
-      Cam_Close();
-      await caseapi.util.waitTime(100); // 等100ms
-      const resArr = this.basedata.ResolutionList;
-      var restr = resArr[this.info.resolution];
-      var pos = restr.lastIndexOf("*");
-      var width = parseInt(restr.substring(0, pos));
-      var height = parseInt(restr.substring(pos + 1, restr.length));
-      Cam_Open(this.info.scaner, width, height);
-      await caseapi.util.waitTime(100);
+      Cam_Close()
+      await caseapi.util.waitTime(100) // 等100ms
+      const resArr = this.basedata.ResolutionList
+      var restr = resArr[this.info.resolution]
+      var pos = restr.lastIndexOf('*')
+      var width = parseInt(restr.substring(0, pos))
+      var height = parseInt(restr.substring(pos + 1, restr.length))
+      Cam_Open(this.info.scaner, width, height)
+      await caseapi.util.waitTime(100)
 
       // 设置图片为png 0-jpg,1-png,2-tif,3-pdf
-      Cam_SetFileType(1);
+      Cam_SetFileType(1)
 
       // 设置质量，0-10%，1-20%…………,9-100%
 
       // 设置灰度
-      Cam_SetColorMode(this.info.ColorMode);
+      Cam_SetColorMode(this.info.ColorMode)
 
-      Cam_SetJpgQuality(9);
+      Cam_SetJpgQuality(9)
 
       // 去黑边
-      Cam_SetDeleteBlackEdge(0);
-      await caseapi.util.waitTime(100);
+      Cam_SetDeleteBlackEdge(0)
+      await caseapi.util.waitTime(100)
       // await caseapi.util.waitTime(100);
-      Cam_SetCutMode(this.info.autocut); // 自动裁切
+      Cam_SetCutMode(this.info.autocut) // 自动裁切
 
-      Cam_SetDeleteBlackEdge(this.info.removeBlack);
+      Cam_SetDeleteBlackEdge(this.info.removeBlack)
       // Cam_SetCutMode(1); // 自动裁切
 
-      Cam_Focus();
+      Cam_Focus()
 
-      this.loading = false;
+      this.loading = false
 
-      this.info.autocut = 1;
-      this.info.removeBlack = 1;
+      this.info.autocut = 1
+      this.info.removeBlack = 1
       setTimeout(() => {
-        this.setAutoCutAndBlack();
-      }, 1000);
+        this.setAutoCutAndBlack()
+      }, 1000)
     },
     GetCaptrueImgResultCB(param) {
-      console.log("GetCaptrueImgResultCB", param);
+      console.log('GetCaptrueImgResultCB', param)
 
-      const { flag, base64Str } = param;
+      const { flag, base64Str } = param
       if (flag == 0) {
         // 成功
-        this.imageList.push(base64Str);
+        this.imageList.push(base64Str)
       }
     },
     GetCameraOnOffStatus(data) {
-      console.log("GetCameraOnOffStatus", data);
+      console.log('GetCameraOnOffStatus', data)
     },
 
     PdfCombineResultCB(data) {
-      const { flag, base64Str } = data;
+      const { flag, base64Str } = data
 
-      console.log("生成的pdf文件内容", base64Str);
+      console.log('生成的pdf文件内容', base64Str)
     },
     scanCallback(param) {
-      console.log("scanCallback", param);
-      const func = param.func;
-      const data = param.data;
+      console.log('scanCallback', param)
+      const func = param.func
+      const data = param.data
       switch (func) {
-        case "GetDevCountAndNameResultCB": // 获取设备列表
-          this.GetDevCountAndNameResultCB(data);
+        case 'GetDevCountAndNameResultCB': // 获取设备列表
+          this.GetDevCountAndNameResultCB(data)
 
-          break;
-        case "GetCaptrueImgResultCB": // 抓取图片
-          this.GetCaptrueImgResultCB(data);
-          break;
+          break
+        case 'GetCaptrueImgResultCB': // 抓取图片
+          this.GetCaptrueImgResultCB(data)
+          break
 
-        case "GetResolutionResultCB": // 获取分辨率
-          this.GetResolutionResultCB(data);
-          break;
-        case "GetCameraOnOffStatus":
-          this.GetCameraOnOffStatus(data); // 摄像头状态
-          break;
-        case "AddImgFileToPDFResultCB": // 添加图片到pdf
-          this.AddImgFileToPDFResultCB(data);
-          break;
-        case "PdfCombineResultCB": // 合并pdf
-          this.PdfCombineResultCB(data);
-          break;
+        case 'GetResolutionResultCB': // 获取分辨率
+          this.GetResolutionResultCB(data)
+          break
+        case 'GetCameraOnOffStatus':
+          this.GetCameraOnOffStatus(data) // 摄像头状态
+          break
+        case 'AddImgFileToPDFResultCB': // 添加图片到pdf
+          this.AddImgFileToPDFResultCB(data)
+          break
+        case 'PdfCombineResultCB': // 合并pdf
+          this.PdfCombineResultCB(data)
+          break
         default:
-          break;
+          break
       }
     },
 
     AddImgFileToPDFResultCB(data) {
-      const { flag, base64Str } = data;
+      const { flag, base64Str } = data
 
       if (flag == 0) {
         // 成功
-        this.imageList.push(base64Str);
+        this.imageList.push(base64Str)
       }
     },
-    changeDirect(action = "left") {
-      if (action == "left") {
-        Cam_RotateLeft();
-      } else if (action == "right") {
-        Cam_RotateRight();
+    changeDirect(action = 'left') {
+      if (action == 'left') {
+        Cam_RotateLeft()
+      } else if (action == 'right') {
+        Cam_RotateRight()
       }
     },
 
     async addimage() {
       // AddImgFileToPDF("");
-      Cam_Focus();
-      await caseapi.util.waitTime(100);
-      Cam_Photo("");
+      Cam_Focus()
+      await caseapi.util.waitTime(100)
+      Cam_Photo('')
     },
     async savePdf() {
       // Cam_CombinePDF();
 
       // 改用pdfjs来生成PDF
-      console.log("正在生成PDF");
+      console.log('正在生成PDF')
       if (this.imageList.length < 1) {
-        this.$alert("没有足够的图片，无法生成PDF");
-        return;
+        this.$alert('没有足够的图片，无法生成PDF')
+        return
       }
 
-      const pdfDoc = await PDFDocument.create();
+      const pdfDoc = await PDFDocument.create()
 
       for (let i = 0; i < this.imageList.length; i++) {
-        const image = this.imageList[i];
-        console.log("image is ", image);
-        const pngImage = await pdfDoc.embedJpg(image);
-        const pngDims = pngImage.scale(1);
+        const image = this.imageList[i]
+        console.log('image is ', image)
+        const pngImage = await pdfDoc.embedJpg(image)
+        const pngDims = pngImage.scale(1)
 
-        const page = pdfDoc.addPage();
-        page.setHeight(pngDims.height);
-        page.setWidth(pngDims.width);
+        const page = pdfDoc.addPage()
+        page.setHeight(pngDims.height)
+        page.setWidth(pngDims.width)
         // 取图片宽度和长度
         page.drawImage(pngImage, {
           x: 0,
           y: 0,
           width: pngDims.width,
-          height: pngDims.height,
-        });
+          height: pngDims.height
+        })
       }
-      const pdfBytes = await pdfDoc.saveAsBase64();
+      const pdfBytes = await pdfDoc.saveAsBase64()
 
       // 输出pdfbytes
-      this.$emit("savepdf", { title: this.pdftitle, data: pdfBytes });
+      this.$emit('savepdf', { title: this.pdftitle, data: pdfBytes })
       this.$nextTick(() => {
-        this.closeWin();
-      });
+        this.closeWin()
+      })
 
       // console.log("pdffile is ",pdfBytes);
 
@@ -558,19 +556,19 @@ export default {
     },
 
     closeWin() {
-      Cam_Close();
-      this.showWindow = false;
+      Cam_Close()
+      this.showWindow = false
     },
     removeImage(index) {
       // 移除imageList的的指定位置元素
-      this.imageList.splice(index, 1);
+      this.imageList.splice(index, 1)
     },
     setAutoCutAndBlack() {
-      Cam_SetCutMode(this.info.autocut); // 自动裁切
-      Cam_SetDeleteBlackEdge(this.info.removeBlack);
-    },
-  },
-};
+      Cam_SetCutMode(this.info.autocut) // 自动裁切
+      Cam_SetDeleteBlackEdge(this.info.removeBlack)
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

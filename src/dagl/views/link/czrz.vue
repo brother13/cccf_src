@@ -90,18 +90,15 @@
         </template>
       </el-table-column>
       <el-table-column label="O3-8h" align="center">
-          <template slot-scope="scope">
-            {{ scope.row.o3 }}
-          </template>
+        <template slot-scope="scope">
+          {{ scope.row.o3 }}
+        </template>
       </el-table-column>
       <el-table-column label="PM2.5" align="center">
         <template slot-scope="scope">
           {{ scope.row.pm25 }}
         </template>
       </el-table-column>
-
-
-
 
     </el-table>
   </div>
@@ -127,43 +124,43 @@ export default {
       filename: '',
       autoWidth: true,
       bookType: 'xlsx',
-      DeptList:  [
-            {
-                "regionid": 1,
-                "deptname": "执行局",
-                "fullname": "执行局",
-                "id": 2,
-                "regionname": "执行局",
-                "hasChildren": true
-            },
-            {
-                "regionid": 4,
-                "deptname": "　┝　民一庭",
-                "fullname": "执行局 > 民一庭",
-                "id": 14,
-                "regionname": "民一庭"
-            },
-            {
-                "regionid": 3,
-                "deptname": "　┝　本人",
-                "fullname": "执行局 > 本人",
-                "id": 13,
-                "regionname": "本人"
-            }
-        ],
+      DeptList: [
+        {
+          'regionid': 1,
+          'deptname': '执行局',
+          'fullname': '执行局',
+          'id': 2,
+          'regionname': '执行局',
+          'hasChildren': true
+        },
+        {
+          'regionid': 4,
+          'deptname': '　┝　民一庭',
+          'fullname': '执行局 > 民一庭',
+          'id': 14,
+          'regionname': '民一庭'
+        },
+        {
+          'regionid': 3,
+          'deptname': '　┝　本人',
+          'fullname': '执行局 > 本人',
+          'id': 13,
+          'regionname': '本人'
+        }
+      ],
       listQuery: {
         page: 1,
         pagesize: 10,
         keyword: undefined,
         regionid: 4,
-        startdate:parseTime(new Date().getTime()- 3*24 * 60 * 60 * 1000, '{y}-{m}-{d}'),
-        enddate:parseTime(new Date().getTime(), '{y}-{m}-{d}'),
+        startdate: parseTime(new Date().getTime() - 3 * 24 * 60 * 60 * 1000, '{y}-{m}-{d}'),
+        enddate: parseTime(new Date().getTime(), '{y}-{m}-{d}'),
         isvoid: '0'
-      },
+      }
     }
   },
   created() {
-/*    postdata('/dept/tree', {}).then((res) => {
+    /*    postdata('/dept/tree', {}).then((res) => {
       this.DeptList = res.data.list
     }), */
 
@@ -178,13 +175,12 @@ export default {
         this.listLoading = false
       })
       this.listLoading = false
-
     },
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = [ '日期','区县',   'SO2', 'NO2', 'PM10',  'CO', 'O3-8h','PM2.5','AQI']
-        const filterVal = [ 'monitortime','regionname','so2', 'no2', 'pm10', 'co', 'o3', 'pm25',  'aqi']
+        const tHeader = ['日期', '区县', 'SO2', 'NO2', 'PM10', 'CO', 'O3-8h', 'PM2.5', 'AQI']
+        const filterVal = ['monitortime', 'regionname', 'so2', 'no2', 'pm10', 'co', 'o3', 'pm25', 'aqi']
         const list = this.list
         const data = this.formatJson(filterVal, list)
         excel.export_json_to_excel({

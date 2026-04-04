@@ -299,7 +299,7 @@ export default {
     },
     getList() {
       this.previewData = []
-      let index = this.listQuery.pagesize * (this.listQuery.page - 1) + 1
+      const index = this.listQuery.pagesize * (this.listQuery.page - 1) + 1
 
       for (let i = index; i < index + this.listQuery.pagesize; i++) {
         this.previewData.push(this.tableData[i])

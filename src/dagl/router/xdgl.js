@@ -33,7 +33,7 @@ const Router_xdgl = {
         icon: 'el-icon-notebook-1',
         roles: ['XDFKTX']
       }
-    },
+    }
 
   ]
 }

@@ -62,7 +62,7 @@ export default {
       }
 
       var echarts = require('echarts')
-      let obj = this.$refs.echart
+      const obj = this.$refs.echart
       // obj.innerHTML = ""; //  先清空！
 
       this.objChart = echarts.init(obj)

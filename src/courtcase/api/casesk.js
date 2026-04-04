@@ -162,8 +162,8 @@ var obj = {
   // 作废单据
   async voidCase(id, newval) {
     // 加入备注信息
-    let res2 = { code: 0, message: '操作失败' }
-    let query = { id: id, value: newval, note: '' }
+    const res2 = { code: 0, message: '操作失败' }
+    const query = { id: id, value: newval, note: '' }
     if (newval === 1) {
       // 弹框提醒
       try {
@@ -202,8 +202,8 @@ var obj = {
   // 作废款项入账
   async voidCasebill(id, newval) {
     // 加入备注信息
-    let res2 = { code: 0, message: '操作失败' }
-    let query = { id: id, value: newval, typeid: 401, note: '' }
+    const res2 = { code: 0, message: '操作失败' }
+    const query = { id: id, value: newval, typeid: 401, note: '' }
     if (newval === 1) {
       // 弹框提醒
       try {
@@ -245,7 +245,7 @@ var obj = {
    * @returns
    */
   async saveCase(id, data) {
-    let query = data
+    const query = data
     data['id'] = id
     const res = await postdata(this.ACTION.save, query)
     return res
@@ -292,20 +292,19 @@ var obj = {
       const res = await postdata(this.ACTION.newcode, query)
       return res.data
     }
-    console.log('casesk/getNewCode', typeid,newtypeid)
+    console.log('casesk/getNewCode', typeid, newtypeid)
     const localbillno = base.getBillno(newtypeid)
-    const key_billnotype = 'billno_typefrom_'+newtypeid;
+    const key_billnotype = 'billno_typefrom_' + newtypeid
     const billtype = store.get(key_billnotype) // 默认为或 local，如果所有人共用号码，则取 fromall
 
-    console.log("billtype",billtype);
+    console.log('billtype', billtype)
 
-    if(billtype === 'fromall'){
-
+    if (billtype === 'fromall') {
       const query = { typeid: typeid }
       const res = await postdata(this.ACTION.getNewBillnoByLast, query)
       return res.data
-    }else{
-      if (localbillno ) {
+    } else {
+      if (localbillno) {
         // 自增长+1
         const newcode = await base.newcode(localbillno)
         return newcode
@@ -315,7 +314,6 @@ var obj = {
         return res.data
       }
     }
-    
   },
 
   /**

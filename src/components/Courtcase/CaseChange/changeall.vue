@@ -44,16 +44,15 @@
           <el-col :span="12">
             <el-form-item label="变更记录">
               <el-button
-                @click="showLoglist = !showLoglist"
                 :icon="logLoading ? 'el-icon-loading' : 'el-icon-time'"
-                >{{ showLoglist ? "隐藏" : "显示" }}变更记录{{
-                  logList.length > 0
-                    ? "(" + logList.length + ")"
-                    : logLoading
+                @click="showLoglist = !showLoglist"
+              >{{ showLoglist ? "隐藏" : "显示" }}变更记录{{
+                logList.length > 0
+                  ? "(" + logList.length + ")"
+                  : logLoading
                     ? ""
                     : "(暂无记录)"
-                }}</el-button
-              >
+              }}</el-button>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -117,24 +116,22 @@
               <template v-for="(item, index) in caseList">
                 <el-option :key="index" :value="index" :label="item.caseinfo">
                   <span style="float: left">{{ item.caseinfo }}</span>
-                  <span style="float: right; color: #8492a6; font-size: 13px"
-                    >{{ item.deptname }} / {{ item.cbr }}</span
-                  >
+                  <span
+                    style="float: right; color: #8492a6; font-size: 13px"
+                  >{{ item.deptname }} / {{ item.cbr }}</span>
                 </el-option>
               </template>
             </el-select>
             <el-button
               type="success"
               size="mini"
-              @click="setLinkCase"
               style="margin-left: 10px"
-              >填写</el-button
-            >
+              @click="setLinkCase"
+            >填写</el-button>
           </el-form-item>
 
           <el-form-item label="新案号" prop="caseinfo">
-            <span>（</span
-            ><el-select v-model="detail.caseyear" style="width: 120px">
+            <span>（</span><el-select v-model="detail.caseyear" style="width: 120px">
               <template v-for="yearnum in basedata.yearList">
                 <el-option :key="yearnum" :value="yearnum" :label="yearnum" />
               </template>
@@ -148,8 +145,7 @@
                 :label="aj.casetypename"
               />
             </el-select>
-            <span v-if="detail.caseyear && detail.caseyear < 2016">字第</span
-            ><el-input v-model="detail.casenum" style="width: 100px" />号
+            <span v-if="detail.caseyear && detail.caseyear < 2016">字第</span><el-input v-model="detail.casenum" style="width: 100px" />号
 
             <el-button
               type="success"
@@ -157,8 +153,7 @@
               class="form-button"
               :disabled="getajxxing"
               @click="getAjjbxx"
-              >导入</el-button
-            >
+            >导入</el-button>
           </el-form-item>
 
           <el-form-item label="新承办部门" prop="deptname">
@@ -184,13 +179,13 @@
           </el-form-item>
           <el-form-item label="变更日期" prop="revtime">
             <el-date-picker
-          v-model="detail.revtime"
-          type="date"
-          placeholder="变更日期"
-          style="width: 100%"
-          value-format="yyyy-MM-dd"
-          class="form-item"
-        />
+              v-model="detail.revtime"
+              type="date"
+              placeholder="变更日期"
+              style="width: 100%"
+              value-format="yyyy-MM-dd"
+              class="form-item"
+            />
           </el-form-item>
           <el-form-item label="变更理由" prop="note">
             <el-input
@@ -199,13 +194,13 @@
               maxlength="50"
               :rows="3"
               show-word-limit
-            ></el-input>
+            />
           </el-form-item>
         </template>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="showWindow = false"> 取消 </el-button>
-        <el-button type="primary" icon="el-icon-edit" @click="doSave" v-if="canChange">
+        <el-button v-if="canChange" type="primary" icon="el-icon-edit" @click="doSave">
           提交
         </el-button>
       </div>
@@ -214,29 +209,29 @@
 </template>
 
 <script>
-import caseapi from "@/courtcase/api";
+import caseapi from '@/courtcase/api'
 
-const config_skipcheck = true; // 跳过检查
+const config_skipcheck = true // 跳过检查
 // 手工设置款项入账的案号信息
 const fieldList = [
-  { field: "statusText", label: "当前状态", width: 150, align: "center", show: !config_skipcheck },
-  { field: "oldcaseinfo", label: "原案号", width: 180, align: "center", show: true },
-  { field: "caseinfo", label: "新案号", width: 180, align: "center", show: true },
-  { field: "olddeptname", label: "原承办部门", width: 100, align: "center", show: true },
-  { field: "deptname", label: "新承办部门", width: 100, align: "center", show: true },
-  { field: "oldcbr", label: "原承办人", width: 100, align: "center", show: true },
-  { field: "cbr", label: "新承办人", width: 100, align: "center", show: true },
-  { field: "note", label: "变更说明", width: 120, align: "center", show: true },
-  { field: "opertime", label: "操作时间", width: 160, align: "center", show: true },
-  { field: "username", label: "操作人", width: 100, align: "center", show: true },
-  { field: "checker", label: "审批人", width: 100, align: "center", show: !config_skipcheck },
-  { field: "checktime", label: "审批时间", width: 100, align: "center", show: !config_skipcheck },
-  { field: "checknote", label: "审批意见", width: 100, align: "center", show: !config_skipcheck },
-  { field: "revusername", label: "接收人", width: 120, align: "center", show: !config_skipcheck },
-  { field: "revtime", label: "接收时间", width: 120, align: "center", show: !config_skipcheck },
-];
+  { field: 'statusText', label: '当前状态', width: 150, align: 'center', show: !config_skipcheck },
+  { field: 'oldcaseinfo', label: '原案号', width: 180, align: 'center', show: true },
+  { field: 'caseinfo', label: '新案号', width: 180, align: 'center', show: true },
+  { field: 'olddeptname', label: '原承办部门', width: 100, align: 'center', show: true },
+  { field: 'deptname', label: '新承办部门', width: 100, align: 'center', show: true },
+  { field: 'oldcbr', label: '原承办人', width: 100, align: 'center', show: true },
+  { field: 'cbr', label: '新承办人', width: 100, align: 'center', show: true },
+  { field: 'note', label: '变更说明', width: 120, align: 'center', show: true },
+  { field: 'opertime', label: '操作时间', width: 160, align: 'center', show: true },
+  { field: 'username', label: '操作人', width: 100, align: 'center', show: true },
+  { field: 'checker', label: '审批人', width: 100, align: 'center', show: !config_skipcheck },
+  { field: 'checktime', label: '审批时间', width: 100, align: 'center', show: !config_skipcheck },
+  { field: 'checknote', label: '审批意见', width: 100, align: 'center', show: !config_skipcheck },
+  { field: 'revusername', label: '接收人', width: 120, align: 'center', show: !config_skipcheck },
+  { field: 'revtime', label: '接收时间', width: 120, align: 'center', show: !config_skipcheck }
+]
 export default {
-  name: "CasebillChange",
+  name: 'CasebillChange',
   props: {},
   data() {
     return {
@@ -248,161 +243,161 @@ export default {
       listLoading: false,
       logLoading: false, // 正在加载日志
 
-      dateRange: "",
+      dateRange: '',
       basedata: {
         deptList: [],
         userList: [],
         casetypeList: [],
-        yearList: [],
+        yearList: []
       },
 
-      linkcase: "", // 当前选中项，默认是-1
+      linkcase: '', // 当前选中项，默认是-1
       caseList: [], // 通过子账号关联的案号
 
       detail: {
-        billno: "",
+        billno: '',
         typeid: 0,
-        caseyear: "",
-        casetype: "",
-        casenum: "",
-        deptname: "",
-        statusText: "",
-        revtime:'',// 接收日期，可为空
+        caseyear: '',
+        casetype: '',
+        casenum: '',
+        deptname: '',
+        statusText: '',
+        revtime: '', // 接收日期，可为空
 
-        cbr: "",
-        note: "",
+        cbr: '',
+        note: '',
         oldinfo: {
-          billno: "",
-          caseinfo: "",
-          deptname: "",
-          cbr: "",
-        },
+          billno: '',
+          caseinfo: '',
+          deptname: '',
+          cbr: ''
+        }
       },
       getajxxing: false,
 
       rules: {
-        caseyear: [{ required: true, message: "案号年不能为空", trigger: "change" }],
-        casetype: [{ required: true, message: "案号字号不能为空", trigger: "change" }],
-        casenum: [{ required: true, message: "案件序号不能为空", trigger: "change" }],
-        deptname: [{ required: true, message: "变更部门不能为空", trigger: "change" }],
-        cbr: [{ required: true, message: "承办人不能为空", trigger: "change" }],
-        note: [{ required: true, message: "变更理由不能为空", trigger: "change" }],
+        caseyear: [{ required: true, message: '案号年不能为空', trigger: 'change' }],
+        casetype: [{ required: true, message: '案号字号不能为空', trigger: 'change' }],
+        casenum: [{ required: true, message: '案件序号不能为空', trigger: 'change' }],
+        deptname: [{ required: true, message: '变更部门不能为空', trigger: 'change' }],
+        cbr: [{ required: true, message: '承办人不能为空', trigger: 'change' }],
+        note: [{ required: true, message: '变更理由不能为空', trigger: 'change' }]
       },
 
       // 判断是否提交变更
-      canChange: false, // 默认不允许，仅在无变更记录，或是最后一条变更记录为 已接收时，才允许新增变更
-    };
+      canChange: false // 默认不允许，仅在无变更记录，或是最后一条变更记录为 已接收时，才允许新增变更
+    }
   },
   computed: {},
   watch: {},
   mounted() {},
   methods: {
     showWin(info) {
-      this.canChange = false; // 默认不允许为真
+      this.canChange = false // 默认不允许为真
       // console.log("casechange > show > data:", info);
-      const { billno, caseinfo, deptname, cbr, subaccount, typeid } = info;
-      this.resetTemp();
-      this.detail.billno = billno;
-      this.detail.typeid = typeid;
+      const { billno, caseinfo, deptname, cbr, subaccount, typeid } = info
+      this.resetTemp()
+      this.detail.billno = billno
+      this.detail.typeid = typeid
 
-      this.detail.oldinfo.billno = billno;
-      this.detail.oldinfo.caseinfo = caseinfo;
-      this.detail.oldinfo.deptname = deptname;
-      this.detail.oldinfo.cbr = cbr;
-      this.detail.subaccount = subaccount;
+      this.detail.oldinfo.billno = billno
+      this.detail.oldinfo.caseinfo = caseinfo
+      this.detail.oldinfo.deptname = deptname
+      this.detail.oldinfo.cbr = cbr
+      this.detail.subaccount = subaccount
 
-      this.getBasedata();
-      this.getLogList(billno);
+      this.getBasedata()
+      this.getLogList(billno)
       if (subaccount) {
-        this.getSubLink(subaccount);
+        this.getSubLink(subaccount)
       } else {
-        this.caseList = [];
+        this.caseList = []
       }
 
-      this.showWindow = true;
+      this.showWindow = true
     },
 
     checkCanChange() {
-      this.showLoglist = false;
-      this.canChange = false;
-      this.detail.status = "";
+      this.showLoglist = false
+      this.canChange = false
+      this.detail.status = ''
 
-      const data = this.logList;
+      const data = this.logList
 
       // 没有记录，则允许变更
       if (!data || data.length < 1) {
-        this.canChange = true;
-        return false;
+        this.canChange = true
+        return false
       }
 
       // 如果有记录则要判断最后一条的状态，是不是已接收
-      const row = data[data.length - 1];
+      const row = data[data.length - 1]
 
       if (!row) {
         // 没有记录，则允许变更
-        return false;
+        return false
       }
 
       if (row) {
-        this.detail.statusText = row.statusText;
+        this.detail.statusText = row.statusText
       }
 
       // 如果没有记录，则不展开，如果有记录并且末条未审核，则自动展开
       if (data.length > 0 && !row.revtime) {
-        this.showLoglist = true;
+        this.showLoglist = true
       }
 
       // 被拒绝的，允许变更
       if (row.checkstatus == 2) {
-        this.canChange = true;
-        return true;
+        this.canChange = true
+        return true
       }
 
       if (row.checkstatus == 1 && row.revtime && row.revusername) {
-        this.canChange = true;
+        this.canChange = true
       } else {
-        this.canChange = false;
+        this.canChange = false
       }
     },
     getSubLink(subaccount) {
-      this.caseList = [];
-      const param = { subaccount: subaccount };
+      this.caseList = []
+      const param = { subaccount: subaccount }
       caseapi.plugins.caselog_casebill_getcaselink(param).then((res) => {
-        console.log("getSubLink", res);
-        this.caseList = res;
-      });
+        console.log('getSubLink', res)
+        this.caseList = res
+      })
     },
     getLogList(billno) {
-      this.logLoading = true;
-      const param = { billno: billno, typeid: this.detail.typeid };
+      this.logLoading = true
+      const param = { billno: billno, typeid: this.detail.typeid }
       caseapi.plugins.caselog_casebill_getlog(param).then((res) => {
         // console.log("getLogList", res);
-        this.logList = res.items;
+        this.logList = res.items
 
-        this.checkCanChange();
+        this.checkCanChange()
         // console.log("logList", this.logList);
         this.$nextTick(() => {
-          this.logLoading = false;
-        });
-      });
+          this.logLoading = false
+        })
+      })
     },
     resetTemp() {
-      this.detail.billno = "";
-      this.detail.caseyear = "";
-      this.detail.casetype = "";
-      this.detail.casenum = "";
-      this.detail.deptname = "";
-      this.detail.cbr = "";
-      this.detail.note = "";
-      this.logList = [];
-      this.logLoading = false;
-      this.linkcase = "";
+      this.detail.billno = ''
+      this.detail.caseyear = ''
+      this.detail.casetype = ''
+      this.detail.casenum = ''
+      this.detail.deptname = ''
+      this.detail.cbr = ''
+      this.detail.note = ''
+      this.logList = []
+      this.logLoading = false
+      this.linkcase = ''
 
-      this.detail.revtime = caseapi.base.getLogindate();
+      this.detail.revtime = caseapi.base.getLogindate()
 
       this.$nextTick(() => {
-        this.$refs["dataForm"].clearValidate();
-      });
+        this.$refs['dataForm'].clearValidate()
+      })
     },
 
     /**
@@ -410,102 +405,102 @@ export default {
      *
      */
     async getBasedata() {
-      caseapi.base.getBasedata(["casetype", "deptlist"]).then((res) => {
-        this.basedata.casetypeList = res["casetype"];
-        this.basedata.deptList = res["deptlist"];
-      });
+      caseapi.base.getBasedata(['casetype', 'deptlist']).then((res) => {
+        this.basedata.casetypeList = res['casetype']
+        this.basedata.deptList = res['deptlist']
+      })
 
       caseapi.base.getYearList().then((res) => {
-        this.basedata.yearList = res;
-      });
+        this.basedata.yearList = res
+      })
 
       caseapi.base.getCbrList().then((data) => {
-        this.basedata.userList = data;
-      });
+        this.basedata.userList = data
+      })
       // console.log(this.basedata)
 
-      return true;
+      return true
     },
 
     getAjjbxx() {
-      const caseyear = this.detail.caseyear;
-      const casetype = this.detail.casetype;
-      const casenum = this.detail.casenum;
+      const caseyear = this.detail.caseyear
+      const casetype = this.detail.casetype
+      const casenum = this.detail.casenum
       if (!caseyear || !casetype || !casenum) {
-        this.$alert("请填入完整案号");
-        return false;
+        this.$alert('请填入完整案号')
+        return false
       }
 
-      this.getajxxing = true;
+      this.getajxxing = true
       setTimeout(() => {
-        this.getajxxing = false;
-      }, 3000);
+        this.getajxxing = false
+      }, 3000)
 
       caseapi.casesk.getajjbxx(caseyear, casetype, casenum).then((data) => {
-        this.getajxxing = false;
+        this.getajxxing = false
         if (!data) {
-          this.$alert("未找到案件！");
-          return false;
+          this.$alert('未找到案件！')
+          return false
         }
 
-        this.detail.deptname = data.deptname;
-        this.detail.cbr = data.cbrname;
-      });
+        this.detail.deptname = data.deptname
+        this.detail.cbr = data.cbrname
+      })
     },
 
     async doSave() {
-      const valid = await this.$refs["dataForm"].validate();
+      const valid = await this.$refs['dataForm'].validate()
       if (!valid) {
-        return false;
+        return false
       }
 
       // 判断案号三要素是否为空
 
       if (!this.detail.caseyear || !this.detail.casetype || !this.detail.casenum) {
-        this.$alert("案号信息不完整！");
-        return false;
+        this.$alert('案号信息不完整！')
+        return false
       }
 
-      let query = Object.assign({}, this.detail);
-      query.skipcheck = config_skipcheck;
+      const query = Object.assign({}, this.detail)
+      query.skipcheck = config_skipcheck
 
       const res = await caseapi.plugins
         .caselog_casebill_setcaseinfo(query)
         .catch((e) => {
-          this.$message.error("发生错误");
-          console.log(e);
-        });
+          this.$message.error('发生错误')
+          console.log(e)
+        })
 
       if (res > 0) {
-        this.$alert("设置成功");
-        this.resetTemp();
+        this.$alert('设置成功')
+        this.resetTemp()
         this.$nextTick(() => {
-          this.showWindow = false;
-        });
+          this.showWindow = false
+        })
       } else {
-        this.$message.error("发生错误");
+        this.$message.error('发生错误')
       }
     },
 
     setLinkCase() {
-      const linkcase = this.linkcase;
-      if (linkcase === "") {
-        return false;
+      const linkcase = this.linkcase
+      if (linkcase === '') {
+        return false
       }
 
       if (linkcase < 0 || linkcase > this.caseList.length - 1) {
-        return false;
+        return false
       }
 
-      const item = this.caseList[linkcase];
-      let field = ["caseyear", "casetype", "casenum", "deptname", "cbr"];
+      const item = this.caseList[linkcase]
+      const field = ['caseyear', 'casetype', 'casenum', 'deptname', 'cbr']
       for (let i = 0; i < field.length; i++) {
-        const f = field[i];
-        this.detail[f] = item[f];
+        const f = field[i]
+        this.detail[f] = item[f]
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

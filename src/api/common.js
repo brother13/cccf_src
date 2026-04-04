@@ -24,7 +24,6 @@ export function LabelList() {
   return postdata(action, {})
 }
 
-
 export function cflist(data) {
   const action = '/data/cflist'
   return postdata(action, data)

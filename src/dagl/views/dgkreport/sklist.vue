@@ -96,8 +96,7 @@
           style="margin-left: 10px"
           icon="el-icon-search"
           @click="handleFilter"
-          >搜索</el-button
-        >
+        >搜索</el-button>
         <el-button
           v-waves
           class="filter-item"
@@ -106,8 +105,7 @@
           :disabled="isExporting"
           :icon="isExporting ? 'el-icon-loading' : 'el-icon-download'"
           @click="handleExport"
-          >导出</el-button
-        >
+        >导出</el-button>
         <!-- <el-dropdown split-button type="primary" icon="el-icon-download" trigger="click" class="filter-item"
           @command="handleCommand" @click="handleExport_table">
           <i class="el-icon-download" />导出数据
@@ -136,8 +134,7 @@
       <div v-if="count.num" class="courtcase-countinfo">
         当前记录数
         <el-tag> {{ count.num }} </el-tag>
-        笔，合计金额<el-tag>{{ formatNumber(count.je) }}</el-tag
-        >元
+        笔，合计金额<el-tag>{{ formatNumber(count.je) }}</el-tag>元
       </div>
       <pagination
         v-show="count.num > 0"
@@ -200,8 +197,7 @@
       <div v-if="count.num" class="courtcase-countinfo">
         当前记录数
         <el-tag> {{ count.num }} </el-tag>
-        笔，现有余额<el-tag>{{ formatNumber(count.je) }}</el-tag
-        >元
+        笔，现有余额<el-tag>{{ formatNumber(count.je) }}</el-tag>元
       </div>
       <pagination
         v-show="count.num > 0"
@@ -222,22 +218,22 @@
 <script>
 // import { postdata } from '@/courtcase/api/common'
 
-import waves from "@/directive/waves"; // waves directive
+import waves from '@/directive/waves' // waves directive
 // import { parseTime } from '@/utils'
-import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
-import Casefilter from "@/components/Courtcase/CaseFilter"; // secondary package based on el-pagination
-import Casenotice from "@/components/Courtcase/CaseNotice"; // secondary package based on el-pagination
-import CaseStList from "@/components/Courtcase/CaseStlist/stlist2"; // secondary package based on el-pagination
+import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import Casefilter from '@/components/Courtcase/CaseFilter' // secondary package based on el-pagination
+import Casenotice from '@/components/Courtcase/CaseNotice' // secondary package based on el-pagination
+import CaseStList from '@/components/Courtcase/CaseStlist/stlist2' // secondary package based on el-pagination
 // import Moneyinput from '@/components/Courtcase/MoneyInput' // secondary package based on el-pagination
 // import Caselog from '@/components/Courtcase/CaseLog' // secondary package based on el-pagination
 
 // import hiprint from '@/components/Courtcase/hiprint' // 引入打印控件
-import caseapi from "@/courtcase/api";
-import Casecount from "@/components/Courtcase/Casecount"; // secondary package based on el-pagination
-import Operdate from "@/components/Courtcase/Operdate"; // secondary package based on el-pagination
-import { mapGetters } from "vuex";
-import LoadingProgress from "@/components/Courtcase/LoadingProgress";
-import CountCard from "@/components/Courtcase/CountCard";
+import caseapi from '@/courtcase/api'
+import Casecount from '@/components/Courtcase/Casecount' // secondary package based on el-pagination
+import Operdate from '@/components/Courtcase/Operdate' // secondary package based on el-pagination
+import { mapGetters } from 'vuex'
+import LoadingProgress from '@/components/Courtcase/LoadingProgress'
+import CountCard from '@/components/Courtcase/CountCard'
 
 const fieldList = [
   // { field: '_index', label: '序号', export: true, show: false },
@@ -253,58 +249,58 @@ const fieldList = [
   //   order: true
   // },
 
-  { field: "djcode", label: "进账票号", export: true, show: true, order: true },
+  { field: 'djcode', label: '进账票号', export: true, show: true, order: true },
   {
-    field: "ah",
-    label: "案号",
+    field: 'ah',
+    label: '案号',
     export: true,
     show: true,
     width: 220,
-    order: true,
+    order: true
   },
 
   {
-    field: "kpdate",
-    label: "开票日期",
+    field: 'kpdate',
+    label: '开票日期',
     export: true,
     show: true,
-    order: true,
+    order: true
   },
   {
-    field: "dzdate",
-    label: "到账日期",
+    field: 'dzdate',
+    label: '到账日期',
     export: true,
     show: true,
-    order: true,
+    order: true
   },
   {
-    field: "jzdate",
-    label: "进账日期",
+    field: 'jzdate',
+    label: '进账日期',
     export: true,
     show: true,
-    order: true,
+    order: true
   },
 
-  { field: "dsr", label: "当事人", export: true, show: true, width: 300 },
+  { field: 'dsr', label: '当事人', export: true, show: true, width: 300 },
   {
-    field: "jzje",
-    label: "金额",
+    field: 'jzje',
+    label: '金额',
     export: true,
     show: true,
-    align: "right",
-    order: true,
+    align: 'right',
+    order: true
   },
 
   {
-    field: "cbbm",
-    label: "承办部门",
+    field: 'cbbm',
+    label: '承办部门',
     export: true,
     show: true,
-    order: true,
+    order: true
   },
 
-  { field: "cbr", label: "承办人", export: true, show: true, order: true },
-  { field: "sjy", label: "书记员", export: true, show: true, order: true },
+  { field: 'cbr', label: '承办人', export: true, show: true, order: true },
+  { field: 'sjy', label: '书记员', export: true, show: true, order: true }
   // {
   //   field: 'yh_zt',
   //   label: '延缓状态',
@@ -328,33 +324,33 @@ const fieldList = [
   //   order: true
   // },
   // { field: 'username', label: '操作员', export: true, show: true },
-];
+]
 
 const yestatusList = [
-  { value: 1, label: "有余额" },
-  { value: 2, label: "余额为零" },
-  { value: 0, label: "所有数据" },
-];
+  { value: 1, label: '有余额' },
+  { value: 2, label: '余额为零' },
+  { value: 0, label: '所有数据' }
+]
 
 const statusList = [
-  { value: 0, label: "所有数据" },
-  { value: 1, label: "正常" },
-  { value: 2, label: "已登记延缓" },
-];
+  { value: 0, label: '所有数据' },
+  { value: 1, label: '正常' },
+  { value: 2, label: '已登记延缓' }
+]
 const datetypeList = [
-  { label: "开票日期", value: "kpdate" },
-  { label: "到账日期", value: "dzdate" },
-  { label: "进账日期", value: "jzdate" },
+  { label: '开票日期', value: 'kpdate' },
+  { label: '到账日期', value: 'dzdate' },
+  { label: '进账日期', value: 'jzdate' }
   // {label:'延缓日期',value:'yh_enddate'},
-];
+]
 const PAGECONFIG = {
-  pagename: "收款明细表", // 标题
+  pagename: '收款明细表', // 标题
   typeid: 101,
-  pagecode: "dgkye_sklist", // 页面名称,
-};
+  pagecode: 'dgkye_sklist' // 页面名称,
+}
 
 export default {
-  name: PAGECONFIG.pagecode + "Table",
+  name: PAGECONFIG.pagecode + 'Table',
   components: {
     Pagination,
     Casefilter,
@@ -366,13 +362,13 @@ export default {
     Casecount,
     Operdate,
     LoadingProgress,
-    CountCard,
+    CountCard
   },
   directives: { waves },
   filters: {
     statusFilter(status) {
-      return status === 0 ? "success" : "danger";
-    },
+      return status === 0 ? 'success' : 'danger'
+    }
   },
 
   data() {
@@ -383,23 +379,23 @@ export default {
       listLoading: true,
       pageconfig: PAGECONFIG,
       fieldList: fieldList,
-      showcaselabel: "",
+      showcaselabel: '',
       tableData: [],
-      dateRange: "thismonth",
+      dateRange: 'thismonth',
       store_key: PAGECONFIG.pagecode,
 
       listQuery: {
         page: 1,
         pagesize: 10,
         keyword: undefined,
-        sort: "",
-        datetype: "kpdate",
+        sort: '',
+        datetype: 'kpdate',
         je: undefined,
         cbr: undefined,
         starttime: undefined,
         endtime: undefined,
         yestatus: 0,
-        status: 0,
+        status: 0
       },
       basedata: {
         deptList: [],
@@ -411,31 +407,31 @@ export default {
         dateRangeList: [],
         datetypeList: datetypeList,
         yestatusList: yestatusList,
-        statusList: statusList,
+        statusList: statusList
       },
       count: {
         num: 0,
         je: 0,
-        ye: 0,
+        ye: 0
       },
 
       fleshye: {
-        endtime: "",
-        datetype: "billno",
+        endtime: '',
+        datetype: 'billno',
         yetype: 1,
-        updatetime: "",
-        lasttime: "",
+        updatetime: '',
+        lasttime: ''
       },
       fleshing: false,
 
       headers: {
-        "RLF-TOKEN": "",
+        'RLF-TOKEN': ''
       },
       export: {
         title: PAGECONFIG.pagename,
         header: [],
         field: [],
-        field2: [],
+        field2: []
       },
 
       config: null,
@@ -448,49 +444,49 @@ export default {
         done: 0,
         page: 1,
         totalpage: 0,
-        pagesize: 5000, // 默认分页数
+        pagesize: 5000 // 默认分页数
       },
 
       // 以下是汇总信息
 
       countList: [], // 统计汇总的
-      activeName: "count", // 当前激活的tab
+      activeName: 'count', // 当前激活的tab
       alltype: [], // 所有的分类信息
 
       detailList: [], // 明细记录
 
       noteinfo: {
-        note: "",
+        note: '',
         showWin: false,
-        username: "",
-        createtime: "",
-        updatetime: "",
-        info: null, // 原收款记录
-      },
-    };
+        username: '',
+        createtime: '',
+        updatetime: '',
+        info: null // 原收款记录
+      }
+    }
   },
   computed: {
-    ...mapGetters(["name"]),
+    ...mapGetters(['name']),
 
     canQueryAll() {
-      const roles = this.$store.state.user.roles;
-      const key = "ZXTZ_QUERY_ALL";
+      const roles = this.$store.state.user.roles
+      const key = 'ZXTZ_QUERY_ALL'
 
       if (roles && roles.includes(key)) {
-        return true;
+        return true
       }
-      return false;
-    },
+      return false
+    }
   },
   watch: {
     $route() {
-      this.init();
-    },
+      this.init()
+    }
   },
   created() {
-    this.init();
+    this.init()
 
-    this.getList();
+    this.getList()
   },
   methods: {
     /**
@@ -499,54 +495,54 @@ export default {
     async checkUrl() {},
     async init() {
       if (!this.canQueryAll) {
-        this.listQuery.cbr = this.name;
+        this.listQuery.cbr = this.name
       }
       // this.getLasttime();
       // this.getReport();
-      this.initExport();
-      this.getBasedata();
+      this.initExport()
+      this.getBasedata()
     },
 
     async getList() {
-      this.listLoading = true;
+      this.listLoading = true
       caseapi.plugins.queryList_sk(this.listQuery).then((res) => {
-        this.count = res.total;
-        this.tableData = res.items;
-        this.listLoading = false;
-      });
+        this.count = res.total
+        this.tableData = res.items
+        this.listLoading = false
+      })
     },
     // 初始化 导出的列表
     initExport() {
-      this.export.header = [];
-      this.export.field = [];
-      this.export.field2 = [];
+      this.export.header = []
+      this.export.field = []
+      this.export.field2 = []
       for (let i = 0; i < this.fieldList.length; i++) {
-        const field = this.fieldList[i];
-        if (field["export"] === true) {
-          this.export.header.push(field["label"]);
-          this.export.field.push(field["field"]);
-          this.export.field2.push(field);
+        const field = this.fieldList[i]
+        if (field['export'] === true) {
+          this.export.header.push(field['label'])
+          this.export.field.push(field['field'])
+          this.export.field2.push(field)
         }
       }
     },
     doSearch(param) {
-      const page = this.listQuery.page;
-      const pagesize = this.listQuery.pagesize;
-      this.listQuery = param;
-      this.listQuery.page = page;
-      this.listQuery.pagesize = pagesize;
+      const page = this.listQuery.page
+      const pagesize = this.listQuery.pagesize
+      this.listQuery = param
+      this.listQuery.page = page
+      this.listQuery.pagesize = pagesize
 
-      this.getList();
+      this.getList()
     },
     getBigNumber(str) {
       if (str) {
-        return "大写金额：" + caseapi.util.cashToChinese(str);
+        return '大写金额：' + caseapi.util.cashToChinese(str)
       } else {
-        return "";
+        return ''
       }
     },
     formatNumber(num) {
-      return caseapi.util.number_format(num, 2);
+      return caseapi.util.number_format(num, 2)
     },
 
     /**
@@ -555,142 +551,142 @@ export default {
      */
     async getBasedata() {
       caseapi.base.getYearList().then((res) => {
-        this.basedata.yearList = res;
-      });
+        this.basedata.yearList = res
+      })
 
-      this.basedata.dateRangeList = caseapi.base.getDateRangeList();
+      this.basedata.dateRangeList = caseapi.base.getDateRangeList()
       // console.log(this.basedata)
 
-      const datetype = caseapi.store.get(this.store_key);
+      const datetype = caseapi.store.get(this.store_key)
       if (datetype) {
-        this.dateRange = datetype;
+        this.dateRange = datetype
       }
       if (this.dateRange) {
-        this.changeDateRange();
+        this.changeDateRange()
       }
       // this.getRefreshConfig();
 
-      return true;
+      return true
     },
 
     async getLasttime() {
       caseapi.plugins.dgkreport_getendtime().then((res) => {
-        this.fleshye.endtime = res.endtime;
-        this.fleshye.lasttime = res.lasttime;
-      });
+        this.fleshye.endtime = res.endtime
+        this.fleshye.lasttime = res.lasttime
+      })
     },
 
     getIndexMap() {
-      let indexMap = {};
+      const indexMap = {}
       for (let i = 0; i < this.detailList.length; i++) {
-        const row = this.detailList[i];
-        const scode = row.info.code;
-        indexMap[scode] = i;
+        const row = this.detailList[i]
+        const scode = row.info.code
+        indexMap[scode] = i
       }
-      return indexMap;
+      return indexMap
     },
-    async getDetail(code = "ALL") {
-      const indexMap = this.getIndexMap();
-      this.listLoading = true;
+    async getDetail(code = 'ALL') {
+      const indexMap = this.getIndexMap()
+      this.listLoading = true
 
-      let query = Object.assign({}, this.listQuery);
-      if (code != "ALL") {
-        const index = indexMap[code];
-        query = this.detailList[index].query;
-        query["code"] = code;
+      let query = Object.assign({}, this.listQuery)
+      if (code != 'ALL') {
+        const index = indexMap[code]
+        query = this.detailList[index].query
+        query['code'] = code
       }
       const res = await caseapi.plugins.dgkreport_getList(query).finally(() => {
-        this.listLoading = false;
-      });
+        this.listLoading = false
+      })
 
-      if (code == "ALL") {
-        for (let k in res) {
-          const info = res[k];
-          const scode = info.info.code;
-          const index = indexMap[scode];
-          this.detailList[index].total = info.total;
-          this.detailList[index].items = info.items;
+      if (code == 'ALL') {
+        for (const k in res) {
+          const info = res[k]
+          const scode = info.info.code
+          const index = indexMap[scode]
+          this.detailList[index].total = info.total
+          this.detailList[index].items = info.items
         }
       } else {
-        const index = indexMap[code];
-        const info = res[code];
-        this.detailList[index].total = info.total;
-        this.detailList[index].items = info.items;
+        const index = indexMap[code]
+        const info = res[code]
+        this.detailList[index].total = info.total
+        this.detailList[index].items = info.items
       }
     },
 
     changeDateRange() {
       // 调整日期范围
-      const data = caseapi.base.getDateRange(this.dateRange);
-      this.listQuery.starttime = data.starttime;
-      this.listQuery.endtime = data.endtime;
+      const data = caseapi.base.getDateRange(this.dateRange)
+      this.listQuery.starttime = data.starttime
+      this.listQuery.endtime = data.endtime
 
-      caseapi.store.set(this.store_key, this.dateRange);
+      caseapi.store.set(this.store_key, this.dateRange)
     },
     handleFilter() {
-      this.listQuery.page = 1;
+      this.listQuery.page = 1
       // this.getDetail()
       // this.getReport();
-      this.getList();
+      this.getList()
     },
 
     sortChange(data) {
-      const { prop, order } = data;
-      const order2 = order === "ascending" ? "asc" : "desc";
-      this.listQuery.sort = prop + " " + order2;
-      this.handleFilter();
+      const { prop, order } = data
+      const order2 = order === 'ascending' ? 'asc' : 'desc'
+      this.listQuery.sort = prop + ' ' + order2
+      this.handleFilter()
       // if (prop === 'id') {
       //   this.sortByID(order)
       // }
     },
     sortByID(order) {
-      if (order === "ascending") {
-        this.listQuery.sort = "+id";
+      if (order === 'ascending') {
+        this.listQuery.sort = '+id'
       } else {
-        this.listQuery.sort = "-id";
+        this.listQuery.sort = '-id'
       }
-      this.handleFilter();
+      this.handleFilter()
     },
 
     async handleExport() {
       // 导出数据
-      const maxnum = 5000;
+      const maxnum = 5000
       try {
-        let confirm = await this.$confirm(
-          "当前列表共" +
+        const confirm = await this.$confirm(
+          '当前列表共' +
             this.count.num +
-            "笔，共计" +
+            '笔，共计' +
             this.formatNumber(this.count.je) +
-            "元，是否确认导出?",
-          "提示",
+            '元，是否确认导出?',
+          '提示',
           {
-            confirmButtonText: "确定",
-            cancelButtonText: "取消",
-            type: "warning",
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
           }
-        );
-        console.log(confirm);
+        )
+        console.log(confirm)
       } catch (e) {
         // 说明点击了取消
-        return;
+        return
       }
 
       if (this.count.num > maxnum) {
         // 做提示
         try {
-          let confirm = await this.$confirm(
-            "当前记录数超过" + maxnum + "笔,导出可能较慢,是否继续导出?",
-            "提示",
+          const confirm = await this.$confirm(
+            '当前记录数超过' + maxnum + '笔,导出可能较慢,是否继续导出?',
+            '提示',
             {
-              confirmButtonText: "确定",
-              cancelButtonText: "取消",
-              type: "warning",
+              confirmButtonText: '确定',
+              cancelButtonText: '取消',
+              type: 'warning'
             }
-          );
-          console.log(confirm);
+          )
+          console.log(confirm)
         } catch (e) {
           // 说明点击了取消
-          return;
+          return
         }
       }
 
@@ -704,83 +700,83 @@ export default {
 
       // 以下改用分页导出数据的方法，用以实现超大数据量级的导出
 
-      this.total = this.count.num;
-      this.exportstatus.total = this.total;
-      this.exportstatus.done = 0;
-      this.exportstatus.page = 1;
+      this.total = this.count.num
+      this.exportstatus.total = this.total
+      this.exportstatus.done = 0
+      this.exportstatus.page = 1
       this.exportstatus.totalpage = Math.floor(
         this.total / this.exportstatus.pagesize
-      );
+      )
       if (
         this.total >
         this.exportstatus.pagesize * this.exportstatus.totalpage
       ) {
-        this.exportstatus.totalpage++; // 判断分页
+        this.exportstatus.totalpage++ // 判断分页
       }
-      let alldata = [];
-      this.isExporting = true; // 标志 是否正在导出
+      const alldata = []
+      this.isExporting = true // 标志 是否正在导出
       this.showProgress(
-        "正在读取数据",
+        '正在读取数据',
         this.exportstatus.done,
         this.exportstatus.total
-      );
+      )
       for (let i = 1; i <= this.exportstatus.totalpage; i++) {
         if (!this.isExporting) {
-          this.$message.error("已取消");
-          return false;
+          this.$message.error('已取消')
+          return false
           // break
         }
-        let query = Object.assign({}, this.listQuery);
-        query.page = i;
-        query.pagesize = this.exportstatus.pagesize;
-        const res = await caseapi.plugins.queryList_sk(query);
-        const data = res.items;
+        const query = Object.assign({}, this.listQuery)
+        query.page = i
+        query.pagesize = this.exportstatus.pagesize
+        const res = await caseapi.plugins.queryList_sk(query)
+        const data = res.items
         for (let idx = 0; idx < data.length; idx++) {
-          let row = data[idx];
-          row["_index"] = (i - 1) * this.exportstatus.pagesize + idx + 1;
-          alldata.push(row);
+          const row = data[idx]
+          row['_index'] = (i - 1) * this.exportstatus.pagesize + idx + 1
+          alldata.push(row)
         }
-        this.exportstatus.done += data.length;
+        this.exportstatus.done += data.length
         // alldata = alldata.concat(data) // 合并数组
         this.showProgress(
-          "正在读取数据",
+          '正在读取数据',
           this.exportstatus.done,
           this.exportstatus.total
-        );
+        )
       }
       if (this.isExporting && alldata.length) {
-        this.handleDownload(alldata);
+        this.handleDownload(alldata)
       }
 
       setTimeout(() => {
-        this.isExporting = false;
-        this.hideProgress();
-      }, 500);
+        this.isExporting = false
+        this.hideProgress()
+      }, 500)
     },
     showProgress(title, num, total) {
       try {
-        this.$refs["progress"].showInfo(title, num, total);
+        this.$refs['progress'].showInfo(title, num, total)
       } catch (e) {
         // console.log(e)
       }
     },
     hideProgress() {
       try {
-        this.$refs["progress"].close();
+        this.$refs['progress'].close()
       } catch (e) {
         // console.log(e)
       }
     },
     stopExport() {
-      this.isExporting = false;
+      this.isExporting = false
     },
 
     handleDownload(alldata) {
-      this.downloadLoading = true;
-      import("@/vendor/Export2Excel").then((excel) => {
-        const tHeader = this.export.header;
-        const filterVal = this.export.field2;
-        const data = this.formatJson(filterVal, alldata);
+      this.downloadLoading = true
+      import('@/vendor/Export2Excel').then((excel) => {
+        const tHeader = this.export.header
+        const filterVal = this.export.field2
+        const data = this.formatJson(filterVal, alldata)
         excel.export_json_to_excel({
           header: tHeader,
           data,
@@ -788,57 +784,57 @@ export default {
           autoWidth: true,
           maxWidth: 80,
           // filename: "table-list"
-          filename: this.export.title,
-        });
-        this.downloadLoading = false;
-      });
+          filename: this.export.title
+        })
+        this.downloadLoading = false
+      })
     },
 
     formatJson(filterVal, jsonData) {
       return jsonData.map((v) =>
         filterVal.map((field) => {
-          const j = field.field;
-          let value = v[j];
-          if (field.align && field.align === "right") {
+          const j = field.field
+          let value = v[j]
+          if (field.align && field.align === 'right') {
             // 数字
-            value = this.formatNumber(value);
-            value = value.replace(/,/g, "");
-            if (value === "-") {
-              value = 0;
+            value = this.formatNumber(value)
+            value = value.replace(/,/g, '')
+            if (value === '-') {
+              value = 0
             }
-            return value - 0;
+            return value - 0
           }
 
-          return value;
+          return value
           // if (j === 'timestamp') {
           //   return parseTime(v[j])
           // } else {
           //   return v[j]
           // }
         })
-      );
+      )
     },
-    getSortClass: function (key) {
-      const sort = this.listQuery.sort;
+    getSortClass: function(key) {
+      const sort = this.listQuery.sort
       return sort === `+${key}`
-        ? "ascending"
+        ? 'ascending'
         : sort === `-${key}`
-        ? "descending"
-        : "";
+          ? 'descending'
+          : ''
     },
 
     handleCommand(command) {
-      const { id, data } = command;
+      const { id, data } = command
       switch (id) {
-        case "handleExportTable":
-          this.handleExportTable(data);
-          break;
-        case "stlist": // 查询收退情况
-          this.showStList(data);
-          break;
-        case "viewnote": // 查看备注
-          this.showNote(data);
-          break;
+        case 'handleExportTable':
+          this.handleExportTable(data)
+          break
+        case 'stlist': // 查询收退情况
+          this.showStList(data)
+          break
+        case 'viewnote': // 查看备注
+          this.showNote(data)
+          break
 
         default:
         // do nothing
@@ -848,212 +844,212 @@ export default {
     // 显示收退情况
     showStList(row) {
       try {
-        const stobj = this.$refs["STlist"];
+        const stobj = this.$refs['STlist']
         if (stobj) {
-          stobj.showListByBill(row.djcode, row.ah);
+          stobj.showListByBill(row.djcode, row.ah)
         } else {
-          this.$message.error("显示收退列表错误：对象没找到");
+          this.$message.error('显示收退列表错误：对象没找到')
         }
       } catch (e) {
-        console.log(e);
-        this.$message.error("显示收退列表发生错误:" + e.description);
+        console.log(e)
+        this.$message.error('显示收退列表发生错误:' + e.description)
       }
     },
 
     fleshData() {
-      this.fleshing = true;
-      this.listLoading = true;
+      this.fleshing = true
+      this.listLoading = true
       caseapi.plugins.dgkreport_calc(this.fleshye).then((res) => {
-        this.fleshing = false;
-        this.listQuery.page = 1;
-        this.getReport();
-      });
+        this.fleshing = false
+        this.listQuery.page = 1
+        this.getReport()
+      })
     },
 
     // 控制是否显示
     checkFieldShow(fieldname, value) {
       for (let i = 0; i < this.fieldList.length; i++) {
-        const field = this.fieldList[i];
+        const field = this.fieldList[i]
         if (field.field == fieldname) {
-          this.fieldList[i].export = value;
-          this.fieldList[i].show = value;
+          this.fieldList[i].export = value
+          this.fieldList[i].show = value
 
-          break;
+          break
         }
       }
     },
 
     clicklink(code) {
       // console.log("clicklink", code);
-      this.activeName = code;
+      this.activeName = code
     },
     tableRowClassName({ row, rowIndex }) {
-      const leftdays = row.leftdays;
+      const leftdays = row.leftdays
 
       if (leftdays >= 0 && leftdays <= 5) {
-        return "row-warning";
+        return 'row-warning'
       } else if (leftdays < 0) {
-        return "row-danger";
+        return 'row-danger'
       }
-      return "";
+      return ''
     },
     async handleExport_table() {
-      this.downloadLoading = true;
+      this.downloadLoading = true
 
       // console.log("handleExportTable:", typeinfo);
 
-      let query = Object.assign({}, this.listQuery);
-      query["page"] = 1;
-      query["pagesize"] = 99999;
-      query["code"] = "ALL";
-      const res = await caseapi.plugins.dgkreport_getList(query);
+      const query = Object.assign({}, this.listQuery)
+      query['page'] = 1
+      query['pagesize'] = 99999
+      query['code'] = 'ALL'
+      const res = await caseapi.plugins.dgkreport_getList(query)
 
-      let alldata = [];
-      const filterVal = this.export.field2;
-      for (let k in res) {
-        const item = res[k];
-        let info = {};
-        info["sheet"] = item.info.label + "(" + item.total.num + ")";
-        info["head"] = this.export.header;
+      const alldata = []
+      const filterVal = this.export.field2
+      for (const k in res) {
+        const item = res[k]
+        const info = {}
+        info['sheet'] = item.info.label + '(' + item.total.num + ')'
+        info['head'] = this.export.header
         for (let j = 0; j < item.items.length; j++) {
-          item.items[j]["_index"] = j + 1;
+          item.items[j]['_index'] = j + 1
         }
 
-        info["data"] = this.formatJson_new(filterVal, item.items);
-        alldata.push(info);
+        info['data'] = this.formatJson_new(filterVal, item.items)
+        alldata.push(info)
       }
-      const filename = "代管款台账";
+      const filename = '代管款台账'
 
-      const excel = await import("@/vendor/Export2Excel");
+      const excel = await import('@/vendor/Export2Excel')
       excel.export_json_to_excel_multiTabs({
         alldata: alldata,
-        filename: filename,
-      });
+        filename: filename
+      })
       // this.listLoading = false
 
-      this.downloadLoading = false;
+      this.downloadLoading = false
 
       // this.listLoading = false
 
-      this.downloadLoading = false;
+      this.downloadLoading = false
     },
     func_base64_to_blob(data, mime) {
-      data = window.atob(data);
-      var ia = new Uint8Array(data.length);
+      data = window.atob(data)
+      var ia = new Uint8Array(data.length)
       for (var i = 0; i < data.length; i++) {
-        ia[i] = data.charCodeAt(i);
+        ia[i] = data.charCodeAt(i)
       }
       return new Blob([ia], {
-        type: mime,
-      });
+        type: mime
+      })
     },
 
     formatJson_new(filterVal, jsonData) {
       return jsonData.map((v) =>
         filterVal.map((field) => {
           // 判断是否居右，如果居右，则说明是数字
-          const j = field.field;
-          if (field.align && field.align === "right") {
-            return v[j] - 0;
+          const j = field.field
+          if (field.align && field.align === 'right') {
+            return v[j] - 0
           } else {
-            return v[j];
+            return v[j]
           }
         })
-      );
+      )
     },
     async handleExportTable(index) {
-      this.downloadLoading = true;
-      const info = this.detailList[index];
-      const code = info.info.code;
-      console.log("handleExportTable:", info);
+      this.downloadLoading = true
+      const info = this.detailList[index]
+      const code = info.info.code
+      console.log('handleExportTable:', info)
 
-      let query = Object.assign({}, info.query);
-      query["page"] = 1;
-      query["pagesize"] = 99999;
-      const res = await caseapi.plugins.dgkreport_getList(query);
-      let alldata = res[code].items;
+      const query = Object.assign({}, info.query)
+      query['page'] = 1
+      query['pagesize'] = 99999
+      const res = await caseapi.plugins.dgkreport_getList(query)
+      const alldata = res[code].items
 
       for (let i = 0; i < alldata.length; i++) {
-        alldata[i]["_index"] = i + 1;
+        alldata[i]['_index'] = i + 1
       }
 
-      import("@/vendor/Export2Excel").then((excel) => {
-        const filterVal = this.export.field2;
-        const tHeader = this.export.header;
-        const data = this.formatJson(filterVal, alldata);
+      import('@/vendor/Export2Excel').then((excel) => {
+        const filterVal = this.export.field2
+        const tHeader = this.export.header
+        const data = this.formatJson(filterVal, alldata)
         excel.export_json_to_excel({
           header: tHeader,
           data,
           sheetname: info.info.label,
           // filename: "table-list"
-          filename: "代管款台账_" + info.info.label,
-        });
-      });
+          filename: '代管款台账_' + info.info.label
+        })
+      })
 
       // this.listLoading = false
 
-      this.downloadLoading = false;
+      this.downloadLoading = false
     },
     handleQuery(row) {
-      this.showStList(row);
+      this.showStList(row)
     },
     showNote(row) {
-      this.noteinfo.username = "";
-      this.noteinfo.createtime = "";
-      this.noteinfo.note = "";
-      this.noteinfo.updatetime = "";
-      this.noteinfo.info = null;
-      this.noteinfo.info = Object.assign({}, row);
+      this.noteinfo.username = ''
+      this.noteinfo.createtime = ''
+      this.noteinfo.note = ''
+      this.noteinfo.updatetime = ''
+      this.noteinfo.info = null
+      this.noteinfo.info = Object.assign({}, row)
       caseapi.plugins.getNote(row).then((res) => {
         if (res) {
-          this.noteinfo.username = res.username;
-          this.noteinfo.createtime = res.createtime;
-          this.noteinfo.note = res.note;
-          this.noteinfo.updatetime = res.updatetime;
+          this.noteinfo.username = res.username
+          this.noteinfo.createtime = res.createtime
+          this.noteinfo.note = res.note
+          this.noteinfo.updatetime = res.updatetime
         }
 
         this.$nextTick(() => {
-          this.noteinfo.showWin = true;
-        });
-      });
+          this.noteinfo.showWin = true
+        })
+      })
     },
 
     async addNote() {
-      console.log("addNote > noteinfo", this.noteinfo);
+      console.log('addNote > noteinfo', this.noteinfo)
 
-      const billno = this.noteinfo.info.billno || "";
-      const caseinfo = this.noteinfo.info.caseinfo || "";
-      const note = this.noteinfo.note;
-      const bankdate = this.noteinfo.info.bankdate || "";
+      const billno = this.noteinfo.info.billno || ''
+      const caseinfo = this.noteinfo.info.caseinfo || ''
+      const note = this.noteinfo.note
+      const bankdate = this.noteinfo.info.bankdate || ''
       if (!note || note.length < 3) {
-        this.$alert("备注不能少于3个字");
-        return false;
+        this.$alert('备注不能少于3个字')
+        return false
       }
 
-      let query = {
+      const query = {
         note: note,
         billno: billno,
         caseinfo: caseinfo,
-        bankdate: bankdate,
-      };
-      const res = await caseapi.plugins.addNote(query);
+        bankdate: bankdate
+      }
+      const res = await caseapi.plugins.addNote(query)
 
-      this.$alert("保存成功");
-      this.freshAllList();
+      this.$alert('保存成功')
+      this.freshAllList()
       this.$nextTick(() => {
-        this.noteinfo.showWin = false;
-      });
+        this.noteinfo.showWin = false
+      })
       // this.getDetail();
     },
 
     freshAllList() {
       for (let i = 0; i < this.detailList.length; i++) {
-        const code = this.detailList[i].info.code;
-        this.getDetail(code);
+        const code = this.detailList[i].info.code
+        this.getDetail(code)
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>
 <style lang="scss" scoped>
 .report-chart {

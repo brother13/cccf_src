@@ -1,8 +1,8 @@
 <template>
   <div v-bind="$attrs" v-on="$listeners">
     <el-row>
-      <el-col :span="2" v-if="value">
-        <LinkIcon :src="value"></LinkIcon>
+      <el-col v-if="value" :span="2">
+        <LinkIcon :src="value" />
         <!-- <el-image :src="value" class="icon-image"></el-image> -->
       </el-col>
       <el-col :span="22">
@@ -19,7 +19,7 @@
             :value="item.icon"
           >
             <span style="float: left">
-              <LinkIcon :src="item.icon"></LinkIcon>
+              <LinkIcon :src="item.icon" />
               <!-- <el-image :src="item.icon" class="icon-image"></el-image> -->
             </span>
             <span style="float: right; color: #8492a6; font-size: 13px">{{
@@ -33,43 +33,43 @@
 </template>
 
 <script>
-import LinkIcon from '../LinkIcon';
+import LinkIcon from '../LinkIcon'
 
-let iconList = [];
-const path = "./assets/images/appicon/";
+const iconList = []
+const path = './assets/images/appicon/'
 for (var i = 1; i <= 12; i++) {
-  const file = path + "icon" + i + ".png";
-  const newicon = { icon: 'icon'+i,file:file };
-  iconList.push(newicon);
+  const file = path + 'icon' + i + '.png'
+  const newicon = { icon: 'icon' + i, file: file }
+  iconList.push(newicon)
 }
 // 加载所有的
 export default {
-  name: "IconSelect",
+  name: 'IconSelect',
   components: { LinkIcon },
   props: {
     value: {
       type: String,
-      required: true,
-    },
+      required: true
+    }
   },
   data() {
     return {
-      iconList: iconList,
-    };
+      iconList: iconList
+    }
   },
   computed: {
     selectVal: {
       get() {
-        return this.value;
+        return this.value
       },
       set(val) {
-        this.$emit("input", val);
-      },
-    },
+        this.$emit('input', val)
+      }
+    }
   },
   mounted() {},
-  methods: {},
-};
+  methods: {}
+}
 </script>
 
 <style lang="scss" scoped>

@@ -56,28 +56,28 @@
         <div style="min-height: 20px">&nbsp;</div>
 
         <el-form-item label="是否上缴" prop="reason">
-          <el-select style="width: 100%" v-model="detail.opertype">
+          <el-select v-model="detail.opertype" style="width: 100%">
             <template>
               <el-option
                 v-for="(item, index) in basedata.checkValueList"
+                :key="index"
                 :label="item.label"
                 :value="item.value"
-                :key="index"
-              ></el-option>
+              />
             </template>
           </el-select>
         </el-form-item>
 
         <template v-if="detail.opertype == 2">
           <el-form-item label="不上缴理由" prop="reason">
-            <el-select style="width: 100%" v-model="detail.reason">
+            <el-select v-model="detail.reason" style="width: 100%">
               <template>
                 <el-option
                   v-for="(item, index) in basedata.reasonList"
+                  :key="index"
                   :label="item.classname"
                   :value="item.classname"
-                  :key="index"
-                ></el-option>
+                />
               </template>
             </el-select>
           </el-form-item>
@@ -89,18 +89,18 @@
               minlength="2"
               :rows="3"
               show-word-limit
-            ></el-input>
+            />
           </el-form-item>
         </template>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="showWindow = false"> 取消 </el-button>
         <el-button
+          v-show="detail.opertype > 0"
           type="primary"
           icon="el-icon-edit"
-          @click="doSave"
-          v-show="detail.opertype > 0"
           :disabled="batchinfo.isDoing"
+          @click="doSave"
         >
           提交
         </el-button>
@@ -110,39 +110,39 @@
 </template>
 
 <script>
-import caseapi from "@/courtcase/api";
+import caseapi from '@/courtcase/api'
 // 手工设置款项入账的案号信息
 const fieldList = [
-  { field: "billno", label: "单据号", width: 120, align: "center", show: true },
-  { field: "caseinfo", label: "案号", width: 180, align: "center", show: true },
-  { field: "operdate", label: "制单日期", width: 100, align: "center", show: true },
-  { field: "deptname", label: "承办部门", width: 100, align: "center", show: true },
-  { field: "cbr", label: "承办人", width: 100, align: "center", show: true },
-  { field: "ye", label: "金额", width: 100, align: "right", show: true },
+  { field: 'billno', label: '单据号', width: 120, align: 'center', show: true },
+  { field: 'caseinfo', label: '案号', width: 180, align: 'center', show: true },
+  { field: 'operdate', label: '制单日期', width: 100, align: 'center', show: true },
+  { field: 'deptname', label: '承办部门', width: 100, align: 'center', show: true },
+  { field: 'cbr', label: '承办人', width: 100, align: 'center', show: true },
+  { field: 'ye', label: '金额', width: 100, align: 'right', show: true },
   {
-    field: "oldcase_status",
-    label: "是否上缴",
+    field: 'oldcase_status',
+    label: '是否上缴',
     width: 100,
-    align: "center",
-    show: true,
+    align: 'center',
+    show: true
   },
-  { field: "oldcase_reason", label: "当前理由", width: 100, align: "center", show: true },
+  { field: 'oldcase_reason', label: '当前理由', width: 100, align: 'center', show: true },
   {
-    field: "oldcase_note",
-    label: "当前具体理由",
+    field: 'oldcase_note',
+    label: '当前具体理由',
     width: 180,
-    align: "center",
-    show: true,
+    align: 'center',
+    show: true
   },
-  { field: "oldcase_time", label: "填写时间", width: 160, align: "center", show: true },
-];
+  { field: 'oldcase_time', label: '填写时间', width: 160, align: 'center', show: true }
+]
 
 const checkValueList = [
-  { label: "上缴", value: 1 },
-  { label: "年内处理", value: 2 },
-];
+  { label: '上缴', value: 1 },
+  { label: '年内处理', value: 2 }
+]
 export default {
-  name: "caseoldcasereason",
+  name: 'Caseoldcasereason',
   props: {},
   data() {
     return {
@@ -154,17 +154,17 @@ export default {
       listLoading: false,
       logLoading: false, // 正在加载日志
 
-      dateRange: "",
+      dateRange: '',
       basedata: {
         deptList: [],
         userList: [],
         casetypeList: [],
         yearList: [],
         reasonList: [],
-        checkValueList: checkValueList,
+        checkValueList: checkValueList
       },
 
-      linkcase: "", // 当前选中项，默认是-1
+      linkcase: '', // 当前选中项，默认是-1
       caseList: [], // 通过子账号关联的案号
 
       isBatchMode: false, // 是否是批量模式
@@ -174,16 +174,16 @@ export default {
         data: [],
         total: 0,
         done: 0,
-        isDoing: false, // 正在执行
+        isDoing: false // 正在执行
       },
 
       detail: {
         id: 0,
         billno: [],
-        typeid: "",
-        reason: "",
-        note: "",
-        opertype: undefined, // 默认无选项
+        typeid: '',
+        reason: '',
+        note: '',
+        opertype: undefined // 默认无选项
       },
 
       getajxxing: false,
@@ -194,8 +194,8 @@ export default {
       },
 
       // 判断是否提交变更
-      canChange: false, // 默认不允许，仅在无变更记录，或是最后一条变更记录为 已接收时，才允许新增变更
-    };
+      canChange: false // 默认不允许，仅在无变更记录，或是最后一条变更记录为 已接收时，才允许新增变更
+    }
   },
   computed: {},
   watch: {},
@@ -208,34 +208,34 @@ export default {
       // const res = await caseapi.plugins.caselog_getinfo(query);
       // console.log("showInfo,id=", id, "res=", res);
 
-      this.isBatchMode = true;
-      this.getBasedata();
+      this.isBatchMode = true
+      this.getBasedata()
 
-      let allbill = [];
+      const allbill = []
       for (let i = 0; i < alldata.length; i++) {
-        const row = alldata[i];
-        allbill.push(row.billno);
+        const row = alldata[i]
+        allbill.push(row.billno)
       }
-      this.detail.billno = allbill;
-      this.batchinfo.data = alldata;
-      const typeid = alldata[0]["typeid"] || 101;
-      this.detail.typeid = typeid;
-      this.detail.reason = "";
-      this.detail.note = "";
+      this.detail.billno = allbill
+      this.batchinfo.data = alldata
+      const typeid = alldata[0]['typeid'] || 101
+      this.detail.typeid = typeid
+      this.detail.reason = ''
+      this.detail.note = ''
 
       // if (res) {
       //   this.info = res;
       // }
-      this.showWindow = true;
+      this.showWindow = true
     },
 
     resetInfo(id) {
       // console.log("resetInfo", id);
-      this.detail.id = id;
-      this.detail.checknote = "";
-      this.detail.checkstatus = 1; // 默认通过
+      this.detail.id = id
+      this.detail.checknote = ''
+      this.detail.checkstatus = 1 // 默认通过
 
-      this.info = Object.assign({}, this.info_empty);
+      this.info = Object.assign({}, this.info_empty)
     },
 
     /**
@@ -243,81 +243,81 @@ export default {
      *
      */
     async getBasedata() {
-      caseapi.base.getBasedata(["unuploadreason"]).then((res) => {
-        this.basedata.reasonList = res["unuploadreason"];
-      });
-      return true;
+      caseapi.base.getBasedata(['unuploadreason']).then((res) => {
+        this.basedata.reasonList = res['unuploadreason']
+      })
+      return true
     },
     formatNumber(num) {
-      return caseapi.util.number_format(num, 2);
+      return caseapi.util.number_format(num, 2)
     },
     async doSave_batch() {
-      this.batchinfo.isDoing = true;
+      this.batchinfo.isDoing = true
 
       for (let i = 0; i < this.batchinfo.id.length; i++) {
-        const id = this.batchinfo.id[i];
-        this.batchinfo.done = i + 1;
-        let param = Object.assign({}, this.detail);
-        param.id = id;
+        const id = this.batchinfo.id[i]
+        this.batchinfo.done = i + 1
+        const param = Object.assign({}, this.detail)
+        param.id = id
         const res = await caseapi.plugins.unuploadreason_addnote(param).catch((e) => {
-          this.$message.error("发生错误");
-          console.log(e);
-        });
+          this.$message.error('发生错误')
+          console.log(e)
+        })
         if (!res) {
-          return false;
+          return false
         }
       }
 
-      this.batchinfo.isDoing = false;
+      this.batchinfo.isDoing = false
 
-      this.$alert("保存成功");
-      this.$emit("done", true);
+      this.$alert('保存成功')
+      this.$emit('done', true)
       this.$nextTick(() => {
-        this.showWindow = false;
-      });
+        this.showWindow = false
+      })
     },
     async doSave() {
-      const valid = await this.$refs["dataForm"].validate().catch((e) => {
-        console.log("校验失败", e);
-      });
+      const valid = await this.$refs['dataForm'].validate().catch((e) => {
+        console.log('校验失败', e)
+      })
 
-      console.log("valid", valid);
+      console.log('valid', valid)
       if (!valid) {
-        return false;
+        return false
       }
 
       if (this.detail.opertype == 2) {
         // 判断是否不允许
         if (!this.detail.reason) {
-          this.$alert("不上缴原因不能为空！");
-          return false;
+          this.$alert('不上缴原因不能为空！')
+          return false
         }
         if (!this.detail.note) {
-          this.$alert("具体原因不能为空！");
-          return false;
+          this.$alert('具体原因不能为空！')
+          return false
         }
       }
 
       const res = await caseapi.plugins.unuploadreason_addnote(this.detail).catch((e) => {
-        this.$message.error("发生错误");
-        console.log(e);
-      });
+        this.$message.error('发生错误')
+        console.log(e)
+      })
       if (!res) {
-        return false;
+        return false
       }
 
       if (res > 0) {
-        this.$alert("保存成功");
-        this.$emit("done", true);
+        this.$alert('保存成功')
+        this.$emit('done', true)
         this.$nextTick(() => {
-          this.showWindow = false;
-        });
+          this.showWindow = false
+        })
       } else {
-        this.$message.error("发生错误");
+        this.$message.error('发生错误')
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

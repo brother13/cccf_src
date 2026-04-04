@@ -20,7 +20,7 @@ const Router_zxktz = {
       name: 'dgkye-report',
       meta: {
         title: '执行款台账',
-        icon: 'el-icon-s-order',
+        icon: 'el-icon-s-order'
       }
     },
 
@@ -30,7 +30,7 @@ const Router_zxktz = {
       name: 'dgkye-sklist',
       meta: {
         title: '收款明细表',
-        icon: 'el-icon-s-order',
+        icon: 'el-icon-s-order'
       }
     },
     {
@@ -39,7 +39,7 @@ const Router_zxktz = {
       name: 'dgke-tklist',
       meta: {
         title: '退款明细表',
-        icon: 'el-icon-s-order',
+        icon: 'el-icon-s-order'
       }
     },
     {
@@ -48,7 +48,7 @@ const Router_zxktz = {
       name: 'dgke-thqdlist',
       meta: {
         title: '退回清单',
-        icon: 'el-icon-s-order',
+        icon: 'el-icon-s-order'
       }
     },
     {
@@ -57,9 +57,9 @@ const Router_zxktz = {
       name: 'dgke-dkplist',
       meta: {
         title: '待开收据',
-        icon: 'el-icon-s-order',
+        icon: 'el-icon-s-order'
       }
-    },
+    }
 
     // {
     //   path: 'akyh-table',
@@ -70,8 +70,6 @@ const Router_zxktz = {
     //     icon: 'el-icon-s-order',
     //   }
     // },
-
-
 
   ]
 }

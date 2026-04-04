@@ -91,7 +91,7 @@ var obj = {
     // 获取案件编号（移送诉讼费用）
     getNewCaseNum: '/casetk/getNewCaseNum',
 
-    checkBankTp: '/casetk/checkBankTp',
+    checkBankTp: '/casetk/checkBankTp'
 
   },
 
@@ -173,11 +173,11 @@ var obj = {
   async voidCase(id, newval) {
     // const query = { id: id, value: newval }
     // 加入备注信息
-    let res2 = {
+    const res2 = {
       code: 0,
       message: '操作失败'
     }
-    let query = {
+    const query = {
       id: id,
       value: newval,
       note: ''
@@ -217,14 +217,14 @@ var obj = {
   },
   // 作废操作
   async voidtk(id, note) {
-    let query = {
+    const query = {
       id: id,
       value: 1,
       note: note
     }
     const res = await postdata(this.ACTION.voidcase, query)
 
-    return res;
+    return res
   },
 
   /**
@@ -234,7 +234,7 @@ var obj = {
    * @returns
    */
   async saveCase(id, data) {
-    let query = data
+    const query = data
     data['id'] = id
     const res = await postdata(this.ACTION.save, query)
     return res
@@ -262,7 +262,7 @@ var obj = {
   },
 
   async getNewCode(typeid) {
-    let newtypeid = typeid
+    const newtypeid = typeid
 
     const localbillno = base.getBillno(newtypeid)
     if (localbillno) {
@@ -404,11 +404,11 @@ var obj = {
    * @param {*} id
    * @returns
    */
-  async ExportBank_getFile(bankcode, id,param) {
+  async ExportBank_getFile(bankcode, id, param) {
     const query = {
       bankcode: bankcode,
       id: id,
-      query:param
+      query: param
     }
     const res = await postdata(this.ACTION.ExportBank_export, query)
     return res
@@ -511,28 +511,28 @@ var obj = {
   },
 
   async checkBanktpInfo(param) {
-    const dwname = param.dwname;
-    const bankaccount = param.bankaccount;
-    const bankname = param.bankname;
+    const dwname = param.dwname
+    const bankaccount = param.bankaccount
+    const bankname = param.bankname
 
     // if (!dwname && !bankaccount && !bankname) {
     //   return false; // 没有内容，直接返回
     // }
 
-    let typeid = param.typeid;
-    let newtypeid = typeid;
-    let frombill = param.frombill||'';
+    const typeid = param.typeid
+    let newtypeid = typeid
+    let frombill = param.frombill || ''
 
-    switch(typeid){
+    switch (typeid) {
       case 101:
-        newtypeid = 203;
-        frombill = param.billno||'';
-        break;
+        newtypeid = 203
+        frombill = param.billno || ''
+        break
       case 104:
       case 109:
-        newtypeid = 201;
-        frombill = param.billno||'';
-        break;
+        newtypeid = 201
+        frombill = param.billno || ''
+        break
     }
 
     const query = {
@@ -543,60 +543,48 @@ var obj = {
       typeid: newtypeid
     }
 
+    const res = await this.checkBankTp(query)
+    const items = res.items
+    const items_bill = res.items_bill
+    let text = ''
 
-
-    const res = await this.checkBankTp(query);
-    const items = res.items;
-    const items_bill = res.items_bill;
-    let text = "";
-
-    const total = res.total || 0;
-    const total_bill = res.total_bill || 0;
-
-
-
-
+    const total = res.total || 0
+    const total_bill = res.total_bill || 0
 
     if (total + total_bill < 1) {
-      return true;
+      return true
     }
-
 
     // 判断是否存在单据号有发生过退票
     // 判断是否有单据的退票记录
     if (total_bill > 0) {
       // text = "";
-      const row = items_bill[0];
-      const tpreason = row.tpreason;
-      const tpdate = row.tpdate;
-      text += `当前单据号【${frombill}】在【${tpdate}】有退票记录，退票理由是：${tpreason}。<br>`;
+      const row = items_bill[0]
+      const tpreason = row.tpreason
+      const tpdate = row.tpdate
+      text += `当前单据号【${frombill}】在【${tpdate}】有退票记录，退票理由是：${tpreason}。<br>`
       // await this.$alert(text);
       // return false;
-
     }
 
-
     if (total > 0) {
-      text += `当前账号【${dwname}  ${bankaccount}】有 ${total} 条退票记录。`;
+      text += `当前账号【${dwname}  ${bankaccount}】有 ${total} 条退票记录。`
 
       text += '<ul>'
 
       // 如果存在多条，则提示第一次
       for (let i = 0; i < items.length; i++) {
         if (i > 2) { // 最多显示三条
-          break;
+          break
         }
-        const row = items[i];
-        const tpdate = row.tpdate;
-        const tpreason = row.tpreason;
-        const rowbankname = row.bankname;
+        const row = items[i]
+        const tpdate = row.tpdate
+        const tpreason = row.tpreason
+        const rowbankname = row.bankname
         text += `<li>${tpdate}发生退票，理由：${tpreason}，开户行：${rowbankname}</li>`
-
       }
-      text += "</ul>";
+      text += '</ul>'
     }
-
-
 
     MessageBox.alert(text, '退票提醒', {
       confirmButtonText: '确定',
@@ -609,8 +597,6 @@ var obj = {
         // })
       }
     })
-
-
   }
 }
 

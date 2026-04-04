@@ -133,7 +133,7 @@ export default {
 
       // 加工数据，求和
 
-      let printfield = []
+      const printfield = []
       for (let i = 0; i < field.length; i++) {
         if (field[i]['print']) {
           printfield.push(field[i])
@@ -142,7 +142,7 @@ export default {
 
       const suminfo = this.calcSum(data, sumfield, printfield)
       console.log(suminfo)
-      let newdata = [...data]
+      const newdata = [...data]
       this.temp.data = newdata
 
       if (suminfo) {
@@ -196,7 +196,7 @@ export default {
       if (total > maxnum) {
         // 做提示
         try {
-          let confirm = await this.$confirm('当前记录数超过' + maxnum + '笔,打印较慢,是否继续打印?', '提示',
+          const confirm = await this.$confirm('当前记录数超过' + maxnum + '笔,打印较慢,是否继续打印?', '提示',
             {
               confirmButtonText: '确定',
               cancelButtonText: '取消',
@@ -216,7 +216,7 @@ export default {
       // }
 
       if (total <= pagemax && total) {
-        let query = Object.assign({}, param)
+        const query = Object.assign({}, param)
         // query.flesh = 0
         this.isExporting = true // 标志 是否正在导出
 
@@ -239,14 +239,14 @@ export default {
           this.loadstatus.totalpage++ // 判断分页
         }
         console.log('totalpage', this.loadstatus.totalpage)
-        let alldata = []
+        const alldata = []
         this.loadstatus.loading = true // 标志 是否正在读取数据
 
         this.showWindow = true
 
         this.showProgress('正在读取数据', this.loadstatus.done, this.loadstatus.total)
         for (let i = 1; i <= this.loadstatus.totalpage; i++) {
-          let query = Object.assign({}, param)
+          const query = Object.assign({}, param)
           // query.flesh = 0
           query.page = i
           query.pagesize = this.loadstatus.pagesize
@@ -255,7 +255,7 @@ export default {
           // console.log('after call func', func)
           const data = res.items
           for (let idx = 0; idx < data.length; idx++) {
-            let row = data[idx]
+            const row = data[idx]
             row['_index'] = (i - 1) * this.loadstatus.pagesize + idx + 1
             alldata.push(row)
           }
@@ -279,7 +279,7 @@ export default {
     },
 
     calcSum(data = [], sumfield = [], field = []) {
-      let sumje = {}
+      const sumje = {}
       if (sumfield.length < 1) {
         return null
       }
@@ -312,8 +312,8 @@ export default {
     },
 
     insertHtml(id, html) {
-      let obj = document.getElementById(id)
-      let doc = obj.contentDocument || obj.contentWindow.document
+      const obj = document.getElementById(id)
+      const doc = obj.contentDocument || obj.contentWindow.document
 
       // console.log('insertHTML', doc)
       if (doc) {

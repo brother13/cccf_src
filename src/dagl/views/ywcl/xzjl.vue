@@ -3,8 +3,8 @@
     <div class="filter-container">
       <span class="filter-item" style="color: #606266">添加日期：</span>
       <el-date-picker
-        label="起始日期"
         v-model="listQuery.startdate"
+        label="起始日期"
         type="date"
         placeholder="起始日期"
         class="filter-item"
@@ -13,8 +13,8 @@
         @change="handleFilter"
       />
       <el-date-picker
-        label="届满日期"
         v-model="listQuery.enddate"
+        label="届满日期"
         type="date"
         placeholder="届满日期"
         class="filter-item"
@@ -37,8 +37,7 @@
           :key="item.deptid"
           :label="item.fullname"
           :value="item.deptid"
-          >{{ item.deptname }}</el-option
-        >
+        >{{ item.deptname }}</el-option>
       </el-select>
       <el-select
         v-model="listQuery.isvoid"
@@ -71,16 +70,14 @@
         type="primary"
         icon="el-icon-search"
         @click="handleFilter"
-        >搜索</el-button
-      >
+      >搜索</el-button>
       <el-button
         class="filter-item"
         style="margin-left: 10px"
         type="primary"
         icon="el-icon-edit"
         @click="handleCreate"
-        >新增</el-button
-      >
+      >新增</el-button>
       <!-- <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
         导出
       </el-button>-->
@@ -133,18 +130,16 @@
             icon="el-icon-edit"
             @click="handleUpdate(row)"
           >
-            <i class="el-icon-edit"></i>编辑
+            <i class="el-icon-edit" />编辑
             <el-dropdown-menu>
               <el-dropdown-item
                 icon="el-icon-edit"
                 @click.native="handleUpdate(row)"
-                >编辑</el-dropdown-item
-              >
+              >编辑</el-dropdown-item>
               <el-dropdown-item
                 icon="el-icon-delete"
                 @click.native="handleDelete(row)"
-                >删除</el-dropdown-item
-              >
+              >删除</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
           <el-button
@@ -152,8 +147,7 @@
             type="warning"
             icon="el-icon-download"
             @click="downLoadWord(row)"
-            >文书</el-button
-          >
+          >文书</el-button>
 
           <!--          <el-button type="primary" size="mini" icon="el-icon-edit" @click="handleUpdate(row)">编辑</el-button>
           <el-button size="mini" type="primary" icon="el-icon-download" @click="downLoadWord(row)">文书</el-button>
@@ -190,7 +184,7 @@
           <el-input v-model="temp.cbr" />
         </el-form-item>
         <el-form-item label="案号录入">
-          <el-input @input="handleahjcChange()" v-model="temp.ahjc" />
+          <el-input v-model="temp.ahjc" @input="handleahjcChange()" />
         </el-form-item>
         <el-form-item label="案号" prop="ah">
           <el-input v-model="temp.ah" />
@@ -204,39 +198,37 @@
         <el-form-item label="被申请人" prop="bzxr">
           <el-input v-model="temp.bzxr" />
         </el-form-item>
-        <el-row :gutter="20"
-          ><el-col span="12">
-            <el-form-item label="开始日期" prop="startdate">
-              <el-date-picker
-                @change="handleDateChange()"
-                label="开始日期"
-                prop="startdate"
-                v-model="temp.startdate"
-                type="date"
-                placeholder="开始日期"
-                value-format="yyyy-MM-dd"
-              /> </el-form-item></el-col
-          ><el-col span="12">
+        <el-row
+          :gutter="20"
+        ><el-col span="12">
+           <el-form-item label="开始日期" prop="startdate">
+             <el-date-picker
+               v-model="temp.startdate"
+               label="开始日期"
+               prop="startdate"
+               type="date"
+               placeholder="开始日期"
+               value-format="yyyy-MM-dd"
+               @change="handleDateChange()"
+             /> </el-form-item></el-col><el-col span="12">
             <el-form-item label="届满日期" :prop="temp.cfsfpro">
               <el-date-picker
+                v-model="temp.enddate"
                 label="届满日期"
                 :prop="temp.cfsfpro"
-                v-model="temp.enddate"
                 type="date"
                 placeholder="届满日期"
                 value-format="yyyy-MM-dd"
               />
-            </el-form-item> </el-col
-          ><el-col span="12">
+            </el-form-item> </el-col><el-col span="12">
             <el-form-item label="冻结账号">
               <el-input v-model="temp.account" />
-            </el-form-item> </el-col
-          ><el-col span="12">
+            </el-form-item> </el-col><el-col span="12">
             <el-form-item label="冻结金额">
               <el-input
+                v-model="temp.sjdjje"
                 placeholder="请输入金额"
                 type="number"
-                v-model="temp.sjdjje"
               />
             </el-form-item>
           </el-col>
@@ -244,20 +236,20 @@
           <el-col span="12">
             <el-form-item label="扣划金额">
               <el-input
-                @input="handleKhljje()"
+                v-model="temp.sjkhje"
                 placeholder="请输入金额"
                 type="number"
-                v-model="temp.sjkhje"
+                @input="handleKhljje()"
               />
             </el-form-item>
           </el-col>
           <el-col span="12">
             <el-form-item label="扣划累计">
               <el-input
+                v-model="temp.khljje"
                 placeholder="请输入金额"
                 type="number"
                 disabled
-                v-model="temp.khljje"
               />
             </el-form-item>
           </el-col>
@@ -265,46 +257,41 @@
           <el-col span="12">
             <el-form-item label="财产类型" prop="type">
               <el-select
-                @change="handleDateChange()"
                 v-model="temp.type"
                 style="width: 100%"
                 class="filter-item"
                 placeholder="请选择"
                 clearable
+                @change="handleDateChange()"
               >
                 <el-option
                   v-for="item in Cftype"
                   :key="item.id"
                   :label="item.typename"
                   :value="item.typename"
-                  >{{ item.typename }}</el-option
-                >
+                >{{ item.typename }}</el-option>
               </el-select>
-            </el-form-item> </el-col
-          ><el-col span="12">
+            </el-form-item> </el-col><el-col span="12">
             <el-form-item label="首封状态" prop="cfsf">
               <el-select
-                @change="handleCfsfChange()"
                 v-model="temp.cfsf"
                 style="width: 100%"
                 class="filter-item"
                 placeholder="请选择"
                 clearable
+                @change="handleCfsfChange()"
               >
                 <el-option
                   v-for="item in cfsf"
                   :key="item.id"
                   :label="item.cfsf"
                   :value="item.cfsf"
-                  >{{ item.cfsf }}</el-option
-                >
+                >{{ item.cfsf }}</el-option>
               </el-select>
-            </el-form-item> </el-col
-          ><el-col span="12">
+            </el-form-item> </el-col><el-col span="12">
             <el-form-item label="原承办人">
               <el-input v-model="temp.ycbr" />
-            </el-form-item> </el-col
-          ><el-col span="12">
+            </el-form-item> </el-col><el-col span="12">
             <el-form-item label="控制类型">
               <el-select
                 v-model="temp.leixing"
@@ -318,11 +305,9 @@
                   :key="item.id"
                   :label="item.name"
                   :value="item.name"
-                  >{{ item.name }}</el-option
-                >
+                >{{ item.name }}</el-option>
               </el-select>
-            </el-form-item> </el-col
-          ><el-col span="12">
+            </el-form-item> </el-col><el-col span="12">
             <el-form-item label="自动续封">
               <el-switch
                 v-model="temp.autocf"
@@ -331,8 +316,7 @@
                 :inactive-value="0"
               />
               <el-tag>{{ temp.autocf == 1 ? "开启" : "关闭" }}</el-tag>
-            </el-form-item></el-col
-          ><el-col span="12">
+            </el-form-item></el-col><el-col span="12">
             <el-form-item label="状态">
               <el-switch
                 v-model="temp.isvoid"
@@ -343,8 +327,7 @@
               />
               <el-tag>{{ temp.isvoid == 0 ? "正常" : "停用" }}</el-tag>
             </el-form-item>
-          </el-col></el-row
-        >
+          </el-col></el-row>
 
         <el-form-item label="财产情况" prop="status">
           <el-input
@@ -371,8 +354,7 @@
         <el-button
           type="primary"
           @click="dialogStatus === 'create' ? createData() : updateData()"
-          >保存</el-button
-        >
+        >保存</el-button>
       </div>
     </el-dialog>
 
@@ -392,9 +374,10 @@
         <el-table-column prop="pv" label="Pv" />
       </el-table>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="dialogPvVisible = false"
-          >确认</el-button
-        >
+        <el-button
+          type="primary"
+          @click="dialogPvVisible = false"
+        >确认</el-button>
       </span>
     </el-dialog>
 
@@ -420,7 +403,7 @@
               <el-input v-model="batchInfo.data.ah" />
             </el-form-item>
           </el-col>
-          <el-col :span="12"> </el-col>
+          <el-col :span="12" />
           <el-col :span="12">
             <el-form-item label="办案人" prop="cbr">
               <el-input v-model="batchInfo.data.cbr" />
@@ -449,19 +432,17 @@
         </el-row>
 
         <el-form-item label="数据情况">
-          共有<el-tag>{{ batchInfo.data.ckList.length }}</el-tag
-          >笔记录<template v-if="batchInfo.checkedList.length > 0"
-            >，当前勾选<el-tag>{{ batchInfo.checkedList.length }}</el-tag
-            >笔</template
-          >
+          共有<el-tag>{{ batchInfo.data.ckList.length }}</el-tag>笔记录<template
+            v-if="batchInfo.checkedList.length > 0"
+          >，当前勾选<el-tag>{{ batchInfo.checkedList.length }}</el-tag>笔</template>
         </el-form-item>
         <div class="batch-table">
           <el-table
+            ref="batchCkList"
             :data="batchInfo.data.ckList"
             border
             fit
             highlight-current-row
-            ref="batchCkList"
             style="width: 100%"
             size="mini"
             @selection-change="changeCheck"
@@ -508,34 +489,33 @@
         <el-button
           type="primary"
           icon="el-icon-check"
-          @click="batch_save"
           :disabled="batchInfo.checkedList.length < 1"
-          >保存</el-button
-        >
+          @click="batch_save"
+        >保存</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { DataList, LabelList } from "@/dagl/api/data";
+import { DataList, LabelList } from '@/dagl/api/data'
 
-import waves from "@/directive/waves"; // waves directive
-import { parseTime } from "@/utils";
-import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
-import caseapi from "@/courtcase/api";
+import waves from '@/directive/waves' // waves directive
+import { parseTime } from '@/utils'
+import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import caseapi from '@/courtcase/api'
 
 const fieldList_batch = [
-  { label: "被执行人", field: "bzxr", width: 120 },
-  { label: "控制情况", field: "kzqk", width: 80 },
-  { label: "财产类型", field: "type", width: 100 },
-  { label: "单位", field: "bankname", width: 120 },
-  { label: "账号", field: "account", width: 150 },
-  { label: "冻结金额", field: "sjdjje", width: 100, align: "right" },
-  { label: "开始日期", field: "startdate", width: 90 },
-  { label: "届满日期", field: "enddate", width: 90 },
-  { label: "财产情况", field: "ccqk", width: 500 },
-];
+  { label: '被执行人', field: 'bzxr', width: 120 },
+  { label: '控制情况', field: 'kzqk', width: 80 },
+  { label: '财产类型', field: 'type', width: 100 },
+  { label: '单位', field: 'bankname', width: 120 },
+  { label: '账号', field: 'account', width: 150 },
+  { label: '冻结金额', field: 'sjdjje', width: 100, align: 'right' },
+  { label: '开始日期', field: 'startdate', width: 90 },
+  { label: '届满日期', field: 'enddate', width: 90 },
+  { label: '财产情况', field: 'ccqk', width: 500 }
+]
 import {
   postdata,
   cflist,
@@ -544,35 +524,35 @@ import {
   cflistupdate,
   cftype,
   getajjbxx,
-  saveCflistusername,
-} from "@/dagl/api/common";
-import { mapGetters } from "vuex";
-import docxtemplater from "docxtemplater";
-import PizZip from "pizzip";
-import JSZipUtils from "jszip-utils";
-import { saveAs } from "file-saver";
+  saveCflistusername
+} from '@/dagl/api/common'
+import { mapGetters } from 'vuex'
+import docxtemplater from 'docxtemplater'
+import PizZip from 'pizzip'
+import JSZipUtils from 'jszip-utils'
+import { saveAs } from 'file-saver'
 // const DeptList = [{ deptid: '', deptcode: '', deptname: '' }]
 
 export default {
-  name: "UserTable",
+  name: 'UserTable',
   components: {
-    Pagination,
+    Pagination
   },
   directives: {
-    waves,
+    waves
   },
   filters: {
     statusFilter(status) {
-      return status === "0" ? "success" : "danger";
+      return status === '0' ? 'success' : 'danger'
     },
     joinstr(str) {
-      if (typeof str === "string") {
-        str = str.split(",");
+      if (typeof str === 'string') {
+        str = str.split(',')
       }
       if (Array.isArray(str)) {
-        return str.join(" / ");
+        return str.join(' / ')
       }
-    },
+    }
   },
 
   data() {
@@ -585,50 +565,50 @@ export default {
       cfsf: [
         {
           id: 1,
-          cfsf: "首封",
+          cfsf: '首封'
         },
         {
           id: 2,
-          cfsf: "轮候",
-        },
+          cfsf: '轮候'
+        }
       ],
       listQuery: {
         page: 1,
         pagesize: 10,
         startdate: parseTime(
           new Date().getTime() - 7 * 24 * 60 * 60 * 1000,
-          "{y}-{m}-{d}"
+          '{y}-{m}-{d}'
         ),
         enddate: parseTime(
           new Date().getTime() + 0 * 24 * 60 * 60 * 1000,
-          "{y}-{m}-{d}"
+          '{y}-{m}-{d}'
         ),
         keyword: undefined,
-        datekeyword: "inserttime",
+        datekeyword: 'inserttime',
         deptcode: [],
-        isvoid: "0",
+        isvoid: '0'
       },
       thumbdata: {
-        caseid: "",
-        uploadtype: "profile",
-        filetype: "avatar",
+        caseid: '',
+        uploadtype: 'profile',
+        filetype: 'avatar'
       },
       photodata: {
-        caseid: "",
-        uploadtype: "profile",
-        filetype: "photo",
+        caseid: '',
+        uploadtype: 'profile',
+        filetype: 'photo'
       },
 
       Cftype: [],
       Leixing: [
         {
-          name: "点对点",
-          id: 1,
+          name: '点对点',
+          id: 1
         },
         {
-          name: "总对总",
-          id: 2,
-        },
+          name: '总对总',
+          id: 2
+        }
       ],
 
       DeptList: [],
@@ -644,22 +624,22 @@ export default {
       temp: {
         cflistid: undefined,
         cbr: this.$store.getters.name,
-        cfsf: "首封",
-        cfsfpro: "enddate",
+        cfsf: '首封',
+        cfsfpro: 'enddate',
         isvoid: 0,
         autocf: 0,
-        leixing: "总对总",
-        startdate: "",
-        enddate: "",
-        ahjc: "",
-        ah: "",
+        leixing: '总对总',
+        startdate: '',
+        enddate: '',
+        ahjc: '',
+        ah: ''
       },
       // roomList: [],
       dialogFormVisible: false,
-      dialogStatus: "",
+      dialogStatus: '',
       textMap: {
-        update: "编辑提醒",
-        create: "新增提醒",
+        update: '编辑提醒',
+        create: '新增提醒'
       },
       dialogPvVisible: false,
       pvData: [],
@@ -672,31 +652,31 @@ export default {
         cbr: [
           {
             required: true,
-            message: "办案人名称不能为空",
-            trigger: "change",
-          },
+            message: '办案人名称不能为空',
+            trigger: 'change'
+          }
         ],
         ah: [
           {
             required: true,
-            message: "案号不能为空",
-            trigger: "change",
-          },
+            message: '案号不能为空',
+            trigger: 'change'
+          }
         ],
         bzxr: [
           {
             required: true,
-            message: "被申请人不能为空",
-            trigger: "change",
-          },
+            message: '被申请人不能为空',
+            trigger: 'change'
+          }
         ],
         enddate: [
           {
             required: true,
-            message: "届满日期不能为空",
-            trigger: "change",
-          },
-        ],
+            message: '届满日期不能为空',
+            trigger: 'change'
+          }
+        ]
         // mobile: [
         //   { required: true, message: '手机号码不能为空', trigger: 'change' }
         // ],
@@ -708,114 +688,113 @@ export default {
         fieldList: fieldList_batch,
         data: {
           id: 0,
-          ah: "",
-          cbr: "",
-          zbah: "",
-          deptname: "",
-          sqzxr: "",
-          note: "",
-          zxyjah: "",
-          zxay:'',
-          ajmc: "",
-          ckList: [],
+          ah: '',
+          cbr: '',
+          zbah: '',
+          deptname: '',
+          sqzxr: '',
+          note: '',
+          zxyjah: '',
+          zxay: '',
+          ajmc: '',
+          ckList: []
         },
         data_empty: {
           id: 0,
-          ah: "",
-          cbr: "",
-          zbah: "",
-          deptname: "",
-          sqzxr: "",
-          note: "",
-          zxyjah: "",
-          zxay:'', // 案由
-          ajmc: "",
-          ckList: [],
+          ah: '',
+          cbr: '',
+          zbah: '',
+          deptname: '',
+          sqzxr: '',
+          note: '',
+          zxyjah: '',
+          zxay: '', // 案由
+          ajmc: '',
+          ckList: []
         },
         rules: {
           cbr: [
             {
               required: true,
-              message: "办案人名称不能为空",
-              trigger: "change",
-            },
+              message: '办案人名称不能为空',
+              trigger: 'change'
+            }
           ],
           ah: [
             {
               required: true,
-              message: "案号不能为空",
-              trigger: "change",
-            },
-          ],
+              message: '案号不能为空',
+              trigger: 'change'
+            }
+          ]
         },
 
         // 已选项项
-        checkedList: [],
-      },
-    };
+        checkedList: []
+      }
+    }
   },
   computed: {
     isvoid2: {
-      get: function () {
+      get: function() {
         return (
           this.temp.isvoid === 0 ||
           this.temp.isvoid === undefined ||
-          this.temp.isvoid === ""
-        );
+          this.temp.isvoid === ''
+        )
       },
-      set: function (newvalue) {
-        this.temp.isvoid = newvalue ? "0" : "1";
-      },
-    },
+      set: function(newvalue) {
+        this.temp.isvoid = newvalue ? '0' : '1'
+      }
+    }
   },
   created() {
-    this.getBaseData();
-    this.getList();
+    this.getBaseData()
+    this.getList()
     if (this.$route.query.id > 0) {
       saveCflistusername({
         cflistid: this.$route.query.id,
-        username: this.$store.getters.name,
-      });
+        username: this.$store.getters.name
+      })
       cflist({
         page: 1,
         pagesize: 10,
-        id: this.$route.query.id,
+        id: this.$route.query.id
       }).then((response) => {
-        let rows = response.data.items;
+        const rows = response.data.items
         if (rows.length == 1) {
-          let row = rows[0];
-          row.isvoid = 0; //将临时数据修改为正式数据
-          if (row.cbr == "" || row.cbr == null)
-            row.cbr = this.$store.getters.name; //将临时数据修改为正式数据
-          this.handleUpdate(row);
+          const row = rows[0]
+          row.isvoid = 0 // 将临时数据修改为正式数据
+          if (row.cbr == '' || row.cbr == null) { row.cbr = this.$store.getters.name } // 将临时数据修改为正式数据
+          this.handleUpdate(row)
         } else {
           this.$message({
-            message: "数据加载异常",
-            type: "erro",
-          });
+            message: '数据加载异常',
+            type: 'erro'
+          })
         }
-      });
+      })
     }
 
-    this.init();
+    this.init()
   },
   computed: {
     ...mapGetters([
-      "sidebar",
-      "name",
-      "deptname",
+      'sidebar',
+      'name',
+      'deptname',
       // 'avatar',
-      "device",
-    ]),
+      'device'
+    ])
   },
   methods: {
     async init() {
       // 初始化
 
-      const batchmode = this.$route.query.batch || "";
-      const batchid = this.$route.query.batchid || "";
-      if (batchmode != "" && batchid != "") {
-        this.batch_loadBatchinfo(batchid);
+      const batchmode = this.$route.query.batch || ''
+      const batchid = this.$route.query.batchid || ''
+      if (batchmode != '' && batchid != '') {
+        this.batch_loadBatchinfo(batchid)
         // this.$route.push('/tz/xzjl')
       }
     },
@@ -826,77 +805,77 @@ export default {
       ) {
         this.temp.khljje = (
           parseFloat(this.temp.khljjebck) + parseFloat(this.temp.sjkhje)
-        ).toFixed(2);
+        ).toFixed(2)
       } else {
-        this.temp.khljje = this.temp.khljjebck;
+        this.temp.khljje = this.temp.khljjebck
       }
     },
     handleCfsfChange() {
-      if (this.temp.cfsf == "轮候") {
-        this.temp.cfsfpro = "";
+      if (this.temp.cfsf == '轮候') {
+        this.temp.cfsfpro = ''
       } else {
-        this.temp.cfsfpro = "enddate";
+        this.temp.cfsfpro = 'enddate'
       }
     },
 
     addDaysToDate(dateString, days) {
-      const date = new Date(dateString);
-      date.setDate(date.getDate() + days);
-      return date;
+      const date = new Date(dateString)
+      date.setDate(date.getDate() + days)
+      return date
     },
     addMonths(dateString, months) {
-      if (dateString == null) return null;
-      const date = new Date(dateString);
-      date.setMonth(date.getMonth() + months);
-      date.setDate(date.getDate() - 1);
-      return date.toISOString().split("T")[0];
+      if (dateString == null) return null
+      const date = new Date(dateString)
+      date.setMonth(date.getMonth() + months)
+      date.setDate(date.getDate() - 1)
+      return date.toISOString().split('T')[0]
     },
     handleahjcChange() {
-      var _year = this.temp.ahjc.substring(0, 4);
-      var _xuhao = this.temp.ahjc.substring(4, 20);
-      var _tmpah = this.$store.state.user.ahmc.replace("{序号}", _xuhao);
-      _tmpah = _tmpah.replace("{年份}", _year);
-      this.temp.ah = _tmpah;
+      var _year = this.temp.ahjc.substring(0, 4)
+      var _xuhao = this.temp.ahjc.substring(4, 20)
+      var _tmpah = this.$store.state.user.ahmc.replace('{序号}', _xuhao)
+      _tmpah = _tmpah.replace('{年份}', _year)
+      this.temp.ah = _tmpah
     },
     handleDateChange() {
-      var _this = this;
+      var _this = this
       this.Cftype.forEach((item) => {
         if (item.typename == _this.temp.type) {
-          var newdate = _this.addMonths(_this.temp.startdate, item.cfmounth‌);
+          var newdate = _this.addMonths(_this.temp.startdate, item.cfmounth‌)
           if (_this.temp.startdate == null) {
-            _this.temp.enddate = null;
+            _this.temp.enddate = null
           } else {
-            _this.temp.enddate = parseTime(newdate, "{y}-{m}-{d}");
+            _this.temp.enddate = parseTime(newdate, '{y}-{m}-{d}')
           }
         }
-      });
+      })
     },
     getBaseData() {
       cftype().then((response) => {
-        this.Cftype = response.data;
-      });
-      this.getDept();
-      this.getGroupList();
-      //this.getLabelList()
+        this.Cftype = response.data
+      })
+      this.getDept()
+      this.getGroupList()
+      // this.getLabelList()
       // this.getRoom()
 
-      //this.getAllUser()
-      //this.getBaseClass()
+      // this.getAllUser()
+      // this.getBaseClass()
       // this.getJobLevel()
       //       this.getJobPost()
       //       this.getJobAuth()
     },
     getBaseClass() {
-      postdata("/class/all", {
-        classtype: ["gender", "jobauth", "jobpost", "joblevel", "zzmm"],
+      postdata('/class/all', {
+        classtype: ['gender', 'jobauth', 'jobpost', 'joblevel', 'zzmm']
       }).then((res) => {
-        const data = res.data;
-        this.jobAuthList = data["jobauth"];
-        this.jobPostList = data["jobpost"];
-        this.jobLevelList = data["joblevel"];
-        this.genderList = data["gender"];
-        this.zzmmList = data["zzmm"];
-      });
+        const data = res.data
+        this.jobAuthList = data['jobauth']
+        this.jobPostList = data['jobpost']
+        this.jobLevelList = data['joblevel']
+        this.genderList = data['gender']
+        this.zzmmList = data['zzmm']
+      })
     },
     // getJobLevel() {
     //   postdata('/user/joblevel').then((res) => {
@@ -915,32 +894,32 @@ export default {
     // },
     getLabelList() {
       LabelList().then((response) => {
-        this.labelList = response.data;
-      });
+        this.labelList = response.data
+      })
     },
     getGroupList() {
       DataList({
-        type: "grouplist",
+        type: 'grouplist'
       }).then((response) => {
-        this.GroupList = response.data.items;
-      });
+        this.GroupList = response.data.items
+      })
     },
     getAllUser() {
       cflist({
         page: 1,
         pagesize: 10000,
-        myusername: this.$store.getters.name,
+        myusername: this.$store.getters.name
       }).then((response) => {
-        this.allUserList = response.data.items;
-      });
+        this.allUserList = response.data.items
+      })
     },
     getDept() {
       // DataList({ type: 'deptlist' }).then((response) => {
       //   this.DeptList = response.data
       // })
-      postdata("/dept/tree", {}).then((res) => {
-        this.DeptList = res.data.list;
-      });
+      postdata('/dept/tree', {}).then((res) => {
+        this.DeptList = res.data.list
+      })
     },
 
     // getRoom() {
@@ -950,484 +929,483 @@ export default {
     //   })
     // },
     getnewcode() {
-      postdata("/user/newcode", {}).then((res) => {
+      postdata('/user/newcode', {}).then((res) => {
         // console.log(res)
-        this.temp.usercode = res.data;
-        console.log(res.data);
-      });
+        this.temp.usercode = res.data
+        console.log(res.data)
+      })
     },
     getList() {
-      this.listLoading = true;
-      this.listQuery.myusername = this.$store.getters.name;
+      this.listLoading = true
+      this.listQuery.myusername = this.$store.getters.name
       cflist(this.listQuery).then((response) => {
-        this.list = response.data.items;
-        this.total = response.data.total;
+        this.list = response.data.items
+        this.total = response.data.total
 
         // Just to simulate the time of the request
         setTimeout(() => {
-          this.listLoading = false;
-        }, 0.5 * 100);
-      });
+          this.listLoading = false
+        }, 0.5 * 100)
+      })
     },
     handleFilter() {
-      this.listQuery.page = 1;
-      this.getList();
+      this.listQuery.page = 1
+      this.getList()
     },
     handleModifyStatus(row, status) {
       this.$message({
-        message: "操作成功",
-        type: "success",
-      });
-      row.status = status;
+        message: '操作成功',
+        type: 'success'
+      })
+      row.status = status
     },
     sortChange(data) {
-      const { prop, order } = data;
-      if (prop === "id") {
-        this.sortByID(order);
+      const { prop, order } = data
+      if (prop === 'id') {
+        this.sortByID(order)
       }
     },
     sortByID(order) {
-      if (order === "ascending") {
-        this.listQuery.sort = "+id";
+      if (order === 'ascending') {
+        this.listQuery.sort = '+id'
       } else {
-        this.listQuery.sort = "-id";
+        this.listQuery.sort = '-id'
       }
-      this.handleFilter();
+      this.handleFilter()
     },
     resetTemp() {
       this.temp = {
         cflistid: undefined,
         cbr: this.$store.getters.name,
-        cfsf: "首封",
-        cfsfpro: "enddate",
+        cfsf: '首封',
+        cfsfpro: 'enddate',
         isvoid: 0,
         autocf: 0,
-        leixing: "总对总",
-        startdate: "",
-        enddate: "",
-      };
+        leixing: '总对总',
+        startdate: '',
+        enddate: ''
+      }
     },
     handleCreate() {
-      this.resetTemp();
-      this.dialogStatus = "create";
-      this.dialogFormVisible = true;
-      this.getnewcode();
+      this.resetTemp()
+      this.dialogStatus = 'create'
+      this.dialogFormVisible = true
+      this.getnewcode()
       this.$nextTick(() => {
-        this.$refs["dataForm"].clearValidate();
-      });
+        this.$refs['dataForm'].clearValidate()
+      })
     },
     createData() {
-      this.$refs["dataForm"].validate((valid) => {
+      this.$refs['dataForm'].validate((valid) => {
         if (valid) {
-          this.temp.cflistid = 0;
+          this.temp.cflistid = 0
 
-          const newtemp = Object.assign({}, this.temp); // 复制一个新组件出来，避免修改数据
-          newtemp.username = this.$store.getters.name;
+          const newtemp = Object.assign({}, this.temp) // 复制一个新组件出来，避免修改数据
+          newtemp.username = this.$store.getters.name
 
           cflistadd(newtemp).then((response) => {
-            const data = response;
+            const data = response
             if (data.code === 20000) {
-              this.dialogFormVisible = false;
+              this.dialogFormVisible = false
 
               this.$notify({
-                title: "操作成功",
+                title: '操作成功',
                 message: data.message,
-                type: "success",
-                duration: 2000,
-              });
-              this.getList();
+                type: 'success',
+                duration: 2000
+              })
+              this.getList()
             }
-          });
+          })
         }
-      });
+      })
     },
     resetPwd() {
       // 重置密码
 
-      this.$confirm("您是否要重置用户密码？", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
+      this.$confirm('您是否要重置用户密码？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       }).then((resp) => {
-        postdata("/user/resetPwd", {
-          cflistid: this.temp.cflistid,
+        postdata('/user/resetPwd', {
+          cflistid: this.temp.cflistid
         }).then((res) => {
-          this.$message(res.message);
-        });
-      });
+          this.$message(res.message)
+        })
+      })
     },
     handleUpdate(row) {
-      this.temp = Object.assign({}, row); // copy obj
-      this.handleCfsfChange();
-      this.dialogStatus = "update";
-      this.dialogFormVisible = true;
-      this.handleCfsfChange();
+      this.temp = Object.assign({}, row) // copy obj
+      this.handleCfsfChange()
+      this.dialogStatus = 'update'
+      this.dialogFormVisible = true
+      this.handleCfsfChange()
 
       this.$nextTick(() => {
-        this.$refs["dataForm"].clearValidate();
-      });
+        this.$refs['dataForm'].clearValidate()
+      })
     },
     updateData() {
-      this.$refs["dataForm"].validate((valid) => {
-        const newtemp = Object.assign({}, this.temp); // 复制一个新组件出来，避免修改数据
+      this.$refs['dataForm'].validate((valid) => {
+        const newtemp = Object.assign({}, this.temp) // 复制一个新组件出来，避免修改数据
 
         if (valid) {
           cflistupdate(newtemp).then((response) => {
             // console.log(data);
-            const data = response;
+            const data = response
             if (data.code === 20000) {
-              this.dialogFormVisible = false;
+              this.dialogFormVisible = false
 
               this.$notify({
-                title: "操作成功",
+                title: '操作成功',
                 message: data.message,
-                type: "success",
-                duration: 2000,
-              });
+                type: 'success',
+                duration: 2000
+              })
               if (this.$route.query.id > 0) {
                 this.$router.push({
-                  path: "/tz/xzjl",
-                });
+                  path: '/tz/xzjl'
+                })
               }
-              this.getList();
+              this.getList()
             }
-          });
+          })
         }
-      });
+      })
     },
     handleDelete(row) {
       // 删除数据
       // 判断是否要删除
-      this.$confirm("此操作将删除该记录, 是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
+      this.$confirm('此操作将删除该记录, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       }).then(() => {
         cflistdel(row.cflistid).then((response) => {
-          const data = response;
+          const data = response
           if (data.code === 20000) {
             this.$notify({
-              title: "操作完成",
+              title: '操作完成',
               message: data.message,
-              type: "success",
-              duration: 2000,
-            });
-            this.getList();
+              type: 'success',
+              duration: 2000
+            })
+            this.getList()
           }
-        });
-      });
+        })
+      })
     },
     checkworddata(value, name) {
       if (value != null) {
-        return value;
+        return value
       } else {
-        return name;
+        return name
       }
     },
     checkwordrq(dateData, name) {
-      if (dateData == null) return name;
-      let date = new Date(dateData);
-      let y = date.getFullYear();
-      let m = date.getMonth() + 1;
-      m = m < 10 ? "" + m : m;
-      let d = date.getDate();
-      d = d < 10 ? "" + d : d;
-      const time = y + "年" + m + "月" + d + "日";
-      console.log(time);
-      return time;
+      if (dateData == null) return name
+      const date = new Date(dateData)
+      const y = date.getFullYear()
+      let m = date.getMonth() + 1
+      m = m < 10 ? '' + m : m
+      let d = date.getDate()
+      d = d < 10 ? '' + d : d
+      const time = y + '年' + m + '月' + d + '日'
+      console.log(time)
+      return time
     },
 
     downLoadWord(detailData) {
-      var tmp_pro = "";
-      if (typeof detailData.ah != "undefined") {
-        tmp_pro = detailData.ah;
+      var tmp_pro = ''
+      if (typeof detailData.ah !== 'undefined') {
+        tmp_pro = detailData.ah
       }
-      var tmp = {};
-      tmp.申请人 = this.checkworddata(detailData.sqzxr, "申请人");
-      tmp.案号 = this.checkworddata(detailData.ah, "案号");
-      tmp.被执行人 = this.checkworddata(detailData.bzxr, "被执行人");
-      tmp.财产情况 = this.checkworddata(detailData.ccqk, "财产情况");
-      tmp.开始日期 = this.checkwordrq(detailData.startdate, "开始日期");
-      tmp.届满日期 = this.checkwordrq(detailData.enddate, "届满日期");
-      tmp.当前日期 = this.checkwordrq(new Date(), "当前日期");
+      var tmp = {}
+      tmp.申请人 = this.checkworddata(detailData.sqzxr, '申请人')
+      tmp.案号 = this.checkworddata(detailData.ah, '案号')
+      tmp.被执行人 = this.checkworddata(detailData.bzxr, '被执行人')
+      tmp.财产情况 = this.checkworddata(detailData.ccqk, '财产情况')
+      tmp.开始日期 = this.checkwordrq(detailData.startdate, '开始日期')
+      tmp.届满日期 = this.checkwordrq(detailData.enddate, '届满日期')
+      tmp.当前日期 = this.checkwordrq(new Date(), '当前日期')
 
       getajjbxx(detailData.ah).then((response) => {
-        const data = response;
+        const data = response
         if (data.code === 20000) {
           if (data.data != null) {
-            tmp.立案案由 = this.checkworddata(data.data.laay, "立案案由");
+            tmp.立案案由 = this.checkworddata(data.data.laay, '立案案由')
             tmp.执行依据案号 = this.checkworddata(
               data.data.zxyjah,
-              "执行依据案号"
-            );
+              '执行依据案号'
+            )
             if (
-              detailData.type === "房产" ||
-              detailData.type === "车辆" ||
-              detailData.type === "银行"
+              detailData.type === '房产' ||
+              detailData.type === '车辆' ||
+              detailData.type === '银行'
             ) {
               this.downLoadWord_one(
                 tmp,
-                "./assets/word/" + detailData.type + "协执文书.docx",
-                tmp_pro + "协执文书.docx"
-              );
+                './assets/word/' + detailData.type + '协执文书.docx',
+                tmp_pro + '协执文书.docx'
+              )
             } else if (
-              detailData.type === "工资卡" ||
-              detailData.type === "支付宝" ||
-              detailData.type === "银行" ||
-              detailData.type === "银行卡"
+              detailData.type === '工资卡' ||
+              detailData.type === '支付宝' ||
+              detailData.type === '银行' ||
+              detailData.type === '银行卡'
             ) {
               // 银行 工资卡 支付宝这3个汇总为银行的模板
               this.downLoadWord_one(
                 tmp,
-                "./assets/word/" + "银行协执文书.docx",
-                tmp_pro + "协执文书.docx"
-              );
+                './assets/word/' + '银行协执文书.docx',
+                tmp_pro + '协执文书.docx'
+              )
             } else {
               this.downLoadWord_one(
                 tmp,
-                "./assets/word/其他协执文书.docx",
-                tmp_pro + "协执文书.docx"
-              );
+                './assets/word/其他协执文书.docx',
+                tmp_pro + '协执文书.docx'
+              )
             }
           } else {
-            this.$message.error("案号不匹配，请先修改为完整案号");
+            this.$message.error('案号不匹配，请先修改为完整案号')
           }
         }
-      });
+      })
     },
     downLoadWord_one(detailData, docxSrc, docxName) {
       // 读取并获得模板文件的二进制内容
-      JSZipUtils.getBinaryContent(docxSrc, function (error, content) {
+      JSZipUtils.getBinaryContent(docxSrc, function(error, content) {
         if (error) {
-          console.log(JSON.stringify(error.message));
-          return;
+          console.log(JSON.stringify(error.message))
+          return
         }
-        let zip = new PizZip(content);
-        let doc = new docxtemplater().loadZip(zip);
+        const zip = new PizZip(content)
+        const doc = new docxtemplater().loadZip(zip)
         // 设置模板变量的值
-        doc.setData(detailData);
+        doc.setData(detailData)
         try {
           // 用模板变量的值替换所有模板变量
-          doc.render();
+          doc.render()
         } catch (error) {
-          let e = {
+          const e = {
             message: error.message,
             name: error.name,
             stack: error.stack,
-            properties: error.properties,
-          };
+            properties: error.properties
+          }
           console.log(
             JSON.stringify({
-              error: e,
+              error: e
             })
-          );
-          throw error;
+          )
+          throw error
         }
         // 生成一个代表docxtemplater对象的zip文件（不是一个真实的文件，而是在内存中的表示）
-        let out = doc.getZip().generate({
-          type: "blob",
+        const out = doc.getZip().generate({
+          type: 'blob',
           mimeType:
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        });
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        })
         // 将目标文件对象保存为目标类型的文件，并命名
-        saveAs(out, docxName);
-      });
+        saveAs(out, docxName)
+      })
     },
 
     handleDownload() {
-      this.downloadLoading = true;
-      import("@/vendor/Export2Excel").then((excel) => {
-        const tHeader = ["timestamp", "title", "type", "importance", "status"];
+      this.downloadLoading = true
+      import('@/vendor/Export2Excel').then((excel) => {
+        const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
         const filterVal = [
-          "timestamp",
-          "title",
-          "type",
-          "importance",
-          "status",
-        ];
-        const data = this.formatJson(filterVal, this.list);
+          'timestamp',
+          'title',
+          'type',
+          'importance',
+          'status'
+        ]
+        const data = this.formatJson(filterVal, this.list)
         excel.export_json_to_excel({
           header: tHeader,
           data,
-          filename: "table-list",
-        });
-        this.downloadLoading = false;
-      });
+          filename: 'table-list'
+        })
+        this.downloadLoading = false
+      })
     },
     formatJson(filterVal, jsonData) {
       return jsonData.map((v) =>
         filterVal.map((j) => {
-          if (j === "timestamp") {
-            return parseTime(v[j]);
+          if (j === 'timestamp') {
+            return parseTime(v[j])
           } else {
-            return v[j];
+            return v[j]
           }
         })
-      );
+      )
     },
-    getSortClass: function (key) {
-      const sort = this.listQuery.sort;
+    getSortClass: function(key) {
+      const sort = this.listQuery.sort
       return sort === `+${key}`
-        ? "ascending"
+        ? 'ascending'
         : sort === `-${key}`
-        ? "descending"
-        : "";
+          ? 'descending'
+          : ''
     },
     handleSuccess_thumb(res) {
       // 获取当前附件列表
       if (res.code === 20000) {
-        const resdata = res.data;
-        const id = resdata[0].id;
-        const url = "./index.php/dagl/file/getImage/id/" + id;
-        this.temp.avatar = url;
+        const resdata = res.data
+        const id = resdata[0].id
+        const url = './index.php/dagl/file/getImage/id/' + id
+        this.temp.avatar = url
       }
       // this.getUserinfo()
     },
     handleSuccess_photo(res) {
       // 获取当前附件列表
       if (res.code === 20000) {
-        const resdata = res.data;
-        const id = resdata[0].id;
-        const url = "./index.php/dagl/file/getImage/id/" + id;
-        this.temp.photo = url;
+        const resdata = res.data
+        const id = resdata[0].id
+        const url = './index.php/dagl/file/getImage/id/' + id
+        this.temp.photo = url
       }
       // this.getUserinfo()
     },
     beforeThumbUpload(file) {
-      if (file.type.indexOf("image/") === -1) {
-        this.$message.error("上传文件并非图片！"); // 判断是否是图片
-        return false;
+      if (file.type.indexOf('image/') === -1) {
+        this.$message.error('上传文件并非图片！') // 判断是否是图片
+        return false
       }
 
       // 判断文件大小
-      const filesize = file.size;
+      const filesize = file.size
       if (filesize > 1024 * 1024) {
-        this.$message.error("大小不能超过1MB"); // 判断是否是图片
-        return false;
+        this.$message.error('大小不能超过1MB') // 判断是否是图片
+        return false
       }
-      return true;
+      return true
     },
     beforeThumbUpload_photo(file) {
-      if (file.type.indexOf("image/") === -1) {
-        this.$message.error("上传文件并非图片！"); // 判断是否是图片
-        return false;
+      if (file.type.indexOf('image/') === -1) {
+        this.$message.error('上传文件并非图片！') // 判断是否是图片
+        return false
       }
 
       // 判断文件大小
-      const filesize = file.size;
+      const filesize = file.size
       if (filesize > 1024 * 1024 * 4) {
-        this.$message.error("大小不能超过4MB"); // 判断是否是图片
-        return false;
+        this.$message.error('大小不能超过4MB') // 判断是否是图片
+        return false
       }
-      return true;
+      return true
     },
 
     async batch_loadBatchinfo(id) {
-      const res = await caseapi.tz.getCfBatchList(id);
+      const res = await caseapi.tz.getCfBatchList(id)
 
-      const ckinfo = res.ckinfo;
-      this.batchInfo.data = Object.assign({}, this.batchInfo.data_empty);
+      const ckinfo = res.ckinfo
+      this.batchInfo.data = Object.assign({}, this.batchInfo.data_empty)
 
-      
       // 开始填充案件信息
       const field = [
-        "cbr",
-        "ah",
-        "zbah",
-        "deptname",
-        "sqzxr",
-        "zxyjah",
-        "zxay",
+        'cbr',
+        'ah',
+        'zbah',
+        'deptname',
+        'sqzxr',
+        'zxyjah',
+        'zxay'
 
-      ];
+      ]
 
-      this.batchInfo.data.id = res.id||0;
-      const isused = res.isused;
+      this.batchInfo.data.id = res.id || 0
+      const isused = res.isused
       if (isused == 1) {
         // 如果已使用则做提醒
-        const usetime = res.usetime;
-        const username = res.username;
-        const text = `当前批次已由【${username}】于【${usetime}】创建过了，是否继续？`;
+        const usetime = res.usetime
+        const username = res.username
+        const text = `当前批次已由【${username}】于【${usetime}】创建过了，是否继续？`
 
         const con2 = await this.$confirm(text).catch((e) => {
-          console.log("取消");
-          this.$message.info("取消");
-        });
+          console.log('取消')
+          this.$message.info('取消')
+        })
         if (!con2) {
-          return;
+          return
         }
       }
       for (let i = 0; i < field.length; i++) {
-        const f = field[i];
-        this.batchInfo.data[f] = ckinfo.ajxx[f];
+        const f = field[i]
+        this.batchInfo.data[f] = ckinfo.ajxx[f]
       }
 
-      this.batchInfo.data.ckList = ckinfo.cklist || [];
+      this.batchInfo.data.ckList = ckinfo.cklist || []
 
       // console.log(res);
-      this.batchInfo.showWin = true;
+      this.batchInfo.showWin = true
       this.$nextTick(() => {
-        this.toggleAllSelection();
-      });
+        this.toggleAllSelection()
+      })
     },
     formatNumber(num) {
-      return caseapi.util.number_format(num, 2);
+      return caseapi.util.number_format(num, 2)
     },
     changeCheck(val) {
-      this.batchInfo.checkedList = [];
+      this.batchInfo.checkedList = []
       val.forEach((item) => {
-        this.batchInfo.checkedList.push(item);
-      });
+        this.batchInfo.checkedList.push(item)
+      })
     },
     toggleAllSelection() {
-      const obj = this.$refs["batchCkList"];
+      const obj = this.$refs['batchCkList']
       if (obj) {
       }
       this.batchInfo.data.ckList.forEach((row) => {
-        obj.toggleRowSelection(row, true);
-      });
+        obj.toggleRowSelection(row, true)
+      })
     },
 
     async batch_save() {
       // 保存数据
 
       if (this.batchInfo.checkedList.length < 1) {
-        this.$alert("请选择要批量处理的数据！");
-        return;
+        this.$alert('请选择要批量处理的数据！')
+        return
       }
 
-      let text = "是否要新增" + this.batchInfo.checkedList.length + "条数据？";
-      const confirm = await this.$confirm(text, "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
+      const text = '是否要新增' + this.batchInfo.checkedList.length + '条数据？'
+      const confirm = await this.$confirm(text, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       }).catch((e) => {
-        console.log("取消");
-        this.$message.info("取消");
-      });
+        console.log('取消')
+        this.$message.info('取消')
+      })
       if (!confirm) {
-        return false;
+        return false
       }
 
-      let query = Object.assign({}, this.batchInfo.data);
-      query["ckList"] = this.batchInfo.checkedList;
+      const query = Object.assign({}, this.batchInfo.data)
+      query['ckList'] = this.batchInfo.checkedList
 
-      const res = await caseapi.tz.batch_save(query);
+      const res = await caseapi.tz.batch_save(query)
 
       if (!res) {
-        return;
+        return
       }
 
-      this.$alert("保存成功！");
+      this.$alert('保存成功！')
       this.$nextTick(() => {
-        this.batchInfo.showWin = false;
-        this.getList();
-      });
+        this.batchInfo.showWin = false
+        this.getList()
+      })
 
       // 以下开始做数据保存的工作
-    },
-  },
-};
+    }
+  }
+}
 </script>
 <style>
 .usersign {

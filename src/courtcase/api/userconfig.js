@@ -35,7 +35,6 @@ var basedata = {
 
     getConfig_casestk: '/userconfig/getConfig_casestk',
 
-
     dgktime_get: '/userconfig/dgktime_get',
     dgktime_set: '/userconfig/dgktime_set'
 
@@ -108,7 +107,7 @@ var basedata = {
 
   // 获取
   getAccountInfo(data, typeid) {
-    let info = {
+    const info = {
       id: 0,
       label: ''
     }
@@ -129,7 +128,7 @@ var basedata = {
   },
   // 获取用户的账号ID
   getConfigAccountInfo(data, typeid) {
-    let id = 0
+    const id = 0
     try {
       for (let i = 0; i < data.length; i++) {
         if (data[i].configcode === typeid) {
@@ -147,16 +146,16 @@ var basedata = {
    * 获取默认的单据类型
    */
   async getAccountConfig(userid) {
-    let newdata = []
-    let list_account = await this.getAccountList()
-    let list_type = await this.getTypeList()
+    const newdata = []
+    const list_account = await this.getAccountList()
+    const list_type = await this.getTypeList()
     // console.log('list_type', list_type)
-    let res = await this.getList(this.configType.account, userid)
+    const res = await this.getList(this.configType.account, userid)
     const list_config = res.items
 
     // console.log(list_config)
     for (let i = 0; i < list_type.length; i++) {
-      let row = {}
+      const row = {}
       const temp = list_type[i]
 
       row['typeid'] = temp['classcode']
@@ -165,14 +164,14 @@ var basedata = {
       row['accountname'] = '<未设置>'
       row['updatetime'] = ''
 
-      let configinfo = this.getConfigAccountInfo(list_config, row['typeid'])
+      const configinfo = this.getConfigAccountInfo(list_config, row['typeid'])
       // console.log(accountid)
       if (configinfo) {
-        let accountid = configinfo.configvalue - 0
+        const accountid = configinfo.configvalue - 0
         // console.log(configinfo, accountid)
         row['updatetime'] = configinfo['updatetime']
         if (accountid) {
-          let info = this.getAccountInfo(list_account, accountid)
+          const info = this.getAccountInfo(list_account, accountid)
           // console.log(info)
           if (info.id) {
             row['accountid'] = info.id
@@ -210,15 +209,15 @@ var basedata = {
    * 获取默认的单据类型
    */
   async getCloseDateConfig() {
-    let newdata = []
-    let list_type = await this.getTypeList()
+    const newdata = []
+    const list_type = await this.getTypeList()
     // console.log('list_type', list_type)
-    let res = await this.getList(this.configType.closedate, 0)
+    const res = await this.getList(this.configType.closedate, 0)
     const list_config = res.items
 
     // console.log(list_config)
     for (let i = 0; i < list_type.length; i++) {
-      let row = {}
+      const row = {}
       const temp = list_type[i]
 
       row['typeid'] = temp['classcode']
@@ -226,10 +225,10 @@ var basedata = {
       row['closedate'] = '' // 先设为0
       row['updatetime'] = ''
 
-      let configinfo = this.getConfigAccountInfo(list_config, row['typeid'])
+      const configinfo = this.getConfigAccountInfo(list_config, row['typeid'])
       // console.log(accountid)
       if (configinfo) {
-        let closedate = configinfo.configvalue
+        const closedate = configinfo.configvalue
         row['closedate'] = closedate
         row['updatetime'] = configinfo['updatetime']
       }
@@ -310,9 +309,9 @@ var basedata = {
   },
   // 设置代管款未发还理由及不上缴理由的时间
   async dgktime_set(query) {
-    const res = await postdata(this.ACTION.dgktime_set,query)
+    const res = await postdata(this.ACTION.dgktime_set, query)
     return res.data
-  },
+  }
 }
 
 export default basedata

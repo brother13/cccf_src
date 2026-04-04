@@ -18,8 +18,7 @@
         type="primary"
         icon="el-icon-search"
         @click="handleFilter"
-        >搜索</el-button
-      >
+      >搜索</el-button>
       <!-- <el-button
         class="filter-item"
         style="margin-left: 10px"
@@ -34,8 +33,7 @@
         type="primary"
         icon="el-icon-download"
         @click="handleExport"
-        >导出</el-button
-      >
+      >导出</el-button>
     </div>
 
     <el-table
@@ -85,8 +83,7 @@
       >
         <template slot-scope="{ row }">
           {{ row.deptname }} / {{ row.username }}
-        </template> </el-table-column
-      >>
+        </template> </el-table-column>>
 
       <el-table-column
         label="IP地址"
@@ -108,8 +105,7 @@
             icon="el-icon-view"
             @click="handleUpdate(row)"
           >
-            查看</el-button
-          >
+            查看</el-button>
           <!-- <el-button
             size="mini"
             type="danger"
@@ -157,30 +153,30 @@
 </template>
 
 <script>
-import { postdata } from "@/web/api/common";
+import { postdata } from '@/web/api/common'
 
-import waves from "@/directive/waves"; // waves directive
-import { parseTime } from "@/utils";
-import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
-import iconSelect from "@/components/IconSelect"; // secondary package based on el-pagination
-import LinkIcon from "@/components/LinkIcon";
+import waves from '@/directive/waves' // waves directive
+import { parseTime } from '@/utils'
+import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import iconSelect from '@/components/IconSelect' // secondary package based on el-pagination
+import LinkIcon from '@/components/LinkIcon'
 
 const ACTION = {
-  add: "/log/add",
-  save: "/log/save",
-  del: "/log/del",
-  list: "/log/list",
-  down: "/log/down",
-};
-const PAGENAME = "应用管理";
+  add: '/log/add',
+  save: '/log/save',
+  del: '/log/del',
+  list: '/log/list',
+  down: '/log/down'
+}
+const PAGENAME = '应用管理'
 export default {
-  name: "AppTable",
+  name: 'AppTable',
   components: { Pagination, iconSelect, LinkIcon },
   directives: { waves },
   filters: {
     statusFilter(status) {
-      return status === "0" ? "success" : "danger";
-    },
+      return status === '0' ? 'success' : 'danger'
+    }
   },
 
   data() {
@@ -193,64 +189,64 @@ export default {
         page: 1,
         pagesize: 10,
         keyword: undefined,
-        isvoid: "0",
+        isvoid: '0'
       },
       jailtypeList: [],
       export: {
-        title: "操作日志",
+        title: '操作日志',
         header: [
-          "ID",
-          "日志时间",
-          "操作类型",
-          "操作动作",
-          "执行动作",
-          "操作内容",
-          "操作人员部门",
-          "操作人员姓名",
-          "IP地址",
+          'ID',
+          '日志时间',
+          '操作类型',
+          '操作动作',
+          '执行动作',
+          '操作内容',
+          '操作人员部门',
+          '操作人员姓名',
+          'IP地址'
         ],
         field: [
-          "id",
-          "updatetime",
-          "logtype",
-          "actionname",
-          "logaction",
-          "lognote",
-          "deptname",
-          "username",
-          "ipaddress",
-        ],
+          'id',
+          'updatetime',
+          'logtype',
+          'actionname',
+          'logaction',
+          'lognote',
+          'deptname',
+          'username',
+          'ipaddress'
+        ]
       },
 
       temp: {
-        id: "",
-        logtype: "",
-        actionname: "",
-        logaction: "",
-        lognote: "",
-        updatetime: "",
-        deptname: "",
-        username: "",
-        userid: "",
-        logdata: "",
+        id: '',
+        logtype: '',
+        actionname: '',
+        logaction: '',
+        lognote: '',
+        updatetime: '',
+        deptname: '',
+        username: '',
+        userid: '',
+        logdata: ''
       },
       temp_empty: {
-        id: "",
-        logtype: "",
-        actionname: "",
-        logaction: "",
-        lognote: "",
-        updatetime: "",
-        deptname: "",
-        username: "",
-        userid: "",
-        logdata: "",
+        id: '',
+        logtype: '',
+        actionname: '',
+        logaction: '',
+        lognote: '',
+        updatetime: '',
+        deptname: '',
+        username: '',
+        userid: '',
+        logdata: ''
       },
       dialogFormVisible: false,
-      dialogStatus: "",
+      dialogStatus: '',
       textMap: {
-        update: "编辑" + PAGENAME,
-        create: "创建" + PAGENAME,
+        update: '编辑' + PAGENAME,
+        create: '创建' + PAGENAME
       },
       dialogPvVisible: false,
       pvData: [],
@@ -258,184 +254,184 @@ export default {
       downloadLoading: false,
       rules: {
         appname: [
-          { required: true, message: "应用名称不能为空", trigger: "change" },
-        ],
-      },
-    };
+          { required: true, message: '应用名称不能为空', trigger: 'change' }
+        ]
+      }
+    }
   },
   computed: {
     isvoid2: {
-      get: function () {
+      get: function() {
         return (
           this.temp.isvoid === 0 ||
           this.temp.isvoid === undefined ||
-          this.temp.isvoid === ""
-        );
+          this.temp.isvoid === ''
+        )
       },
-      set: function (newvalue) {
-        this.temp.isvoid = newvalue ? "0" : "1";
-      },
-    },
+      set: function(newvalue) {
+        this.temp.isvoid = newvalue ? '0' : '1'
+      }
+    }
   },
   created() {
-    this.init();
-    this.getList();
+    this.init()
+    this.getList()
   },
   methods: {
     init() {},
 
     getList() {
-      this.listLoading = true;
+      this.listLoading = true
 
       postdata(ACTION.list, this.listQuery).then((response) => {
-        this.list = response.data.items;
-        this.total = response.data.total;
+        this.list = response.data.items
+        this.total = response.data.total
 
         // Just to simulate the time of the request
         setTimeout(() => {
-          this.listLoading = false;
-        }, 0.5 * 100);
-      });
+          this.listLoading = false
+        }, 0.5 * 100)
+      })
     },
     handleFilter() {
-      this.listQuery.page = 1;
-      this.getList();
+      this.listQuery.page = 1
+      this.getList()
     },
     handleModifyStatus(row, status) {
       this.$message({
-        message: "操作成功",
-        type: "success",
-      });
-      row.status = status;
+        message: '操作成功',
+        type: 'success'
+      })
+      row.status = status
     },
     sortChange(data) {
-      const { prop, order } = data;
-      if (prop === "id") {
-        this.sortByID(order);
+      const { prop, order } = data
+      if (prop === 'id') {
+        this.sortByID(order)
       }
     },
     sortByID(order) {
-      if (order === "ascending") {
-        this.listQuery.sort = "+id";
+      if (order === 'ascending') {
+        this.listQuery.sort = '+id'
       } else {
-        this.listQuery.sort = "-id";
+        this.listQuery.sort = '-id'
       }
-      this.handleFilter();
+      this.handleFilter()
     },
     resetTemp() {
-      this.temp = Object.assign({}, this.temp_empty);
+      this.temp = Object.assign({}, this.temp_empty)
     },
     handleCreate() {
-      this.resetTemp();
-      this.dialogStatus = "create";
-      this.dialogFormVisible = true;
+      this.resetTemp()
+      this.dialogStatus = 'create'
+      this.dialogFormVisible = true
       this.$nextTick(() => {
-        this.$refs["dataForm"].clearValidate();
-      });
+        this.$refs['dataForm'].clearValidate()
+      })
     },
     createData() {
-      this.$refs["dataForm"].validate((valid) => {
+      this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           postdata(ACTION.add, this.temp).then((response) => {
-            const data = response;
+            const data = response
             if (data.code === 20000) {
-              this.dialogFormVisible = false;
+              this.dialogFormVisible = false
 
-              this.$alert("新增成功");
-              this.getList();
+              this.$alert('新增成功')
+              this.getList()
             }
-          });
+          })
         }
-      });
+      })
     },
 
     handleUpdate(row) {
-      this.temp = Object.assign({}, row); // copy obj
-      this.dialogStatus = "update";
-      this.dialogFormVisible = true;
+      this.temp = Object.assign({}, row) // copy obj
+      this.dialogStatus = 'update'
+      this.dialogFormVisible = true
       this.$nextTick(() => {
-        this.$refs["dataForm"].clearValidate();
-      });
+        this.$refs['dataForm'].clearValidate()
+      })
     },
     updateData() {
-      this.$refs["dataForm"].validate((valid) => {
-        const newtemp = Object.assign({}, this.temp); // 复制一个新组件出来，避免修改数据
+      this.$refs['dataForm'].validate((valid) => {
+        const newtemp = Object.assign({}, this.temp) // 复制一个新组件出来，避免修改数据
 
         if (valid) {
           postdata(ACTION.save, newtemp).then((response) => {
-            const data = response;
+            const data = response
             if (data.code === 20000) {
-              this.dialogFormVisible = false;
+              this.dialogFormVisible = false
 
-              this.$alert("修改成功");
-              this.getList();
+              this.$alert('修改成功')
+              this.getList()
             }
-          });
+          })
         }
-      });
+      })
     },
     handleDelete(row) {
       // 删除数据
       // 判断是否要删除
-      this.$confirm("数据删除之后将不能恢复，是否继续?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
+      this.$confirm('数据删除之后将不能恢复，是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       }).then(() => {
         postdata(ACTION.del, { id: row.id }).then((response) => {
-          const data = response;
+          const data = response
           if (data.code === 20000) {
-            this.$alert("操作完成");
-            this.getList();
+            this.$alert('操作完成')
+            this.getList()
           }
-        });
-      });
+        })
+      })
     },
     handleExport() {
       // 导出数据
       postdata(ACTION.down, this.listQuery).then((res) => {
-        const alldata = res.data.items;
-        this.handleDownload(alldata);
-      });
+        const alldata = res.data.items
+        this.handleDownload(alldata)
+      })
     },
     handleDownload(alldata) {
-      this.downloadLoading = true;
-      import("@/vendor/Export2Excel").then((excel) => {
-        const tHeader = this.export.header;
-        const filterVal = this.export.field;
-        const data = this.formatJson(filterVal, alldata);
+      this.downloadLoading = true
+      import('@/vendor/Export2Excel').then((excel) => {
+        const tHeader = this.export.header
+        const filterVal = this.export.field
+        const data = this.formatJson(filterVal, alldata)
         excel.export_json_to_excel({
           header: tHeader,
           data,
           sheetname: this.export.title,
           // filename: "table-list"
-          filename: this.export.title,
-        });
-        this.downloadLoading = false;
-      });
+          filename: this.export.title
+        })
+        this.downloadLoading = false
+      })
     },
 
     formatJson(filterVal, jsonData) {
       return jsonData.map((v) =>
         filterVal.map((j) => {
-          if (j === "timestamp") {
-            return parseTime(v[j]);
+          if (j === 'timestamp') {
+            return parseTime(v[j])
           } else {
-            return v[j];
+            return v[j]
           }
         })
-      );
+      )
     },
-    getSortClass: function (key) {
-      const sort = this.listQuery.sort;
+    getSortClass: function(key) {
+      const sort = this.listQuery.sort
       return sort === `+${key}`
-        ? "ascending"
+        ? 'ascending'
         : sort === `-${key}`
-        ? "descending"
-        : "";
-    },
-  },
-};
+          ? 'descending'
+          : ''
+    }
+  }
+}
 </script>
 <style lang="scss" scoped>
 .icon-image {

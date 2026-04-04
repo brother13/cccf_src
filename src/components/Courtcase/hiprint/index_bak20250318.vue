@@ -185,7 +185,7 @@ export default {
       // let tpldata = data
       // console.log(tpldata)
       // console.log('已获取到模板', data)
-      let template = data
+      const template = data
 
       // 获取数据
       const resdata = await caseapi.template.getPrintData(
@@ -203,7 +203,7 @@ export default {
 
       // console.log('准备初始化模板组件')
       hiprint.init()
-      let hiprintTemplate = new hiprint.PrintTemplate({
+      const hiprintTemplate = new hiprint.PrintTemplate({
         template: template
       })
 
@@ -244,7 +244,7 @@ export default {
       // let tpldata = data
       // console.log(tpldata)
       // console.log('已获取到模板', data)
-      let template = data
+      const template = data
 
       // 获取数据
       const resdata = await caseapi.template.getPrintData(
@@ -262,7 +262,7 @@ export default {
 
       // console.log('准备初始化模板组件')
       hiprint.init()
-      let hiprintTemplate = new hiprint.PrintTemplate({
+      const hiprintTemplate = new hiprint.PrintTemplate({
         template: template
       })
       // 调用打印

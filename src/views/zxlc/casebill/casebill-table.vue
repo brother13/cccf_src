@@ -28,7 +28,7 @@
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
-     
+
       <el-date-picker
         v-model="listQuery.time1"
         type="date"
@@ -60,7 +60,6 @@
         @click="handleExport"
       >导出</el-button>
 
-     
     </div>
 
     <el-table
@@ -77,33 +76,28 @@
     >
       <!-- <el-table-column type="selection" label="选择" /> -->
       <el-table-column
-      type="index"
-      label="序号"
-      align="center"
-      width="50"
-      :index="indexMethod">
-     
-
-    </el-table-column>
-<el-table-column label="单据号" prop="djcode" align="center" width="80" >
-      </el-table-column>
-      <el-table-column label="款项来源" prop="kxly" align="center" width="100" >
-        
-      </el-table-column>
-     <el-table-column label="缴款单位" prop="jkdw" align="center" width="220" sortable="khh">
+        type="index"
+        label="序号"
+        align="center"
+        width="50"
+        :index="indexMethod"
+      />
+      <el-table-column label="单据号" prop="djcode" align="center" width="80" />
+      <el-table-column label="款项来源" prop="kxly" align="center" width="100" />
+      <el-table-column label="缴款单位" prop="jkdw" align="center" width="220" sortable="khh">
         <template slot-scope="{row}">
           <span>{{ row.jkdw }}</span>
           <br>
-          备注：<span>{{row.note}}</span>
+          备注：<span>{{ row.note }}</span>
           <br>
-          入账账号：<span>{{row.fullaccount}}</span>
-          
+          入账账号：<span>{{ row.fullaccount }}</span>
+
         </template>
       </el-table-column>
       <!-- <el-table-column label="入账账号" prop="fullaccount" align="center" width="220" sortable="khh">
         <template slot-scope="{row}">
           <span>{{ row.fullaccount }}</span>
-          
+
         </template>
       </el-table-column> -->
       <el-table-column label="余额" prop="ye2" align="center" width="180" sortable="kyye">
@@ -123,12 +117,10 @@
         </template>
       </el-table-column>
 
-      
-
       <el-table-column label="操作" align="center" width="120" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          
-            <el-button type="success" size="mini" icon="el-icon-search" @click="handleRead(row)">智能匹配</el-button>
+
+          <el-button type="success" size="mini" icon="el-icon-search" @click="handleRead(row)">智能匹配</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -254,8 +246,8 @@ export default {
         ye2: '',
         jkdw: '',
         fullaccount: '',
-        idkey: '',
-       }
+        idkey: ''
+      }
     }
   },
 
@@ -265,10 +257,10 @@ export default {
   },
   methods: {
     init() {
-      
+
     },
-    indexMethod(index){
-      return (this.listQuery.page-1)*this.listQuery.pagesize+index+1
+    indexMethod(index) {
+      return (this.listQuery.page - 1) * this.listQuery.pagesize + index + 1
     },
     getList() {
       this.listLoading = true
@@ -317,7 +309,7 @@ export default {
         ye2: '',
         jkdw: '',
         fullaccount: '',
-        idkey: '',
+        idkey: ''
       }
     },
 

@@ -11,7 +11,6 @@
             <template v-if="checkedInfo.billnum">，共有{{ checkedInfo.billnum }}张单据号，分别为{{
               showBillText(checkedInfo.billnoList) }}</template>
 
-
           </div>
         </el-form-item>
         <el-form-item label="数据预览">
@@ -20,8 +19,17 @@
           }}</el-button>
         </el-form-item>
         <transition name="fade">
-          <el-table v-show="showSSfTable" key="ssftemp" :data="batchData" border fit highlight-current-row
-            style="width: 100%" height="250" size="mini">
+          <el-table
+            v-show="showSSfTable"
+            key="ssftemp"
+            :data="batchData"
+            border
+            fit
+            highlight-current-row
+            style="width: 100%"
+            height="250"
+            size="mini"
+          >
             <el-table-column type="index" width="80" align="center" label="序号">
               <template slot-scope="{ $index }">
                 {{ $index + 1 }}
@@ -30,9 +38,14 @@
 
             <template v-for="field in fieldList">
               <template v-if="field.show">
-                <el-table-column :key="field.field" :label="field.label" :prop="field.field"
-                  :align="field.align ? field.align : 'center'" :width="field.width ? field.width : 120"
-                  :sortable="field.order ? field.order : false">
+                <el-table-column
+                  :key="field.field"
+                  :label="field.label"
+                  :prop="field.field"
+                  :align="field.align ? field.align : 'center'"
+                  :width="field.width ? field.width : 120"
+                  :sortable="field.order ? field.order : false"
+                >
                   <template slot-scope="{ row }">
                     <template v-if="field.align == 'right'">
                       {{ formatNumber(row[field.field]) }}
@@ -77,17 +90,23 @@
           </el-form-item>
           <el-form-item label="打印间隔" prop="printer_speed">
             <el-select v-model="batchPrint.printer_speed" style="width: 100%" placeholder="打印每张票据的间隔时间" clearable>
-              <el-option v-for="item in basedata.printSpeedList" :key="item.value" :label="item.label"
-                :value="item.value">{{ item.label }}</el-option>
+              <el-option
+                v-for="item in basedata.printSpeedList"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >{{ item.label }}</el-option>
             </el-select>
           </el-form-item>
 
-          <el-form-item label="单批页数" prop="printer_batchnum" v-if="batchPrint.printaction == 4">
-            <el-input v-model="batchPrint.printer_batchnum" style="width: 100%" type="number"
-              placeholder="一次性发送的打印页数，建议为10页或20页，建议不要超过50页">
-            </el-input>
+          <el-form-item v-if="batchPrint.printaction == 4" label="单批页数" prop="printer_batchnum">
+            <el-input
+              v-model="batchPrint.printer_batchnum"
+              style="width: 100%"
+              type="number"
+              placeholder="一次性发送的打印页数，建议为10页或20页，建议不要超过50页"
+            />
           </el-form-item>
-
 
           <el-form-item v-if="batchPrintInfo.doing" label="打印进度">
             <span>
@@ -100,8 +119,12 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="batchPrint.showWin = false">取消</el-button>
-        <el-button icon="el-icon-printer" type="primary"
-          :disabled="!batchPrint.templateid || !batchPrint.ids.length || isPrinting " @click="doPrint">开始打印</el-button>
+        <el-button
+          icon="el-icon-printer"
+          type="primary"
+          :disabled="!batchPrint.templateid || !batchPrint.ids.length || isPrinting "
+          @click="doPrint"
+        >开始打印</el-button>
 
         <!-- <el-button @click="sendpaper_checkStatus">检查送纸器状态</el-button> -->
       </div>
@@ -225,7 +248,7 @@ export default {
         printer_speed: 10, // 默认普通速度
 
         printaction: 1, // 默认逐张打印（前进纸）
-        printer_batchnum: 20, // 默认20张一打
+        printer_batchnum: 20 // 默认20张一打
       },
       batchData: [], // 数据情况
 
@@ -248,20 +271,17 @@ export default {
   },
   methods: {
 
-
     showBillText(billList) {
       let text = ''
-      const maxnum = 10;
-      const firstnum = 3;// 最前面最多只取5个
-      const lastnum = 3;//最后面只取最多三个
+      const maxnum = 10
+      const firstnum = 3// 最前面最多只取5个
+      const lastnum = 3// 最后面只取最多三个
       if (billList.length <= maxnum) {
-        text = billList.join('、');
+        text = billList.join('、')
       } else {
         // 取前几项和后几项
-        text = "从" + billList.slice(0, firstnum).join('、') + ' 一直到 ' + billList.slice(-lastnum).join('、')
-
+        text = '从' + billList.slice(0, firstnum).join('、') + ' 一直到 ' + billList.slice(-lastnum).join('、')
       }
-
 
       return text
     },
@@ -306,7 +326,7 @@ export default {
     },
     // 检查数据情况
     checkDataInfo(data) {
-      let count = {
+      const count = {
         num: 0,
         je: 0,
         id: [],
@@ -407,7 +427,7 @@ export default {
       // let tpldata = data
       // console.log(tpldata)
       // console.log('已获取到模板', data)
-      let template = data
+      const template = data
 
       // 获取数据
 
@@ -417,7 +437,7 @@ export default {
 
       // console.log('准备初始化模板组件')
       hiprint.init()
-      let hiprintTemplate = new hiprint.PrintTemplate({
+      const hiprintTemplate = new hiprint.PrintTemplate({
         template: template
       })
 
@@ -453,7 +473,7 @@ export default {
           const billno = info['billno'] || ''
           if (billno) {
             // 提示 请放入单据号为 XXX 的单据并按回车
-            let text =
+            const text =
               '【' +
               (i + 1) +
               '/' +
@@ -543,7 +563,6 @@ export default {
           this.isPrinting = false
         }, 1000)
       } else if (this.batchPrint.printaction === 4) {
-
         // @todo 20250109 批量发送打印任务，一次性打印N张纸
         const batchnum = this.batchPrint.printer_batchnum
         this.setPrinter(this.temp.typeid, this.batchPrint.printer_voucher)
@@ -571,8 +590,7 @@ export default {
           this.isPrinting = false
         }, 1000)
 
-        // 
-
+        //
       }
 
       // 调用打印
@@ -589,7 +607,7 @@ export default {
 
     // 等待2秒
     waittime(timeout = 2000) {
-      let func = new Promise((resolve, reject) => {
+      const func = new Promise((resolve, reject) => {
         setTimeout(() => {
           resolve(true)
         }, timeout)
@@ -618,7 +636,7 @@ export default {
       // let tpldata = data
       // console.log(tpldata)
       // console.log('已获取到模板', data)
-      let template = data
+      const template = data
 
       // 获取数据
       const resdata = await caseapi.template.getPrintData(
@@ -636,7 +654,7 @@ export default {
 
       // console.log('准备初始化模板组件')
       hiprint.init()
-      let hiprintTemplate = new hiprint.PrintTemplate({
+      const hiprintTemplate = new hiprint.PrintTemplate({
         template: template
       })
       // 调用打印

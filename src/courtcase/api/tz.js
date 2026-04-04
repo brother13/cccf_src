@@ -11,7 +11,7 @@ var report = {
   ACTION: {
     getCfBatchList: '/data/getCfBatchList',
     batch_save: '/data/batch_save',
-    getDocTemplateList:'/data/getDocTemplateList'
+    getDocTemplateList: '/data/getDocTemplateList'
   },
 
   async getCfBatchList(id) {
@@ -22,10 +22,10 @@ var report = {
     const res = await postdata(this.ACTION.batch_save, query)
     return res
   },
-   async getDocTemplateList(doctype='txcl') {
+  async getDocTemplateList(doctype = 'txcl') {
     const res = await postdata(this.ACTION.getDocTemplateList, { type: doctype })
     return res.data
-  },
+  }
 }
 
 export default report

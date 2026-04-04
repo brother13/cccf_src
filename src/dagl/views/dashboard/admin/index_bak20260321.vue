@@ -2,7 +2,7 @@
   <div class="body">
     <div class="header">
       <img src="../../../../../public/assets/images/jh.png" alt="Logo" class="logo">
-      <h1 class="platform-title" v-if="!hasRole('PZ')">执行法官助手</h1>
+      <h1 v-if="!hasRole('PZ')" class="platform-title">执行法官助手</h1>
       <!-- <h1 class="platform-title" v-if="hasRole('PZ')">财务凭证接口</h1> -->
     </div>
 
@@ -10,47 +10,45 @@
 
       <div class="menu-item sys-settings">
         <div class="icon-wrapper">
-          <i class="fas fa-bell"></i>
+          <i class="fas fa-bell" />
         </div>
         <div class="menu-text" @click="goToPage('new10day')">新到账的10天未发还</div>
         <span class="badge">{{ count.new10day }} </span>
       </div>
-      <div class="menu-item size-stats" v-if="hasRole('XZTZ')">
+      <div v-if="hasRole('XZTZ')" class="menu-item size-stats">
         <div class="icon-wrapper">
-          <i class="fas fa-file-alt"></i>
+          <i class="fas fa-file-alt" />
         </div>
         <div class="menu-text" @click="goToPage('akyh5day')">延缓5天内到期提醒</div>
         <span class="badge">{{ count.akyh5day }} </span>
       </div>
-      
-      <div class="menu-item data-import" v-if="hasRole('CCCF')">
+
+      <div v-if="hasRole('CCCF')" class="menu-item data-import">
         <div class="icon-wrapper">
-          <i class="far fa-bell"></i>
+          <i class="far fa-bell" />
         </div>
         <div class="menu-text" @click="goToPage('yzyn')">财产查封1 周内到期</div>
-        <span class="badge">{{yzyndata}} </span>
+        <span class="badge">{{ yzyndata }} </span>
       </div>
-      <div class="menu-item number-manage" v-if="hasRole('CCCF')">
+      <div v-if="hasRole('CCCF')" class="menu-item number-manage">
         <div class="icon-wrapper">
-          <i class="fas fa-bell"></i>
+          <i class="fas fa-bell" />
         </div>
         <div class="menu-text" @click="goToPage('yyyn')">财产查封1 月内到期</div>
-        <span class="badge">{{yyyndata}} </span>
+        <span class="badge">{{ yyyndata }} </span>
       </div>
-      <div class="menu-item sys-settings" v-if="hasRole('XDFKTX')">
+      <div v-if="hasRole('XDFKTX')" class="menu-item sys-settings">
         <div class="icon-wrapper">
-          <i class="fas fa-bell"></i>
+          <i class="fas fa-bell" />
         </div>
         <div class="menu-text" @click="goToPage('xdlb')">续冻金额提醒</div>
-        <span class="badge">{{xdlbcount}} </span>
+        <span class="badge">{{ xdlbcount }} </span>
       </div>
-
-
 
     </div>
     <footer class="footer">
       <div class="copyright">
-        <i class="far fa-copyright"></i>
+        <i class="far fa-copyright" />
         版权所有 2026 树莓（沈阳）软件科技发展有限公司
       </div>
     </footer>
@@ -64,7 +62,7 @@ import {
   cflist_total,
   xdlblist,
   zxklist,
-  xdlist,
+  xdlist
 } from '@/dagl/api/common'
 // import GithubCorner from '@/components/GithubCorner'
 // import PanelGroup from './components/PanelGroup'
@@ -72,7 +70,7 @@ import {
 // import RaddarChart from './components/RaddarChart'
 // import PieChart from './components/PieChart'
 // import BarChart from './components/BarChart'
-//import CountCard from './components/CountCard'
+// import CountCard from './components/CountCard'
 
 // import TransactionTable from './components/TransactionTable'
 // import TodoList from './components/TodoList'
@@ -96,11 +94,10 @@ export default {
   data() {
     return {
       listQuery: {},
-      yzyndata: "-",
-      yyyndata: "-",
-      xdlbcount: "-",
-      zxtzcount: "-",
-
+      yzyndata: '-',
+      yyyndata: '-',
+      xdlbcount: '-',
+      zxtzcount: '-',
 
       count: {
         new10day: 0,
@@ -111,13 +108,13 @@ export default {
   computed: {
     // 假设 roles 是当前用户的角色数组
     roles() {
-      return this.$store.state.user.roles; // 假设 roles 存储在 Vuex 的 state 中
+      return this.$store.state.user.roles // 假设 roles 存储在 Vuex 的 state 中
     }
   },
 
   created() {
     this.gettotal()
-    this.init();
+    this.init()
     // console.log(this.$store.state.user)
   },
   activated() {
@@ -126,18 +123,16 @@ export default {
 
   methods: {
     hasRole(role) {
-      return this.roles.includes(role);
+      return this.roles.includes(role)
     },
 
     init() {
-      this.getcount();
-
-
+      this.getcount()
     },
     getcount() {
       caseapi.plugins.countCasenum().then((res) => {
-        this.count.new10day = res.new10day;
-        this.count.akyh5day = res.akyh5day;
+        this.count.new10day = res.new10day
+        this.count.akyh5day = res.akyh5day
       })
     },
     goToPage(type) {
@@ -175,12 +170,6 @@ export default {
           query: { type: type }
         })
       }
-
-
-
-
-
-
     },
     gettotal() {
       cflist_total({
@@ -194,7 +183,6 @@ export default {
           this.yzyndata = response.data.yzyncount
           this.yyyndata = response.data.yyyncount
           this.yyyn2count = response.data.yyyn2count
-
         }, 0.5 * 100)
       })
       xdlist({
@@ -220,7 +208,7 @@ export default {
           this.zxtzcount = response.data.total
         }, 0.5 * 100)
       })
-    },
+    }
   }
 }
 </script>
@@ -270,7 +258,6 @@ body {
   align-items: center;
   /* 垂直居中 */
   flex-wrap: wrap;
-
 
   padding: 20px;
 }

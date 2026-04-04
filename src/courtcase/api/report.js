@@ -30,7 +30,6 @@ var report = {
     caseye_caseinfo: '/report/djyebycase', // 根据案号汇总单据余额
     sklist: '/report/sklist',
     tklist: '/report/tklist',
-    
 
     oldcase: '/report/oldcase', // 获取五年上缴案件列表
     casebill_flashye: '/report/casebill_createtemp',
@@ -110,7 +109,6 @@ var report = {
 
     advdgkreport_update_key_casechange: '/report/advdgkreport_update_key_casechange',
 
-
     caseye_getReasonList: '/report/caseye_getReasonList',
 
     report_dgkye_bybill_view_cbrnum: '/report/report_dgkye_bybill_view_cbrnum',
@@ -121,7 +119,7 @@ var report = {
     report8day_report_casebill_getList: '/report/report8day_report_casebill_getList', // 获取列表
     report8day_report_casebill_days_ByDept_exportExcel: '/report/report8day_report_Casebill_days_ByDept_exportExcel',
 
-    report8day_report_casebill_getendtime: '/report/report8day_report_casebill_getendtime', // 获取时间
+    report8day_report_casebill_getendtime: '/report/report8day_report_casebill_getendtime' // 获取时间
 
   },
   CODE: {
@@ -374,7 +372,7 @@ var report = {
     return res.data
   },
   async advcasebill_updatecbrinfo(ids, type) {
-    let str = store.get('freshConfig')
+    const str = store.get('freshConfig')
     // console.log('config', config)
     let config = { case_zx: 2, case_ms: 1 }
     if (str) {
@@ -479,10 +477,10 @@ var report = {
     const res = await postdata(this.ACTION.report8day_report_casebill_days_ByDept_exportExcel, param)
     return res.data
   },
-    async report8day_report_casebill_getendtime(param) {
+  async report8day_report_casebill_getendtime(param) {
     const res = await postdata(this.ACTION.report8day_report_casebill_getendtime, param)
     return res.data
-  },
+  }
 }
 
 export default report

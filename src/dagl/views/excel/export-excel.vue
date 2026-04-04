@@ -81,9 +81,9 @@
         </template>
       </el-table-column>
       <el-table-column label="O3-8h" align="center">
-          <template slot-scope="scope">
-            {{ scope.row.o3 }}
-          </template>
+        <template slot-scope="scope">
+          {{ scope.row.o3 }}
+        </template>
       </el-table-column>
       <el-table-column label="PM2.5" align="center">
         <template slot-scope="scope">
@@ -95,11 +95,6 @@
           {{ scope.row.aqi }}
         </template>
       </el-table-column>
-
-
-
-
-
 
       <el-table-column label="综指">
         <template slot-scope="scope">
@@ -130,50 +125,50 @@ export default {
       filename: '',
       autoWidth: true,
       bookType: 'xlsx',
-      DeptList:  [
-            {
-                "regionid": 1,
-                "deptname": "重庆市",
-                "fullname": "重庆市",
-                "id": 2,
-                "regionname": "重庆市",
-                "hasChildren": true
-            },
-            {
-                "regionid": 4,
-                "deptname": "　┝　长寿区",
-                "fullname": "重庆市 > 长寿区",
-                "id": 14,
-                "regionname": "长寿区"
-            },
-            {
-                "regionid": 3,
-                "deptname": "　┝　长寿周边",
-                "fullname": "重庆市 > 长寿周边",
-                "id": 13,
-                "regionname": "长寿周边"
-            },
-            {
-                "regionid": 2,
-                "deptname": "　┝　重点区域",
-                "fullname": "重庆市 > 重点区域",
-                "id": 39,
-                "regionname": "重点区域"
-            }
-        ],
+      DeptList: [
+        {
+          'regionid': 1,
+          'deptname': '重庆市',
+          'fullname': '重庆市',
+          'id': 2,
+          'regionname': '重庆市',
+          'hasChildren': true
+        },
+        {
+          'regionid': 4,
+          'deptname': '　┝　长寿区',
+          'fullname': '重庆市 > 长寿区',
+          'id': 14,
+          'regionname': '长寿区'
+        },
+        {
+          'regionid': 3,
+          'deptname': '　┝　长寿周边',
+          'fullname': '重庆市 > 长寿周边',
+          'id': 13,
+          'regionname': '长寿周边'
+        },
+        {
+          'regionid': 2,
+          'deptname': '　┝　重点区域',
+          'fullname': '重庆市 > 重点区域',
+          'id': 39,
+          'regionname': '重点区域'
+        }
+      ],
       listQuery: {
         page: 1,
         pagesize: 10,
         keyword: undefined,
         regionid: 3,
-        startdate:parseTime(new Date().getTime()- 24 * 60 * 60 * 1000, '{y}-{m}-{d}'),
-        enddate:parseTime(new Date().getTime()- 24 * 60 * 60 * 1000, '{y}-{m}-{d}'),
+        startdate: parseTime(new Date().getTime() - 24 * 60 * 60 * 1000, '{y}-{m}-{d}'),
+        enddate: parseTime(new Date().getTime() - 24 * 60 * 60 * 1000, '{y}-{m}-{d}'),
         isvoid: '0'
-      },
+      }
     }
   },
   created() {
-/*    postdata('/dept/tree', {}).then((res) => {
+    /*    postdata('/dept/tree', {}).then((res) => {
       this.DeptList = res.data.list
     }), */
 
@@ -187,13 +182,12 @@ export default {
         this.list = response.data.data.items
         this.listLoading = false
       })
-
     },
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = [ '日期','区县',   'SO2', 'NO2', 'PM10',  'CO', 'O3-8h','PM2.5','AQI','综指']
-        const filterVal = [ 'monitortime','regionname','so2', 'no2', 'pm10', 'co', 'o3', 'pm25',  'aqi', 'zz']
+        const tHeader = ['日期', '区县', 'SO2', 'NO2', 'PM10', 'CO', 'O3-8h', 'PM2.5', 'AQI', '综指']
+        const filterVal = ['monitortime', 'regionname', 'so2', 'no2', 'pm10', 'co', 'o3', 'pm25', 'aqi', 'zz']
         const list = this.list
         const data = this.formatJson(filterVal, list)
         excel.export_json_to_excel({

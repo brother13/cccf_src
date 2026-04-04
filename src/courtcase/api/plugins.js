@@ -19,11 +19,9 @@ var report = {
 
     getStListByBillCase: '/plugins/getStListByBillCase',
 
-
     // 添加与查看备注
     getNote: '/plugins/getNote',
     addNote: '/plugins/addNote',
-
 
     // 收款明细表
     queryList_sk: '/plugins/sklist',
@@ -34,52 +32,52 @@ var report = {
 
   async dgkreport_calc(query) {
     const res = await postdata(this.ACTION.dgkreport_calc, query)
-    return res;
+    return res
   },
 
   async dgkreport_count(query) {
     const res = await postdata(this.ACTION.dgkreport_count, query)
-    return res.data;
+    return res.data
   },
 
   async dgkreport_getList(query) {
     const res = await postdata(this.ACTION.dgkreport_getList, query)
-    return res.data;
+    return res.data
   },
   async dgkreport_getDataRange() {
     const res = await postdata(this.ACTION.dgkreport_getDataRange)
-    return res.data;
+    return res.data
   },
   async dgkreport_getendtime() {
     const res = await postdata(this.ACTION.dgkreport_getendtime)
-    return res.data;
+    return res.data
   },
   async getStListByBillCase(query) {
     const res = await postdata(this.ACTION.getStListByBillCase, query)
-    return res.data;
+    return res.data
   },
   async getNote(query) {
     const res = await postdata(this.ACTION.getNote, query)
-    return res.data;
+    return res.data
   },
   async addNote(query) {
     const res = await postdata(this.ACTION.addNote, query)
-    return res.data;
+    return res.data
   },
 
   async queryList_sk(query) {
     const res = await postdata(this.ACTION.queryList_sk, query)
-    return res.data;
+    return res.data
   },
   async queryList_tk(query) {
     const res = await postdata(this.ACTION.queryList_tk, query)
-    return res.data;
+    return res.data
   },
 
   async countCasenum(query) {
     const res = await postdata(this.ACTION.countCasenum, query)
-    return res.data;
-  },
+    return res.data
+  }
 }
 
 export default report

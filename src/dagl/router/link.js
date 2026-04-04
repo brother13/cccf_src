@@ -18,7 +18,7 @@ const linkRouter = {
     {
       path: 'https://www.air.hbgrand.com:19000/p1upgrade/index',
       meta: { title: '短信记录', icon: 'el-icon-notebook-2' }
-    },
+    }
   ]
 }
 export default linkRouter

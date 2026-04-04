@@ -1,6 +1,6 @@
 import
 getPageTitle
-  from '@/utils/get-page-title.js'
+from '@/utils/get-page-title.js'
 import { MessageBox } from 'element-ui'
 
 import {
@@ -142,18 +142,18 @@ var utils = {
     n = Math.abs(n)
     var s = ''
     for (let i = 0; i < fraction.length; i++) {
-      let p3 = n * 10 * Math.pow(10, i);
-      const p4 = Math.round(p3);
-      const p5 = Math.abs(p3 - p4);
+      let p3 = n * 10 * Math.pow(10, i)
+      const p4 = Math.round(p3)
+      const p5 = Math.abs(p3 - p4)
       // console.log("p3",p3,"p4",p4,"p5",p5);
 
       if (Math.abs(p3 - p4) < 0.0001) {
         // 有部分数字会因为精度问题，如 841.56，会变成 841.59999999999，如果无脑floor，会导致841.56变成841.5角5分。所以需要判断一下abs是否很小，如果是的话改用四舍五入
 
-        p3 = Math.round(p3);
+        p3 = Math.round(p3)
       }
-      const p = Math.floor(p3);
-      const p2 = p % 10;
+      const p = Math.floor(p3)
+      const p2 = p % 10
 
       // console.log("p",p,"p2",p2);
 
@@ -167,7 +167,7 @@ var utils = {
       for (var j = 0; j < unit[1].length && n > 0; j++) {
         p = digit[n % 10] + unit[1][j] + p
         // console.log("p", p);
-        n = Math.floor(n / 10);
+        n = Math.floor(n / 10)
         // console.log("n", n);
       }
       s = p.replace(/(零.)*零$/, '').replace(/^$/, '零') + unit[0][i] + s
@@ -231,7 +231,7 @@ var utils = {
     var sep = (typeof thousands_sep === 'undefined') ? ',' : thousands_sep
     var dec = (typeof dec_point === 'undefined') ? '.' : dec_point
     var s = ''
-    var toFixedFix = function (n, prec) {
+    var toFixedFix = function(n, prec) {
       var k = Math.pow(10, prec)
       // return '' + Math.ceil(n * k) / k
       return '' + Math.round(n * k) / k
@@ -293,7 +293,7 @@ var utils = {
 
   // 检查是否有空格，包括半角空格和全角空格
   checkSpace(arr) {
-    for (let i in arr) {
+    for (const i in arr) {
       const text = arr[i]
       if (!text) {
         continue
@@ -311,8 +311,8 @@ var utils = {
   // 去除空格
   replaceSpace(text) {
     let str = text
-    let spaceList = [' ', '　']
-    for (let k in spaceList) {
+    const spaceList = [' ', '　']
+    for (const k in spaceList) {
       const blank = spaceList[k]
       for (let i = 0; i < 99; i++) {
         if (str.indexOf(blank) > -1) {
@@ -342,7 +342,7 @@ var utils = {
    */
   pdf_getObjectURL(data) {
     let url = null
-    let file = new Blob([data], {
+    const file = new Blob([data], {
       type: 'application/pdf;chartset=utf-8'
     })
     if (window.createObjectURL !== undefined) {
@@ -458,27 +458,26 @@ var utils = {
   getChsDate(datetext) {
     // 将 yyyy-mm-dd的日期格式，改成 yyyy年mm月dd日
     if (datetext) {
-      let date = new Date(datetext);
-      let year = date.getFullYear();
-      let month = date.getMonth() + 1;
-      let day = date.getDate() ;
-      return year + '年' + month + '月' + day + '日';
+      const date = new Date(datetext)
+      const year = date.getFullYear()
+      const month = date.getMonth() + 1
+      const day = date.getDate()
+      return year + '年' + month + '月' + day + '日'
     } else {
-      return '';
+      return ''
     }
   },
 
   // 将文本用主键替换
-  replaceWidhTemplate(template='',data={}){
-
+  replaceWidhTemplate(template = '', data = {}) {
     let text = template
     for (var f in data) {
-      let v = data[f]
+      const v = data[f]
       const l = '{' + f + '}'
-      
+
       text = text.replace(l, v)
     }
-    return text;
+    return text
   }
 
 }

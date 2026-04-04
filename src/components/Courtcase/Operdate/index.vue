@@ -36,12 +36,11 @@ export default {
 
     inputListeners: function() {
       var vm = this
-      try{
-        this.editMode = false;
-      }catch(e){
-        console.log("set editMode false error",e)
+      try {
+        this.editMode = false
+      } catch (e) {
+        console.log('set editMode false error', e)
       }
-      
 
       // `Object.assign` 将所有的对象合并为一个新对象
       return Object.assign(

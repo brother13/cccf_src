@@ -17,7 +17,7 @@ var user = {
     checkauth: '/user/checkauth', // 检查授权剩余时间
     countLogin: '/log/countLogin', // 获取用户登录排名,
     status: '/user/status',
-    getUseRoomList:'/user/getUseRoomList'
+    getUseRoomList: '/user/getUseRoomList'
 
   },
   salt: '_RLF2020', // 密码加密盐值
@@ -53,7 +53,7 @@ var user = {
      * 获取本地存储的用户信息
      */
   async getLocalLoginInfo() {
-    let userinfo = {
+    const userinfo = {
       username: '',
       password: '',
       savepwd: false
@@ -107,7 +107,7 @@ var user = {
     // console.log(JSON.stringify(userinfo));
     // 将userinfo 保存进本地存储中
     store.set('userinfo', JSON.stringify(userinfo))
-    let token = userinfo.token
+    const token = userinfo.token
     Cookies.set(this.cookiekey, token, {
       expires: this.expires
     })
@@ -151,7 +151,7 @@ var user = {
     // console.log(JSON.stringify(userinfo));
     // 将userinfo 保存进本地存储中
     store.set('userinfo', JSON.stringify(userinfo))
-    let token = userinfo.token
+    const token = userinfo.token
     Cookies.set(this.cookiekey, token, {
       expires: this.expires
     })
@@ -251,8 +251,8 @@ var user = {
     return res.code === 20000
   },
   async getUseRoomList(query) {
-    const res = await postdata(this.ACTION.getUseRoomList,query)
-    return res.data;
+    const res = await postdata(this.ACTION.getUseRoomList, query)
+    return res.data
   }
 
 }

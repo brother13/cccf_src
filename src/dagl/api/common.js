@@ -82,23 +82,21 @@ export function saveCflistusername(data) {
 
 export function dxmsg(data) {
   const action = '/data/sendmsg'
-  let str='{"value1":"'+data['cbr']+'","value2":"'+data['ah']+'","value3":"'+data['bzxr']+'","value4":"'+data['type']+"https://renapp.top/cfapp/index.html?id="+data['cflistid']+'，","value5":"'+data['enddate']+'","templateId":2203195,"phone":[{"phonenum":"'+data['mobile']+'"}]}'
+  const str = '{"value1":"' + data['cbr'] + '","value2":"' + data['ah'] + '","value3":"' + data['bzxr'] + '","value4":"' + data['type'] + 'https://renapp.top/cfapp/index.html?id=' + data['cflistid'] + '，","value5":"' + data['enddate'] + '","templateId":2203195,"phone":[{"phonenum":"' + data['mobile'] + '"}]}'
   console.log(str)
-  let str1=textToHex(str)
-
-
+  const str1 = textToHex(str)
 
   return postdata(action, str1)
 }
 
 export function textToHex(text) {
-  const encoder = new TextEncoder();
-  const uint8Array = encoder.encode(text);
-  let hex = '';
-  uint8Array.forEach(function (byte) {
-    hex += byte.toString(16).padStart(2, '0');
-  });
-  return hex;
+  const encoder = new TextEncoder()
+  const uint8Array = encoder.encode(text)
+  let hex = ''
+  uint8Array.forEach(function(byte) {
+    hex += byte.toString(16).padStart(2, '0')
+  })
+  return hex
 }
 export function getajjbxx(data) {
   const action = '/data/getajjbxx'
@@ -120,7 +118,6 @@ export function rpalist(data) {
   const action = '/data/rpalist'
   return postdata(action, data)
 }
-
 
 export function rpalist_total(data) {
   const action = '/data/rpalist_total'

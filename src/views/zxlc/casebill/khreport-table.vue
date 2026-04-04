@@ -1,8 +1,8 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      
-<el-date-picker
+
+      <el-date-picker
         v-model="listQuery.month"
         type="year"
         placeholder="年份"
@@ -24,7 +24,6 @@
         @click="handleExport"
       >导出</el-button> -->
 
-     
     </div>
 
     <el-table
@@ -32,7 +31,7 @@
       v-loading="listLoading"
       :data="list"
       border
-      
+
       fit
       highlight-current-row
       style="width: 100%;"
@@ -41,53 +40,29 @@
     >
       <!-- <el-table-column type="selection" label="选择" /> -->
       <el-table-column
-      type="index"
-      label="序号"
-      align="center"
-      width="50"
-      :index="indexMethod">
-     
+        type="index"
+        label="序号"
+        align="center"
+        width="50"
+        :index="indexMethod"
+      />
+      <el-table-column label="月份" prop="month" align="center" width="120">
+        <template slot-scope="{row}">
+          <el-link target="_blank" @click="jumpToList(row.month)">{{ row.month }}</el-link>
+        </template>
 
-    </el-table-column>
-<el-table-column label="月份" prop="month" align="center" width="120" >
-  <template slot-scope="{row}">
-  <el-link target="_blank" @click="jumpToList(row.month)">{{ row.month }}</el-link>
-  </template>
+      </el-table-column>
+      <el-table-column label="案件数量" prop="case" align="center" width="80" />
 
-</el-table-column>
-     <el-table-column label="案件数量" prop="case" align="center" width="80" >
-
-</el-table-column>
-
-<el-table-column label="保全数量" prop="bq" align="center" width="120" >
-
-</el-table-column>
-<el-table-column label="执异数量" prop="zy" align="center" width="120" >
-
-</el-table-column>
-<el-table-column label="非保全执异" prop="nobq" align="center" width="120" >
-
-</el-table-column>
-<el-table-column label="查询次数" prop="query" align="center" width="120" >
-
-</el-table-column>
-<el-table-column label="查询案件数量" prop="querycase" align="center" width="120" >
-
-</el-table-column>
-<el-table-column label="扣划记录数" prop="kh" align="center" width="180" >
-
-</el-table-column>
-
-     
-      
-
-      
+      <el-table-column label="保全数量" prop="bq" align="center" width="120" />
+      <el-table-column label="执异数量" prop="zy" align="center" width="120" />
+      <el-table-column label="非保全执异" prop="nobq" align="center" width="120" />
+      <el-table-column label="查询次数" prop="query" align="center" width="120" />
+      <el-table-column label="查询案件数量" prop="querycase" align="center" width="120" />
+      <el-table-column label="扣划记录数" prop="kh" align="center" width="180" />
 
     </el-table>
 
-    
-
-    
   </div>
 </template>
 
@@ -99,7 +74,7 @@ import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 export default {
-  name: 'khcasereportTable',
+  name: 'KhcasereportTable',
   components: { Pagination },
   directives: { waves },
 
@@ -123,8 +98,8 @@ export default {
         timetype: '',
         time1: '',
         time2: '',
-        sort:'',
-        month:''
+        sort: '',
+        month: ''
       },
       checkedList: [],
       querytimeList: [],
@@ -141,7 +116,7 @@ export default {
           '非保全执异案件数量',
           '查询次数',
           '扣划记录数'
-         
+
         ],
         field: [
           'month',
@@ -164,8 +139,8 @@ export default {
         ye2: '',
         jkdw: '',
         fullaccount: '',
-        idkey: '',
-       }
+        idkey: ''
+      }
     }
   },
 
@@ -175,20 +150,20 @@ export default {
   },
   methods: {
     init() {
-      var d = new Date();
-      
-      this.listQuery.month = d.getFullYear()+"";
+      var d = new Date()
+
+      this.listQuery.month = d.getFullYear() + ''
     },
-    tableRowClassName({row, rowIndex}) {
-        if (row.querycase!=row.nobq) {
-          return 'warning-row';
-        } else {
-          return '';
-        }
-        return '';
-      },
-    indexMethod(index){
-      return (this.listQuery.page-1)*this.listQuery.pagesize+index+1
+    tableRowClassName({ row, rowIndex }) {
+      if (row.querycase != row.nobq) {
+        return 'warning-row'
+      } else {
+        return ''
+      }
+      return ''
+    },
+    indexMethod(index) {
+      return (this.listQuery.page - 1) * this.listQuery.pagesize + index + 1
     },
     getList() {
       this.listLoading = true
@@ -206,11 +181,10 @@ export default {
       this.listQuery.page = 1
       this.getList()
     },
-jumpToList(month) {
-      let link = '/report/khreportmonth-table'
+    jumpToList(month) {
+      const link = '/report/khreportmonth-table'
       let query = { }
       query = { month: month }
-
 
       this.$router.push({ path: link, query: query })
     },
@@ -243,7 +217,7 @@ jumpToList(month) {
         ye2: '',
         jkdw: '',
         fullaccount: '',
-        idkey: '',
+        idkey: ''
       }
     },
 

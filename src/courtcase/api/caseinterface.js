@@ -16,12 +16,10 @@ var obj = {
 
     uploadfile: '/import/upload', // 通过base64上传文件
 
-    checkfile: '/import/checkfile',  // 检查文件名是否已存在
-    yzw_getdata: '/import/yzw_getdata' ,// 获取一张网Excel的数据
+    checkfile: '/import/checkfile', // 检查文件名是否已存在
+    yzw_getdata: '/import/yzw_getdata', // 获取一张网Excel的数据
 
     yzw_importdata: '/import/yzw_importdata'
-
-
 
   },
 
@@ -53,7 +51,7 @@ var obj = {
   async yzw_importdata(query) {
     const res = await postdata(this.ACTION.yzw_importdata, query)
     return res.data
-  },
+  }
 }
 
 export default obj

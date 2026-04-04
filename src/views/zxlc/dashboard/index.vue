@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-container">
     <div class="website">不明款项匹配辅助系统</div>
-    
+
   </div>
 </template>
 
@@ -36,6 +36,6 @@ export default {
   line-height: 100px;
   padding:40px;
   text-align: center;
-  
+
 }
 </style>

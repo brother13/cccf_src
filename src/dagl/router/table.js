@@ -17,7 +17,7 @@ const tableRouter = {
       component: () => import('@/dagl/views/table/dynamic-table/index'),
       name: '日报数据',
       meta: { title: '日报数据' }
-    },
+    }
 
   ]
 }

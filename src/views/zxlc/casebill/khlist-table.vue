@@ -28,7 +28,7 @@
         class="filter-item"
         @keyup.enter.native="handleFilter"
       />
-     
+
       <el-date-picker
         v-model="listQuery.time1"
         type="date"
@@ -60,7 +60,6 @@
         @click="handleExport"
       >导出</el-button>
 
-     
     </div>
 
     <el-table
@@ -75,56 +74,39 @@
       height="600px"
       @selection-change="changeCheck"
       @sort-change="sortChange"
-      
     >
       <!-- <el-table-column type="selection" label="选择" /> -->
       <el-table-column
-      type="index"
-      label="序号"
-      align="center"
-      width="50"
-      :index="indexMethod">
-     
-
-    </el-table-column>
-<el-table-column label="案号信息" prop="caseinfo" align="center" width="250" >
-  <template slot-scope="{row}">
+        type="index"
+        label="序号"
+        align="center"
+        width="50"
+        :index="indexMethod"
+      />
+      <el-table-column label="案号信息" prop="caseinfo" align="center" width="250">
+        <template slot-scope="{row}">
           <span>{{ row.caseinfo }}</span>
           <br>
-          承办人：<span>{{row.deptname}} / {{row.cbr }}</span>
-         
-         <br>立案日期：<span>{{row.larq}} </span>
-          
-          
-          
+          承办人：<span>{{ row.deptname }} / {{ row.cbr }}</span>
+
+          <br>立案日期：<span>{{ row.larq }} </span>
+
         </template>
       </el-table-column>
-      <el-table-column label="当事人" prop="dsrname" align="center" width="180" sortable="true">
-        
-      </el-table-column>
-      <el-table-column label="账号信息" prop="xzdw" align="center" width="150" sortable="true" >
+      <el-table-column label="当事人" prop="dsrname" align="center" width="180" sortable="true" />
+      <el-table-column label="账号信息" prop="xzdw" align="center" width="150" sortable="true">
         <template slot-scope="{row}">
-          <span>协执：{{row.xzdw}}</span>
+          <span>协执：{{ row.xzdw }}</span>
           <br>
-          <span>{{row.bankaccount}}</span>
-          
+          <span>{{ row.bankaccount }}</span>
+
         </template>
       </el-table-column>
-     
-     
-      <el-table-column label="扣划金额" prop="je" align="center" width="180" sortable="true" >
-        
-      </el-table-column>
-      
 
-      
+      <el-table-column label="扣划金额" prop="je" align="center" width="180" sortable="true" />
 
-      <el-table-column label="时间" align="center" prop="opertime" width="150" class-name="small-padding fixed-width">
-        
-      </el-table-column>
+      <el-table-column label="时间" align="center" prop="opertime" width="150" class-name="small-padding fixed-width" />
     </el-table>
-
-    
 
     <pagination
       v-show="total>0"
@@ -168,7 +150,7 @@ export default {
         timetype: '',
         time1: '',
         time2: '',
-        sort:''
+        sort: ''
       },
       checkedList: [],
       querytimeList: [],
@@ -189,7 +171,7 @@ export default {
           '协执单位',
           '银行账号',
           '扣划金额'
-          
+
         ],
         field: [
           'cklsh',
@@ -203,7 +185,7 @@ export default {
           'xzdw',
           'bankaccount',
           'applymoney'
-          
+
         ]
       },
 
@@ -217,8 +199,8 @@ export default {
         ye2: '',
         jkdw: '',
         fullaccount: '',
-        idkey: '',
-       }
+        idkey: ''
+      }
     }
   },
 
@@ -228,10 +210,10 @@ export default {
   },
   methods: {
     init() {
-      
+
     },
-    indexMethod(index){
-      return (this.listQuery.page-1)*this.listQuery.pagesize+index+1
+    indexMethod(index) {
+      return (this.listQuery.page - 1) * this.listQuery.pagesize + index + 1
     },
     getList() {
       this.listLoading = true
@@ -280,7 +262,7 @@ export default {
         ye2: '',
         jkdw: '',
         fullaccount: '',
-        idkey: '',
+        idkey: ''
       }
     },
 
@@ -330,7 +312,7 @@ export default {
 
     handleDownload(alldata) {
       this.downloadLoading = true
-      
+
       import('@/vendor/Export2Excel').then((excel) => {
         const tHeader = this.export.header
         const filterVal = this.export.field

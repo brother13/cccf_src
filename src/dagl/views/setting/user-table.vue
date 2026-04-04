@@ -69,7 +69,7 @@
       style="width: 100%"
       @sort-change="sortChange"
     >
-      <el-table-column type="index"  align="center" label="序号">
+      <el-table-column type="index" align="center" label="序号">
         <template slot-scope="{ $index }">
           {{ $index + listQuery.pagesize * (listQuery.page - 1) + 1 }}
         </template>
@@ -79,15 +79,13 @@
         label="部门"
         prop="deptname"
         align="center"
-
       />
       <el-table-column
         label="姓名"
         prop="username"
         align="center"
-
       />
-<!--      <el-table-column label="头像" prop="avatar" align="center"  >
+      <!--      <el-table-column label="头像" prop="avatar" align="center"  >
         <template slot-scope="{ row }">
           <template v-if="row.avatar">
             <el-image :src="row.avatar" style="avatar" />
@@ -95,18 +93,18 @@
           <template v-else> - </template>
         </template>
       </el-table-column> -->
-      <el-table-column label="电话" prop="mobile" align="center"  >
+      <el-table-column label="电话" prop="mobile" align="center">
         <template slot-scope="{ row }">
           <ul>
             <template v-if="row.mobile">
-                <span>{{ row.mobile }}</span>
+              <span>{{ row.mobile }}</span>
 
             </template>
           </ul>
         </template>
       </el-table-column>
 
-      <el-table-column label="状态" class-name="status-col"  >
+      <el-table-column label="状态" class-name="status-col">
         <template slot-scope="{ row }">
           <el-tag :type="row.isvoid== '0' ? 'success' : 'danger'">{{
             row.isvoid == '0' ? '正常' : '停用'
@@ -114,7 +112,8 @@
         </template>
       </el-table-column>
       <el-table-column
-        label="操作" align="center"
+        label="操作"
+        align="center"
       >
         <template slot-scope="{ row }">
           <el-button
@@ -155,7 +154,7 @@
         <el-form-item label="用户姓名" prop="username">
           <el-input v-model="temp.username" />
         </el-form-item>
-<!--        <el-form-item label="用户代码" prop="usercode">
+        <!--        <el-form-item label="用户代码" prop="usercode">
           <el-input v-model="temp.usercode" />
         </el-form-item>
         <el-form-item label="性别" prop="gender">
@@ -235,8 +234,7 @@
           </el-select>
         </el-form-item>
 
-
-<!--        <el-form-item label="头像" prop="">
+        <!--        <el-form-item label="头像" prop="">
           <el-upload
             class="avatar-uploader"
             action="./index.php/dagl/index/uploadfile"
@@ -344,7 +342,7 @@ export default {
         page: 1,
         pagesize: 10,
         keyword: undefined,
-        deptcode: [],
+        deptcode: []
       },
       thumbdata: {
         caseid: '',
@@ -612,7 +610,7 @@ export default {
           newpass = this.temp.userpass
 
           if (newpass !== '') {
-            //newpass = md5(newpass + '_RLF2020')
+            // newpass = md5(newpass + '_RLF2020')
           }
 
           console.log(newpass)
@@ -674,7 +672,7 @@ export default {
           return
         }
         if (newtemp.userpass !== '') {
-          //newtemp.userpass = md5(newtemp.userpass + '_RLF2020')
+          // newtemp.userpass = md5(newtemp.userpass + '_RLF2020')
           newtemp.userpass2 = newtemp.userpass
         }
 

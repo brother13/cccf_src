@@ -21,8 +21,8 @@
       <el-descriptions class="margin-top" title="" :column="2" border>
         <el-descriptions-item
           v-for="(item, index) in fieldList"
-          :label="item.label"
           :key="index"
+          :label="item.label"
         >
           {{ taskinfo[item.field] }}
         </el-descriptions-item>
@@ -93,39 +93,38 @@
     <div slot="footer" class="dialog-footer">
       <el-button @click="showWindow = false"> 取消 </el-button>
       <el-button
+        v-show="temp.action"
         type="primary"
         icon="el-icon-edit"
-        @click="doAction"
         :disabled="batchinfo.doing"
-        v-show="temp.action"
-        >执行</el-button
-      >
+        @click="doAction"
+      >执行</el-button>
     </div>
   </el-dialog>
 </template>
 <script>
-import caseapi from "@/courtcase/api";
+import caseapi from '@/courtcase/api'
 
 const actionList = [
-  { label: "批量作废", value: "void" },
-  { label: "批量退票", value: "banktp" },
-];
+  { label: '批量作废', value: 'void' },
+  { label: '批量退票', value: 'banktp' }
+]
 const fieldList = [
-  { label: "任务编号", field: "taskcode" },
-  { label: "任务名称", field: "taskname" },
-  { label: "任务类型", field: "typename" },
-  { label: "任务状态", field: "statusText" },
-  { label: "退款时间", field: "tkdate" },
-  { label: "总笔数", field: "total" },
-  { label: "领款单位", field: "dwname" },
-  { label: "已退款", field: "num_tk" },
-  { label: "开户行", field: "bankname" },
-  { label: "已作废", field: "num_void" },
-  { label: "银行账号", field: "bankaccount" },
-  { label: "已退票", field: "num_banktp" },
-];
+  { label: '任务编号', field: 'taskcode' },
+  { label: '任务名称', field: 'taskname' },
+  { label: '任务类型', field: 'typename' },
+  { label: '任务状态', field: 'statusText' },
+  { label: '退款时间', field: 'tkdate' },
+  { label: '总笔数', field: 'total' },
+  { label: '领款单位', field: 'dwname' },
+  { label: '已退款', field: 'num_tk' },
+  { label: '开户行', field: 'bankname' },
+  { label: '已作废', field: 'num_void' },
+  { label: '银行账号', field: 'bankaccount' },
+  { label: '已退票', field: 'num_banktp' }
+]
 export default {
-  name: "Banktp",
+  name: 'Banktp',
   inheritAttrs: false,
   props: {},
   data: () => {
@@ -138,56 +137,56 @@ export default {
       temp: {
         typeid: 0,
         id: 0,
-        tpreason: "",
-        tpreason2: "",
-        tpdate: "",
-        action: "",
-        note: "",
+        tpreason: '',
+        tpreason2: '',
+        tpdate: '',
+        action: '',
+        note: ''
       },
       temp_empty: {
         typeid: 0,
         id: 0,
-        tpreason: "",
-        tpreason2: "",
-        tpdate: "",
-        action: "",
-        note: "",
+        tpreason: '',
+        tpreason2: '',
+        tpdate: '',
+        action: '',
+        note: ''
       },
       taskinfo: {
         id: 0,
-        taskcode: "",
-        taskname: "",
-        dwname: "",
-        bankname: "",
-        bankaccount: "",
+        taskcode: '',
+        taskname: '',
+        dwname: '',
+        bankname: '',
+        bankaccount: '',
         typeid: 0,
-        tkdate: "",
+        tkdate: '',
         status: 0,
-        statusText: "",
-        typename: "",
+        statusText: '',
+        typename: '',
         total: 0,
         num_void: 0, // 已作废
         num_banktp: 0, // 已退票
-        num_tk: 0, // 已退款
+        num_tk: 0 // 已退款
       },
       batchinfo: {
         doing: false, // 默认未启用
         total: 0,
-        done: 0,
-      },
-    };
+        done: 0
+      }
+    }
   },
   computed: {
     actionName() {
       switch (this.temp.action) {
-        case "void":
-          return "批量作废";
-        case "banktp":
-          return "批量退票";
+        case 'void':
+          return '批量作废'
+        case 'banktp':
+          return '批量退票'
         default:
-          return "";
+          return ''
       }
-    },
+    }
   },
   watch: {},
 
@@ -196,42 +195,42 @@ export default {
   },
   methods: {
     init() {
-      this.temp.tpdate = caseapi.base.getLogindate();
-      this.getTpReason();
+      this.temp.tpdate = caseapi.base.getLogindate()
+      this.getTpReason()
     },
     // 获取任务ID
-    async showWin(taskid, action = "void") {
+    async showWin(taskid, action = 'void') {
       try {
-        const actionname = action == "void" ? "作废" : "退票";
-        let text = `您确定要发起批量${actionname}吗？此操作不可逆！`;
-        const t = await this.$confirm(text);
-        console.log(t);
+        const actionname = action == 'void' ? '作废' : '退票'
+        const text = `您确定要发起批量${actionname}吗？此操作不可逆！`
+        const t = await this.$confirm(text)
+        console.log(t)
       } catch (e) {
-        return false;
+        return false
       }
 
       // 先清空再填写
-      this.temp = Object.assign({}, this.temp_empty);
+      this.temp = Object.assign({}, this.temp_empty)
 
-      this.temp.action = action;
-      this.init();
+      this.temp.action = action
+      this.init()
 
-      const taskinfo = await caseapi.batchpay.getTaskinfo(taskid);
+      const taskinfo = await caseapi.batchpay.getTaskinfo(taskid)
 
       // console.log("taskinfo", taskinfo);
 
-      this.temp.typeid = taskinfo.typeid;
-      this.temp.id = taskid;
-      this.temp.note = "";
+      this.temp.typeid = taskinfo.typeid
+      this.temp.id = taskid
+      this.temp.note = ''
 
-      this.taskinfo.statusText = "";
+      this.taskinfo.statusText = ''
 
       for (let i = 0; i < this.fieldList.length; i++) {
-        const r = this.fieldList[i];
-        const field = r["field"];
-        this.taskinfo[field] = taskinfo[field] || 0;
+        const r = this.fieldList[i]
+        const field = r['field']
+        this.taskinfo[field] = taskinfo[field] || 0
       }
-      this.taskinfo.typeid = taskinfo.typeid;
+      this.taskinfo.typeid = taskinfo.typeid
 
       // this.taskinfo.typename = taskinfo["typename"];
       // this.taskinfo.num_void = taskinfo["num_void"] || 0;
@@ -244,16 +243,16 @@ export default {
 
       // this.taskinfo.taskcode = taskinfo["taskcode"] || "";
       // this.taskinfo.taskname = taskinfo["taskname"] || "";
-      this.taskinfo.id = taskinfo["id"];
+      this.taskinfo.id = taskinfo['id']
       // this.taskinfo.tkdate = taskinfo["tkdate"];
 
-      this.showWindow = true;
+      this.showWindow = true
     },
     getTpReason() {
       caseapi.base.getTpReasonList().then((data) => {
         // console.log(data)
-        this.tpReasonList = data.items;
-      });
+        this.tpReasonList = data.items
+      })
     },
 
     // querySearch(key, callback) {
@@ -262,41 +261,41 @@ export default {
     //   })
     // },
     async doAction() {
-      let action = this.temp.action;
-      let actionname = "";
-      if (action == "void") {
-        actionname = "作废";
-      } else if (action == "banktp") {
-        actionname = "退票";
+      const action = this.temp.action
+      let actionname = ''
+      if (action == 'void') {
+        actionname = '作废'
+      } else if (action == 'banktp') {
+        actionname = '退票'
       } else {
-        this.$message.error("请选择操作类型");
-        return false;
+        this.$message.error('请选择操作类型')
+        return false
       }
 
       // 如果是作废，则判断note不能为空。如果是退票，则判断退票理由和退票日期不能为空
 
-      if (action == "void") {
-        if (!this.temp.note || this.temp.note == "") {
-          this.$alert("请填写作废理由！");
-          return false;
+      if (action == 'void') {
+        if (!this.temp.note || this.temp.note == '') {
+          this.$alert('请填写作废理由！')
+          return false
         }
-      } else if (action == "banktp") {
-        if (!this.temp.tpreason || this.temp.tpreason == "") {
-          this.$alert("请选择退票理由！");
-          return false;
+      } else if (action == 'banktp') {
+        if (!this.temp.tpreason || this.temp.tpreason == '') {
+          this.$alert('请选择退票理由！')
+          return false
         }
-        if (!this.temp.tpdate || this.temp.tpdate == "") {
-          this.$alert("请选择退票日期！");
-          return false;
+        if (!this.temp.tpdate || this.temp.tpdate == '') {
+          this.$alert('请选择退票日期！')
+          return false
         }
       }
-      const text = "您确定要发起批量" + actionname + "吗？此操作不可逆！";
+      const text = '您确定要发起批量' + actionname + '吗？此操作不可逆！'
 
       try {
-        const t = await this.$confirm(text);
-        console.log(t);
+        const t = await this.$confirm(text)
+        console.log(t)
       } catch (e) {
-        return false;
+        return false
       }
 
       // 准备开始执行
@@ -306,35 +305,35 @@ export default {
         page: 1,
         pagesize: 9999,
         id: this.taskinfo.id,
-        typeid: this.temp.typeid,
-      };
+        typeid: this.temp.typeid
+      }
 
-      const tkinfo = await caseapi.batchpay.getBatchTkList(query);
+      const tkinfo = await caseapi.batchpay.getBatchTkList(query)
 
-      this.batchinfo.total = tkinfo.total.num;
-      this.batchinfo.done = 0;
-      this.batchinfo.doing = true;
+      this.batchinfo.total = tkinfo.total.num
+      this.batchinfo.done = 0
+      this.batchinfo.doing = true
 
       // 开始执行
       for (let i = 0; i < tkinfo.items.length; i++) {
-        const row = tkinfo.items[i];
-        const tkid = row.id;
-        const typeid = row.typeid;
+        const row = tkinfo.items[i]
+        const tkid = row.id
+        const typeid = row.typeid
 
-        if (action == "void") {
+        if (action == 'void') {
           // 批量作废
-          const note = this.temp.note;
+          const note = this.temp.note
           try {
-            await caseapi.casetk.voidtk(tkid, note);
-            this.batchinfo.done++;
+            await caseapi.casetk.voidtk(tkid, note)
+            this.batchinfo.done++
           } catch (e) {
-            this.$message.error("批量作废发生错误:" + e.message);
-            return false;
+            this.$message.error('批量作废发生错误:' + e.message)
+            return false
           }
         }
-        if (action == "banktp") {
+        if (action == 'banktp') {
           const tpreason =
-            this.temp.tpreason2 === "-1" ? this.temp.tpreason : this.temp.tpreason2;
+            this.temp.tpreason2 === '-1' ? this.temp.tpreason : this.temp.tpreason2
 
           try {
             const res = await caseapi.casetk.billTP(
@@ -342,11 +341,11 @@ export default {
               tkid,
               tpreason,
               this.temp.tpdate
-            );
-            this.batchinfo.done++;
+            )
+            this.batchinfo.done++
           } catch (e) {
-            this.$message.error("批量退票发生错误:" + e.message);
-            return false;
+            this.$message.error('批量退票发生错误:' + e.message)
+            return false
           }
         }
       }
@@ -354,47 +353,47 @@ export default {
       // 更新任务状态为 已退票或已作废
       const updateinfo = {
         id: this.taskinfo.id,
-        status: action,
-      };
-      await caseapi.batchpay.task_updateStatus(updateinfo);
+        status: action
+      }
+      await caseapi.batchpay.task_updateStatus(updateinfo)
 
-      this.$alert("批量操作完成！");
-      this.batchinfo.doing = false;
-      this.$emit("done");
+      this.$alert('批量操作完成！')
+      this.batchinfo.doing = false
+      this.$emit('done')
       this.$nextTick(() => {
-        this.showWindow = false;
-      });
+        this.showWindow = false
+      })
     },
     closeDialog(done) {
       if (this.batchinfo.doing) {
-        this.$alert("正在刷新数据，不能结束任务，请稍候！");
-        done(false);
+        this.$alert('正在刷新数据，不能结束任务，请稍候！')
+        done(false)
       } else {
-        done(true);
+        done(true)
       }
     },
     async doTP() {
       const tpreason =
-        this.temp.tpreason2 === "-1" ? this.temp.tpreason : this.temp.tpreason2;
-      if (!tpreason || tpreason === "") {
-        this.$message.error("退票理由不能为空");
+        this.temp.tpreason2 === '-1' ? this.temp.tpreason : this.temp.tpreason2
+      if (!tpreason || tpreason === '') {
+        this.$message.error('退票理由不能为空')
       }
       const res = await caseapi.casetk.billTP(
         this.temp.typeid,
         this.temp.id,
         tpreason,
         this.temp.tpdate
-      );
+      )
       if (res.code !== 20000) {
-        this.$message.error(res.message);
+        this.$message.error(res.message)
       } else {
-        this.$message("退票完成");
-        this.$emit("dotp");
-        this.showWindow = false;
+        this.$message('退票完成')
+        this.$emit('dotp')
+        this.showWindow = false
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>
 <style>
 .form-item {

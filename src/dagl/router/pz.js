@@ -15,7 +15,7 @@ const Router_pz = {
   },
   children: [
 
-   {
+    {
       path: 'upload-excel',
       component: () => import('@/dagl/views/pz/upload-excel'),
       name: '凭证接口导入',
@@ -24,7 +24,7 @@ const Router_pz = {
         icon: 'el-icon-c-scale-to-original',
         roles: ['USER']
       }
-    },
+    }
   ]
 }
 export default Router_pz

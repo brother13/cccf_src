@@ -44,7 +44,7 @@ const Router_setting = {
         icon: 'tree',
         roles: ['DEPT']
       }
-    },
+    }
   ]
 }
 export default Router_setting

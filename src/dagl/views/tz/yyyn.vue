@@ -1,42 +1,94 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.keyword" clearable placeholder="请输入关键字，姓名,案号" style="width: 230px"
-        class="filter-item" @keyup.enter.native="handleFilter">
+      <el-input
+        v-model="listQuery.keyword"
+        clearable
+        placeholder="请输入关键字，姓名,案号"
+        style="width: 230px"
+        class="filter-item"
+        @keyup.enter.native="handleFilter"
+      >
         <i slot="prefix" class="el-input__icon el-icon-search" />
       </el-input>
       <span class="filter-item" style="color: #606266">届满日期：</span>
-      <el-date-picker label="届满日期" v-model="listQuery.enddate" type="date" placeholder="截止日期" class="filter-item"
-        style="width: 150px" value-format="yyyy-MM-dd" @change="handleFilter" />
-      <el-select v-model="listQuery.deptcode" placeholder="请选择部门" clearable style="width: 220px" multiple
-        class="filter-item" @change="handleFilter">
+      <el-date-picker
+        v-model="listQuery.enddate"
+        label="届满日期"
+        type="date"
+        placeholder="截止日期"
+        class="filter-item"
+        style="width: 150px"
+        value-format="yyyy-MM-dd"
+        @change="handleFilter"
+      />
+      <el-select
+        v-model="listQuery.deptcode"
+        placeholder="请选择部门"
+        clearable
+        style="width: 220px"
+        multiple
+        class="filter-item"
+        @change="handleFilter"
+      >
         <el-option v-for="item in DeptList" :key="item.deptid" :label="item.fullname" :value="item.deptid">{{
           item.deptname }}</el-option>
       </el-select>
-      <el-select v-model="listQuery.isvoid" placeholder="请选择状态" clearable style="width: 120px" class="filter-item"
-        @change="handleFilter">
+      <el-select
+        v-model="listQuery.isvoid"
+        placeholder="请选择状态"
+        clearable
+        style="width: 120px"
+        class="filter-item"
+        @change="handleFilter"
+      >
         <el-option label="所有" value />
         <el-option label="正常" value="0" />
         <el-option label="停用" value="1" />
       </el-select>
-      <el-select v-model="listQuery.cfsf" placeholder="首封状态" clearable style="width: 120px" class="filter-item"
-        @change="handleFilter">
+      <el-select
+        v-model="listQuery.cfsf"
+        placeholder="首封状态"
+        clearable
+        style="width: 120px"
+        class="filter-item"
+        @change="handleFilter"
+      >
         <el-option label="所有" value />
         <el-option label="首封" value="首封" />
         <el-option label="轮候" value="轮候" />
       </el-select>
-      <el-button class="filter-item" style="margin-left: 10px" type="primary" icon="el-icon-edit"
-        @click="handleCreate">新增</el-button>
+      <el-button
+        class="filter-item"
+        style="margin-left: 10px"
+        type="primary"
+        icon="el-icon-edit"
+        @click="handleCreate"
+      >新增</el-button>
       <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
 
-      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download"
-        @click="handleDownload">
+      <el-button
+        v-waves
+        :loading="downloadLoading"
+        class="filter-item"
+        type="primary"
+        icon="el-icon-download"
+        @click="handleDownload"
+      >
         导出
       </el-button>
     </div>
 
-    <el-table :key="tableKey" v-loading="listLoading" :data="list" border fit highlight-current-row style="width: 100%"
-      @sort-change="sortChange">
+    <el-table
+      :key="tableKey"
+      v-loading="listLoading"
+      :data="list"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%"
+      @sort-change="sortChange"
+    >
       <el-table-column type="index" align="center" label="序号">
         <template slot-scope="{ $index }">
           {{ $index + listQuery.pagesize * (listQuery.page - 1) + 1 }}
@@ -60,7 +112,6 @@
       <el-table-column label="首封状态" prop="cfsf" align="center" />
       <el-table-column label="原承办人" prop="ycbr" align="center" />
 
-
       <!--      <el-table-column
         label="查封状态"
         prop="status"
@@ -81,23 +132,31 @@
       </el-table-column>
       <el-table-column min-width="229" label="操作" align="center">
         <template slot-scope="{ row }">
-          <el-dropdown split-button type="primary" icon="el-icon-edit" @click="handleUpdate(row)" size="mini">
-            <i class="el-icon-edit"></i>{{canEdit(row) ? '编辑' : '查看'}}</el-dropdown-button>
+          <el-dropdown split-button type="primary" icon="el-icon-edit" size="mini" @click="handleUpdate(row)">
+            <i class="el-icon-edit" />{{ canEdit(row) ? '编辑' : '查看' }}</el-dropdown-button>
 
             <el-dropdown-menu>
-              <el-dropdown-item icon="el-icon-edit" @click.native="handleUpdate(row)">{{canEdit(row) ? '编辑' : '查看'}}</el-dropdown-item>
-              <el-dropdown-item icon="el-icon-delete" @click.native="handleDelete(row)" v-if="canEdit(row)">删除</el-dropdown-item>
+              <el-dropdown-item icon="el-icon-edit" @click.native="handleUpdate(row)">{{ canEdit(row) ? '编辑' : '查看' }}</el-dropdown-item>
+              <el-dropdown-item v-if="canEdit(row)" icon="el-icon-delete" @click.native="handleDelete(row)">删除</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
 
-          <el-dropdown split-button type="warning" icon="el-icon-edit" @click="downLoadWord(row)"
-            style='margin-left:10px;' size="mini">
-            <i class="el-icon-download"></i>文书
+          <el-dropdown
+            split-button
+            type="warning"
+            icon="el-icon-edit"
+            style="margin-left:10px;"
+            size="mini"
+            @click="downLoadWord(row)"
+          >
+            <i class="el-icon-download" />文书
             <el-dropdown-menu>
               <el-dropdown-item icon="el-icon-download" @click.native="downLoadWord(row)">协执文书</el-dropdown-item>
               <template v-for="item in templateList">
-                <el-dropdown-item :icon="item.icon ? item.icon : 'el-icon-download'"
-                  @click.native="handleDownOtherDocx(row, item)">{{ item.label }}</el-dropdown-item>
+                <el-dropdown-item
+                  :icon="item.icon ? item.icon : 'el-icon-download'"
+                  @click.native="handleDownOtherDocx(row, item)"
+                >{{ item.label }}</el-dropdown-item>
               </template>
             </el-dropdown-menu>
           </el-dropdown>
@@ -112,18 +171,33 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.pagesize"
-      @pagination="getList" />
+    <pagination
+      v-show="total > 0"
+      :total="total"
+      :page.sync="listQuery.page"
+      :limit.sync="listQuery.pagesize"
+      @pagination="getList"
+    />
 
-    <el-dialog custom-class="saveAsDialog" :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible"
-      :close-on-click-modal="false">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="80px"
-        style=" margin-left: 50px; margin-right: 50px">
+    <el-dialog
+      custom-class="saveAsDialog"
+      :title="textMap[dialogStatus]"
+      :visible.sync="dialogFormVisible"
+      :close-on-click-modal="false"
+    >
+      <el-form
+        ref="dataForm"
+        :rules="rules"
+        :model="temp"
+        label-position="left"
+        label-width="80px"
+        style=" margin-left: 50px; margin-right: 50px"
+      >
         <el-form-item label="办案人" prop="cbr">
           <el-input v-model="temp.cbr" />
         </el-form-item>
         <el-form-item label="案号录入">
-          <el-input @input="handleahjcChange()" v-model="temp.ahjc" />
+          <el-input v-model="temp.ahjc" @input="handleahjcChange()" />
         </el-form-item>
         <el-form-item label="案号" prop="ah">
           <el-input v-model="temp.ah" />
@@ -139,52 +213,73 @@
         </el-form-item>
         <el-row :gutter="20"><el-col :span="12">
 
-            <el-form-item label="开始日期" prop="startdate">
-              <el-date-picker @change="handleDateChange()" label="开始日期" prop="startdate" v-model="temp.startdate"
-                type="date" placeholder="开始日期" value-format="yyyy-MM-dd" />
-            </el-form-item>
-          </el-col><el-col :span="12">
-            <el-form-item label="届满日期" :prop="temp.cfsfpro">
-              <el-date-picker label="届满日期" :prop="temp.cfsfpro" v-model="temp.enddate" type="date" placeholder="届满日期"
-                value-format="yyyy-MM-dd" />
-            </el-form-item>
-          </el-col><el-col :span="12">
+                               <el-form-item label="开始日期" prop="startdate">
+                                 <el-date-picker
+                                   v-model="temp.startdate"
+                                   label="开始日期"
+                                   prop="startdate"
+                                   type="date"
+                                   placeholder="开始日期"
+                                   value-format="yyyy-MM-dd"
+                                   @change="handleDateChange()"
+                                 />
+                               </el-form-item>
+                             </el-col><el-col :span="12">
+                               <el-form-item label="届满日期" :prop="temp.cfsfpro">
+                                 <el-date-picker
+                                   v-model="temp.enddate"
+                                   label="届满日期"
+                                   :prop="temp.cfsfpro"
+                                   type="date"
+                                   placeholder="届满日期"
+                                   value-format="yyyy-MM-dd"
+                                 />
+                               </el-form-item>
+                             </el-col><el-col :span="12">
             <el-form-item label="冻结账号">
               <el-input v-model="temp.account" />
             </el-form-item>
           </el-col><el-col :span="12">
             <el-form-item label="冻结金额">
-              <el-input placeholder="请输入金额" type="number" v-model="temp.sjdjje" />
+              <el-input v-model="temp.sjdjje" placeholder="请输入金额" type="number" />
             </el-form-item>
           </el-col>
 
-
           <el-col :span="12">
             <el-form-item label="扣划金额">
-              <el-input @input="handleKhljje()" placeholder="请输入金额" type="number" v-model="temp.sjkhje" />
+              <el-input v-model="temp.sjkhje" placeholder="请输入金额" type="number" @input="handleKhljje()" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="扣划累计">
-              <el-input placeholder="请输入金额" type="number" disabled v-model="temp.khljje" />
+              <el-input v-model="temp.khljje" placeholder="请输入金额" type="number" disabled />
             </el-form-item>
           </el-col>
 
-
-
-
           <el-col :span="12">
             <el-form-item label="财产类型" prop="type">
-              <el-select @change="handleDateChange()" v-model="temp.type" style="width: 100%" class="filter-item"
-                placeholder="请选择" clearable>
+              <el-select
+                v-model="temp.type"
+                style="width: 100%"
+                class="filter-item"
+                placeholder="请选择"
+                clearable
+                @change="handleDateChange()"
+              >
                 <el-option v-for="item in Cftype" :key="item.id" :label="item.typename" :value="item.typename">{{
                   item.typename }}</el-option>
               </el-select>
             </el-form-item>
           </el-col><el-col :span="12">
             <el-form-item label="首封状态" prop="cfsf">
-              <el-select @change="handleCfsfChange()" v-model="temp.cfsf" style="width: 100%" class="filter-item"
-                placeholder="请选择" clearable>
+              <el-select
+                v-model="temp.cfsf"
+                style="width: 100%"
+                class="filter-item"
+                placeholder="请选择"
+                clearable
+                @change="handleCfsfChange()"
+              >
                 <el-option v-for="item in cfsf" :key="item.id" :label="item.cfsf" :value="item.cfsf">{{ item.cfsf
                 }}</el-option>
               </el-select>
@@ -207,40 +302,64 @@
             </el-form-item>
           </el-col><el-col :span="12">
             <el-form-item label="状态">
-              <el-switch v-model="temp.isvoid" active-color="#13ce66" inactive-color="#ff4949" :inactive-value="1"
-                :active-value="0" />
+              <el-switch
+                v-model="temp.isvoid"
+                active-color="#13ce66"
+                inactive-color="#ff4949"
+                :inactive-value="1"
+                :active-value="0"
+              />
               <el-tag>{{ temp.isvoid == 0 ? '正常' : '停用' }}</el-tag>
             </el-form-item>
           </el-col></el-row>
         <el-form-item label="财产情况" prop="status">
-          <el-input v-model="temp.ccqk" :autosize="{ minRows: 2, maxRows: 6 }" type="textarea"
-            placeholder="您可以填定用户财产情况" />
+          <el-input
+            v-model="temp.ccqk"
+            :autosize="{ minRows: 2, maxRows: 6 }"
+            type="textarea"
+            placeholder="您可以填定用户财产情况"
+          />
         </el-form-item>
         <!--        <el-form-item label="查封状态" prop="status">
           <el-input v-model="temp.status" />
         </el-form-item> -->
         <el-form-item label="备注">
-          <el-input v-model="temp.note" :autosize="{ minRows: 2, maxRows: 6 }" type="textarea"
-            placeholder="您可以填定用户备注" />
+          <el-input
+            v-model="temp.note"
+            :autosize="{ minRows: 2, maxRows: 6 }"
+            type="textarea"
+            placeholder="您可以填定用户备注"
+          />
         </el-form-item>
-        <el-form-item label="回执上传" v-if="filelistshow">
-          <el-upload :action="uploadurl" list-type="picture-card" :on-remove="handleRemove"
-            accept="image/*,.pdf,.doc,.docx" :on-success="handleFileSuccess" :on-error="handleFileError" :data="temp"
-            :before-upload="handleFileUpload" :file-list="fileList">
-            <i slot="default" class="el-icon-plus"></i>
+        <el-form-item v-if="filelistshow" label="回执上传">
+          <el-upload
+            :action="uploadurl"
+            list-type="picture-card"
+            :on-remove="handleRemove"
+            accept="image/*,.pdf,.doc,.docx"
+            :on-success="handleFileSuccess"
+            :on-error="handleFileError"
+            :data="temp"
+            :before-upload="handleFileUpload"
+            :file-list="fileList"
+          >
+            <i slot="default" class="el-icon-plus" />
             <div slot="file" slot-scope="{file}">
               <embed v-if="isPdfFile(file)" :src="file.url" width="100%"></embed>
               <img v-else class="el-upload-list__item-thumbnail" :src="file.url" :alt="file.filename">
               <span class="el-upload-list__item-actions">
-                <span v-if="isPreFile(file)" class="el-upload-list__item-preview"
-                  @click="handlePictureCardPreview(file)">
-                  <i class="el-icon-zoom-in"></i>
+                <span
+                  v-if="isPreFile(file)"
+                  class="el-upload-list__item-preview"
+                  @click="handlePictureCardPreview(file)"
+                >
+                  <i class="el-icon-zoom-in" />
                 </span>
                 <span v-if="!disabled " class="el-upload-list__item-delete" @click="handleDownloadimg(file)">
-                  <i class="el-icon-download"></i>
+                  <i class="el-icon-download" />
                 </span>
-                <span v-if="!disabled" class="el-upload-list__item-delete" @click="handleRemove(file)" >
-                  <i class="el-icon-delete"></i>
+                <span v-if="!disabled" class="el-upload-list__item-delete" @click="handleRemove(file)">
+                  <i class="el-icon-delete" />
                 </span>
               </span>
             </div>
@@ -249,7 +368,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogStatus === 'create' ? createData() : updateData()" v-if="canEdit(temp)">保存</el-button>
+        <el-button v-if="canEdit(temp)" type="primary" @click="dialogStatus === 'create' ? createData() : updateData()">保存</el-button>
       </div>
     </el-dialog>
     <el-dialog :visible.sync="imgdialogVisible">
@@ -274,7 +393,7 @@ import {
   DataList,
   LabelList
 } from '@/dagl/api/data'
-import caseapi from "@/courtcase/api";
+import caseapi from '@/courtcase/api'
 
 import waves from '@/directive/waves' // waves directive
 import {
@@ -298,12 +417,12 @@ import {
 import {
   mapGetters
 } from 'vuex'
-import docxtemplater from "docxtemplater";
-import PizZip from "pizzip";
-import JSZipUtils from "jszip-utils";
+import docxtemplater from 'docxtemplater'
+import PizZip from 'pizzip'
+import JSZipUtils from 'jszip-utils'
 import {
   saveAs
-} from "file-saver";
+} from 'file-saver'
 // const DeptList = [{ deptid: '', deptcode: '', deptname: '' }]
 import pdf from 'vue-pdf'
 
@@ -340,26 +459,26 @@ export default {
       fileList: [],
       filelistshow: false,
       tableKey: 0,
-      uploadurl: "/cccf/index.php/cccf/index/upload",
+      uploadurl: '/cccf/index.php/cccf/index/upload',
 
       list: null,
       alllist: null,
       total: 0,
       listLoading: true,
       cfsf: [{
-        "id": 1,
-        "cfsf": "首封",
+        'id': 1,
+        'cfsf': '首封'
       }, {
-        "id": 2,
-        "cfsf": "轮候",
-      },],
+        'id': 2,
+        'cfsf': '轮候'
+      }],
       Leixing: [{
-        "name": "点对点",
-        "id": 1
+        'name': '点对点',
+        'id': 1
       },
       {
-        "name": "总对总",
-        "id": 2
+        'name': '总对总',
+        'id': 2
       }
       ],
       listQuery: {
@@ -367,7 +486,7 @@ export default {
         pagesize: 10,
         startdate: '',
         enddate: '',
-        //enddate: parseTime(new Date().getTime() + 30 * 24 * 60 * 60 * 1000, '{y}-{m}-{d}'),
+        // enddate: parseTime(new Date().getTime() + 30 * 24 * 60 * 60 * 1000, '{y}-{m}-{d}'),
         keyword: undefined,
         deptcode: [],
         isvoid: '0'
@@ -397,15 +516,15 @@ export default {
       temp: {
         cflistid: undefined,
         cbr: this.$store.getters.name,
-        cfsf: "首封",
-        cfsfpro: "enddate",
+        cfsf: '首封',
+        cfsfpro: 'enddate',
         isvoid: 0,
         autocf: 0,
         leixing: '总对总',
         startdate: '',
         enddate: '',
         ahjc: '',
-        ah: "",
+        ah: ''
       },
       // roomList: [],
       dialogFormVisible: false,
@@ -438,32 +557,32 @@ export default {
           required: true,
           message: '届满日期不能为空',
           trigger: 'change'
-        }],
+        }]
         // mobile: [
         //   { required: true, message: '手机号码不能为空', trigger: 'change' }
         // ],
 
       },
-      templateList: [],// 文书模板列表
+      templateList: []// 文书模板列表
 
     }
   },
   computed: {
     isvoid2: {
-      get: function () {
+      get: function() {
         return (
           this.temp.isvoid === 0 ||
           this.temp.isvoid === undefined ||
           this.temp.isvoid === ''
         )
       },
-      set: function (newvalue) {
+      set: function(newvalue) {
         this.temp.isvoid = newvalue ? '0' : '1'
       }
     }
   },
   created() {
-    if (this.$route.query.ah != undefined) { //写入其他页面传递的案号参数
+    if (this.$route.query.ah != undefined) { // 写入其他页面传递的案号参数
       this.listQuery.keyword = this.$route.query.ah
     }
     if (process.env.NODE_ENV === 'development') {
@@ -480,11 +599,8 @@ export default {
       this.listQuery.enddate = this.addMonths(new Date(), 2, 0)
     }
 
-
     this.getBaseData()
     this.getList()
-
-
   },
   computed: {
     ...mapGetters([
@@ -499,14 +615,13 @@ export default {
     handleKhljje() {
       if (parseFloat(this.temp.sjkhje) >= 0 && parseFloat(this.temp.khljjebck) >= 0) {
         this.temp.khljje = (parseFloat(this.temp.khljjebck) + parseFloat(this.temp.sjkhje)).toFixed(2)
-      }
-      else {
+      } else {
         this.temp.khljje = this.temp.khljjebck
       }
     },
     submitUpload() {
-      console.log('submit');
-      this.$refs.upload.submit();
+      console.log('submit')
+      this.$refs.upload.submit()
     },
     handleRemove(file) {
       this.$confirm('数据删除之后将不能恢复，是否继续?', '提示', {
@@ -520,44 +635,42 @@ export default {
           console.log(response)
         })
       })
-      console.log(file);
+      console.log(file)
     },
     handlePictureCardPreview(file) {
-
       if (this.isPdfFile(file) == true) {
         this.prvpdf = true
       } else {
         this.prvpdf = false
       }
-      this.imgdialogVisible = true;
-      this.dialogImageUrl = file.url;
-
+      this.imgdialogVisible = true
+      this.dialogImageUrl = file.url
     },
     handleDownloadimg(file) {
-      console.log(file);
-      let eleLink = document.createElement('a');
-      eleLink.download = file.filename;
-      console.log(file.url);
-      eleLink.href = file.url;
+      console.log(file)
+      const eleLink = document.createElement('a')
+      eleLink.download = file.filename
+      console.log(file.url)
+      eleLink.href = file.url
       document.body.appendChild(eleLink)
-      eleLink.click();
-      eleLink.remove();
+      eleLink.click()
+      eleLink.remove()
     },
     isPdfFile(file) {
-      if (!file.url && !file.name) return false;
-      const pdfRegex = /\.pdf$/i;
+      if (!file.url && !file.name) return false
+      const pdfRegex = /\.pdf$/i
       return (
         (file.url && pdfRegex.test(file.url)) ||
         (file.name && pdfRegex.test(file.name))
-      );
+      )
     },
     isPreFile(file) {
-      if (!file.url && !file.name) return false;
-      const preRegex = /\.(pdf|jpeg|jpg|gif|png|bmp|svg)$/i;
+      if (!file.url && !file.name) return false
+      const preRegex = /\.(pdf|jpeg|jpg|gif|png|bmp|svg)$/i
       return (
         (file.url && preRegex.test(file.url)) ||
         (file.name && preRegex.test(file.name))
-      );
+      )
     },
 
     // 上传成功
@@ -581,53 +694,51 @@ export default {
     // 文件上传之前
     handleFileUpload(file) {
       // 检查文件名是否已存在
-      //console.log(this.fileList);
+      // console.log(this.fileList);
 
     },
 
     getuploadfile() {
-      this.filelistshow = false;
-      this.fileList = null;
+      this.filelistshow = false
+      this.fileList = null
       getuploadfile(this.temp).then((response) => {
         this.fileList = response.data
-        this.filelistshow = true;
+        this.filelistshow = true
         // setTimeout(() => {
         //   this.filelistshow = true;
         // }, 5 * 100)
 
-        //console.log("getuploadfileresponse")
-        //console.log(response)
+        // console.log("getuploadfileresponse")
+        // console.log(response)
       })
     },
 
-
     handleCfsfChange() {
-      if (this.temp.cfsf == "轮候") {
-        this.temp.cfsfpro = ""
+      if (this.temp.cfsf == '轮候') {
+        this.temp.cfsfpro = ''
       } else {
-        this.temp.cfsfpro = "enddate"
+        this.temp.cfsfpro = 'enddate'
       }
     },
     addDaysToDate(dateString, days) {
-      const date = new Date(dateString);
-      date.setDate(date.getDate() + days);
-      return date;
+      const date = new Date(dateString)
+      date.setDate(date.getDate() + days)
+      return date
     },
     addMonths(dateString, months, days) {
-      if (dateString == null) return null;
-      const date = new Date(dateString);
-      date.setMonth(date.getMonth() + months);
-      if (days == undefined) days = 1;
-      date.setDate(date.getDate() - days);
-      return date.toISOString().split('T')[0];
+      if (dateString == null) return null
+      const date = new Date(dateString)
+      date.setMonth(date.getMonth() + months)
+      if (days == undefined) days = 1
+      date.setDate(date.getDate() - days)
+      return date.toISOString().split('T')[0]
     },
     handleahjcChange() {
       var _year = this.temp.ahjc.substring(0, 4)
       var _xuhao = this.temp.ahjc.substring(4, 20)
-      var _tmpah = this.$store.state.user.ahmc.replace("{序号}", _xuhao)
-      _tmpah = _tmpah.replace("{年份}", _year)
+      var _tmpah = this.$store.state.user.ahmc.replace('{序号}', _xuhao)
+      _tmpah = _tmpah.replace('{年份}', _year)
       this.temp.ah = _tmpah
-
     },
     handleDateChange() {
       var _this = this
@@ -649,15 +760,15 @@ export default {
       this.getDept()
       this.getGroupList()
 
-      const doctype = 'txcl';
+      const doctype = 'txcl'
       caseapi.tz.getDocTemplateList(doctype).then((res) => {
         this.templateList = res
       })
-      //this.getLabelList()
+      // this.getLabelList()
       // this.getRoom()
 
-      //this.getAllUser()
-      //this.getBaseClass()
+      // this.getAllUser()
+      // this.getBaseClass()
       // this.getJobLevel()
       //       this.getJobPost()
       //       this.getJobAuth()
@@ -766,7 +877,7 @@ export default {
         cflistid: undefined,
         cbr: this.$store.getters.name,
         cfsf: '首封',
-        cfsfpro: "enddate",
+        cfsfpro: 'enddate',
         isvoid: 0,
         autocf: 0,
         leixing: '总对总',
@@ -774,7 +885,7 @@ export default {
         enddate: '',
         sjkhje: 0,
         khljje: 0,
-        khljjebck: 0,
+        khljjebck: 0
       }
     },
     handleCreate() {
@@ -791,7 +902,6 @@ export default {
       this.$refs['dataForm'].validate((valid) => {
         if (valid) {
           this.temp.cflistid = 0
-
 
           const newtemp = Object.assign({}, this.temp) // 复制一个新组件出来，避免修改数据
           newtemp.username = this.$store.getters.name
@@ -872,8 +982,6 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-
-
         dxmsg(row).then((response) => {
           const data = response
           if (data.code === 20000) {
@@ -918,96 +1026,94 @@ export default {
     },
     checkwordrq(dateData, name) {
       if (dateData == null) return name
-      let date = new Date(dateData);
-      let y = date.getFullYear();
-      let m = date.getMonth() + 1;
-      m = m < 10 ? "" + m : m;
-      let d = date.getDate();
-      d = d < 10 ? "" + d : d;
-      const time = y + "年" + m + "月" + d + "日";
+      const date = new Date(dateData)
+      const y = date.getFullYear()
+      let m = date.getMonth() + 1
+      m = m < 10 ? '' + m : m
+      let d = date.getDate()
+      d = d < 10 ? '' + d : d
+      const time = y + '年' + m + '月' + d + '日'
       console.log(time)
-      return time;
+      return time
     },
 
     downLoadWord(detailData) {
-      var tmp_pro = ""
-      if (typeof detailData.ah != 'undefined') {
+      var tmp_pro = ''
+      if (typeof detailData.ah !== 'undefined') {
         tmp_pro = detailData.ah
       }
       var tmp = {}
-      tmp.申请人 = this.checkworddata(detailData.sqzxr, "申请人")
-      tmp.案号 = this.checkworddata(detailData.ah, "案号")
-      tmp.被执行人 = this.checkworddata(detailData.bzxr, "被执行人")
-      tmp.财产情况 = this.checkworddata(detailData.ccqk, "财产情况")
-      tmp.开始日期 = this.checkwordrq(detailData.startdate, "开始日期")
-      tmp.届满日期 = this.checkwordrq(detailData.enddate, "届满日期")
-      tmp.当前日期 = this.checkwordrq(new Date(), "当前日期")
-      tmp.立案案由 = "《立案案由》"
-      tmp.执行依据案号 = "《执行依据案号》"
+      tmp.申请人 = this.checkworddata(detailData.sqzxr, '申请人')
+      tmp.案号 = this.checkworddata(detailData.ah, '案号')
+      tmp.被执行人 = this.checkworddata(detailData.bzxr, '被执行人')
+      tmp.财产情况 = this.checkworddata(detailData.ccqk, '财产情况')
+      tmp.开始日期 = this.checkwordrq(detailData.startdate, '开始日期')
+      tmp.届满日期 = this.checkwordrq(detailData.enddate, '届满日期')
+      tmp.当前日期 = this.checkwordrq(new Date(), '当前日期')
+      tmp.立案案由 = '《立案案由》'
+      tmp.执行依据案号 = '《执行依据案号》'
 
       getajjbxx(detailData.ah).then((response) => {
         const data = response
         if (data.code === 20000) {
           if (data.data != null) {
-            tmp.立案案由 = this.checkworddata(data.data.laay, "立案案由")
-            tmp.执行依据案号 = this.checkworddata(data.data.zxyjah, "执行依据案号")
+            tmp.立案案由 = this.checkworddata(data.data.laay, '立案案由')
+            tmp.执行依据案号 = this.checkworddata(data.data.zxyjah, '执行依据案号')
           } else {
             this.$message({
               message: '案号不匹配',
               type: 'warning'
-            });
-
+            })
           }
 
           if (detailData.type === '房产' || detailData.type === '车辆' || detailData.type === '银行') {
-            this.downLoadWord_one(tmp, "./assets/word/" + detailData.type + "协执文书.docx", tmp_pro + "协执文书.docx")
+            this.downLoadWord_one(tmp, './assets/word/' + detailData.type + '协执文书.docx', tmp_pro + '协执文书.docx')
           } else if (detailData.type === '工资卡' || detailData.type === '支付宝' || detailData.type === '银行' ||
             detailData.type === '银行卡') {
             // 银行 工资卡 支付宝这3个汇总为银行的模板
-            this.downLoadWord_one(tmp, "./assets/word/" + "银行协执文书.docx", tmp_pro + "协执文书.docx")
+            this.downLoadWord_one(tmp, './assets/word/' + '银行协执文书.docx', tmp_pro + '协执文书.docx')
           } else {
-            this.downLoadWord_one(tmp, "./assets/word/其他协执文书.docx", tmp_pro + "协执文书.docx")
+            this.downLoadWord_one(tmp, './assets/word/其他协执文书.docx', tmp_pro + '协执文书.docx')
           }
         }
       })
     },
     downLoadWord_one(detailData, docxSrc, docxName) {
       // 读取并获得模板文件的二进制内容
-      JSZipUtils.getBinaryContent(docxSrc, function (error, content) {
+      JSZipUtils.getBinaryContent(docxSrc, function(error, content) {
         if (error) {
-          console.log(JSON.stringify(error.message));
-          return;
+          console.log(JSON.stringify(error.message))
+          return
         }
-        let zip = new PizZip(content);
-        let doc = new docxtemplater().loadZip(zip);
+        const zip = new PizZip(content)
+        const doc = new docxtemplater().loadZip(zip)
         // 设置模板变量的值
-        doc.setData(detailData);
+        doc.setData(detailData)
         try {
           // 用模板变量的值替换所有模板变量
-          doc.render();
+          doc.render()
         } catch (error) {
-          let e = {
+          const e = {
             message: error.message,
             name: error.name,
             stack: error.stack,
-            properties: error.properties,
-          };
+            properties: error.properties
+          }
           console.log(
             JSON.stringify({
-              error: e,
+              error: e
             })
-          );
-          throw error;
+          )
+          throw error
         }
         // 生成一个代表docxtemplater对象的zip文件（不是一个真实的文件，而是在内存中的表示）
-        let out = doc.getZip().generate({
-          type: "blob",
-          mimeType: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        });
+        const out = doc.getZip().generate({
+          type: 'blob',
+          mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        })
         // 将目标文件对象保存为目标类型的文件，并命名
-        saveAs(out, docxName);
-      });
-
+        saveAs(out, docxName)
+      })
     },
 
     handleDownload() {
@@ -1038,13 +1144,13 @@ export default {
         })
       )
     },
-    getSortClass: function (key) {
+    getSortClass: function(key) {
       const sort = this.listQuery.sort
-      return sort === `+${key}` ?
-        'ascending' :
-        sort === `-${key}` ?
-          'descending' :
-          ''
+      return sort === `+${key}`
+        ? 'ascending'
+        : sort === `-${key}`
+          ? 'descending'
+          : ''
     },
 
     handleSuccess_thumb(res) {
@@ -1099,60 +1205,52 @@ export default {
     // 下载指定 文件内容
 
     async handleDownOtherDocx(detailData, item) {
+      const file = item.file
+      const fileurl = './assets/word/' + file
 
-      let file = item.file;
-      let fileurl = "./assets/word/" + file;
-
-      var tmp_pro = ""
-      if (typeof detailData.ah != 'undefined') {
+      var tmp_pro = ''
+      if (typeof detailData.ah !== 'undefined') {
         tmp_pro = detailData.ah
       }
       var tmp = {}
-      tmp.申请人 = this.checkworddata(detailData.sqzxr, "申请人")
-      tmp.案号 = this.checkworddata(detailData.ah, "案号")
-      tmp.被执行人 = this.checkworddata(detailData.bzxr, "被执行人")
-      tmp.财产情况 = this.checkworddata(detailData.ccqk, "财产情况")
-      tmp.开始日期 = this.checkwordrq(detailData.startdate, "开始日期")
-      tmp.届满日期 = this.checkwordrq(detailData.enddate, "届满日期")
-      tmp.当前日期 = this.checkwordrq(new Date(), "当前日期")
-      tmp.立案案由 = "《立案案由》"
-      tmp.执行依据案号 = "《执行依据案号》"
-      const data = await getajjbxx(detailData.ah);
+      tmp.申请人 = this.checkworddata(detailData.sqzxr, '申请人')
+      tmp.案号 = this.checkworddata(detailData.ah, '案号')
+      tmp.被执行人 = this.checkworddata(detailData.bzxr, '被执行人')
+      tmp.财产情况 = this.checkworddata(detailData.ccqk, '财产情况')
+      tmp.开始日期 = this.checkwordrq(detailData.startdate, '开始日期')
+      tmp.届满日期 = this.checkwordrq(detailData.enddate, '届满日期')
+      tmp.当前日期 = this.checkwordrq(new Date(), '当前日期')
+      tmp.立案案由 = '《立案案由》'
+      tmp.执行依据案号 = '《执行依据案号》'
+      const data = await getajjbxx(detailData.ah)
       if (data.code === 20000) {
         if (data.data != null) {
-          tmp.立案案由 = this.checkworddata(data.data.laay, "立案案由")
-          tmp.执行依据案号 = this.checkworddata(data.data.zxyjah, "执行依据案号")
+          tmp.立案案由 = this.checkworddata(data.data.laay, '立案案由')
+          tmp.执行依据案号 = this.checkworddata(data.data.zxyjah, '执行依据案号')
         } else {
           this.$message({
             message: '案号不匹配',
             type: 'warning'
-          });
-
+          })
         }
         this.downLoadWord_one(tmp, fileurl, tmp_pro + file)
-
-
-
-
       }
     },
 
-    canEdit(row){
-      const cbr = row.cbr;
-      const roles = this.$store.state.user.roles;
-      const username = this.$store.state.user.name;
+    canEdit(row) {
+      const cbr = row.cbr
+      const roles = this.$store.state.user.roles
+      const username = this.$store.state.user.name
 
-      const rule = 'CFTZ_EDIT_OTHER';
+      const rule = 'CFTZ_EDIT_OTHER'
 
-      if(roles && roles.includes(rule)){
-        return true;
+      if (roles && roles.includes(rule)) {
+        return true
       }
-      if(cbr == username){
-        return true;
+      if (cbr == username) {
+        return true
       }
-      return false;
-
-
+      return false
     }
   }
 }

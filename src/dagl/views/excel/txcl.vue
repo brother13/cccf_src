@@ -13,8 +13,8 @@
       </el-input>
 
       <el-date-picker
-        label="届满日期"
         v-model="listQuery.enddate"
+        label="届满日期"
         type="date"
         placeholder="截止日期"
         class="filter-item"
@@ -80,7 +80,7 @@
       style="width: 100%"
       @sort-change="sortChange"
     >
-      <el-table-column type="index"  align="center" label="序号">
+      <el-table-column type="index" align="center" label="序号">
         <template slot-scope="{ $index }">
           {{ $index + listQuery.pagesize * (listQuery.page - 1) + 1 }}
         </template>
@@ -90,7 +90,6 @@
         prop="cbr"
         align="center"
         type="width:40px"
-
       />
       <el-table-column
         label="案号"
@@ -122,7 +121,7 @@
         prop="type"
         align="center"
       />
-<!--      <el-table-column
+      <!--      <el-table-column
         label="查封状态"
         prop="status"
         align="center"
@@ -133,15 +132,17 @@
         align="center"
       /> -->
 
-      <el-table-column label="状态" class-name="status-col"  style="width: 50px">
+      <el-table-column label="状态" class-name="status-col" style="width: 50px">
         <template slot-scope="{ row }">
           <el-tag :type="row.isvoid== '0' ? 'success' : 'danger'">{{
             row.isvoid == '0' ? '正常' : '停用'
           }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column min-width="100"
-        label="操作" align="center"
+      <el-table-column
+        min-width="100"
+        label="操作"
+        align="center"
       >
         <template slot-scope="{ row }">
           <el-button
@@ -191,16 +192,20 @@
           <el-input v-model="temp.bzxr" />
         </el-form-item>
         <el-form-item label="开始日期" prop="startdate">
-          <el-date-picker label="开始日期" prop="startdate"
+          <el-date-picker
             v-model="temp.startdate"
+            label="开始日期"
+            prop="startdate"
             type="date"
             placeholder="开始日期"
             value-format="yyyy-MM-dd"
           />
         </el-form-item>
         <el-form-item label="届满日期" prop="enddate">
-          <el-date-picker label="届满日期" prop="enddate"
+          <el-date-picker
             v-model="temp.enddate"
+            label="届满日期"
+            prop="enddate"
             type="date"
             placeholder="届满日期"
             value-format="yyyy-MM-dd"
@@ -282,7 +287,7 @@ import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 import md5 from 'js-md5'
-import { postdata,cflist,cflistadd,cflistdel,cflistupdate  } from '@/dagl/api/common'
+import { postdata, cflist, cflistadd, cflistdel, cflistupdate } from '@/dagl/api/common'
 import { mapGetters } from 'vuex'
 // const DeptList = [{ deptid: '', deptcode: '', deptname: '' }]
 
@@ -315,8 +320,8 @@ export default {
       listQuery: {
         page: 1,
         pagesize: 10,
-        startdate:parseTime(new Date().getTime()- 24 * 60 * 60 * 1000, '{y}-{m}-{d}'),
-        enddate:parseTime(new Date().getTime()+30*24 * 60 * 60 * 1000, '{y}-{m}-{d}'),
+        startdate: parseTime(new Date().getTime() - 24 * 60 * 60 * 1000, '{y}-{m}-{d}'),
+        enddate: parseTime(new Date().getTime() + 30 * 24 * 60 * 60 * 1000, '{y}-{m}-{d}'),
         keyword: undefined,
         deptcode: [],
         isvoid: '0'
@@ -331,28 +336,28 @@ export default {
         uploadtype: 'profile',
         filetype: 'photo'
       },
-      Cftype:  [
-            {
-                "id": 1,
-                "typename": "银行",
-            },
-           {
-               "id": 2,
-               "typename": "公积金",
-           },
-           {
-               "id": 3,
-               "typename": "股权",
-           },
-           {
-               "id": 4,
-               "typename": "房产",
-           },
-           {
-               "id": 5,
-               "typename": "车辆",
-           },
-        ],
+      Cftype: [
+        {
+          'id': 1,
+          'typename': '银行'
+        },
+        {
+          'id': 2,
+          'typename': '公积金'
+        },
+        {
+          'id': 3,
+          'typename': '股权'
+        },
+        {
+          'id': 4,
+          'typename': '房产'
+        },
+        {
+          'id': 5,
+          'typename': '车辆'
+        }
+      ],
 
       DeptList: [],
       GroupList: [],
@@ -458,7 +463,7 @@ export default {
       this.getLabelList()
       // this.getRoom()
 
-      //this.getAllUser()
+      // this.getAllUser()
       this.getBaseClass()
       // this.getJobLevel()
       //       this.getJobPost()
@@ -502,7 +507,7 @@ export default {
       })
     },
     getAllUser() {
-      cflist({ page: 1, pagesize: 10000,myusername: this.$store.getters.name}).then((response) => {
+      cflist({ page: 1, pagesize: 10000, myusername: this.$store.getters.name }).then((response) => {
         this.allUserList = response.data.items
       })
     },
@@ -530,7 +535,7 @@ export default {
     },
     getList() {
       this.listLoading = true
-      this.listQuery.myusername=this.$store.getters.name
+      this.listQuery.myusername = this.$store.getters.name
       cflist(this.listQuery).then((response) => {
         this.list = response.data.items
         this.total = response.data.total
@@ -545,7 +550,7 @@ export default {
       this.listQuery.page = 1
       this.getList()
     },
-/*    handleModifyStatus(row, status) {
+    /*    handleModifyStatus(row, status) {
       this.$message({
         message: '操作成功',
         type: 'success'
@@ -664,7 +669,6 @@ export default {
       this.temp.userpass = ''
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
-
 
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()

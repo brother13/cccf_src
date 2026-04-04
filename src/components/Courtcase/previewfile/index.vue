@@ -1,6 +1,13 @@
 <template>
-  <el-dialog v-dialogDrag v-loading="loading" :title="title" :visible.sync="showWindow" :close-on-click-modal="false" append-to-body
-    width="90%">
+  <el-dialog
+    v-dialogDrag
+    v-loading="loading"
+    :title="title"
+    :visible.sync="showWindow"
+    :close-on-click-modal="false"
+    append-to-body
+    width="90%"
+  >
     <iframe ref="pdfiframe" class="pdfiframe" src="about:blank" style="height: 100%; width: 100%; min-height: 600px" />
 
     <div slot="footer" class="dialog-footer">
@@ -21,10 +28,10 @@ import caseapi from '@/courtcase/api'
 import { mapGetters } from 'vuex'
 const PAGECONOFIG = {
   typename: '文件预览',
-  typeid: 310,
+  typeid: 310
 }
 export default {
-  name: 'ssfbankpdf-preview',
+  name: 'SsfbankpdfPreview',
   inheritAttrs: false,
   // components: { Moneyinput, Operdate },
 
@@ -34,19 +41,15 @@ export default {
       default: '预览'
     }
   },
-  computed: {
-  },
   data: () => {
     return {
       showWindow: false,
 
-      loading: false,
-
-
-
-
+      loading: false
 
     }
+  },
+  computed: {
   },
   computed: {},
   watch: {},
@@ -56,25 +59,24 @@ export default {
   },
   methods: {
     async doPrint() {
-      this.$refs["pdfiframe"].contentWindow.print();
+      this.$refs['pdfiframe'].contentWindow.print()
     },
 
     async showFile(fileinfo) {
-
       if (fileinfo.filedata && !fileinfo.id) {
         // base64形式
-        const pdf = caseapi.util.pdf_base64_to_byte(fileinfo.filedata);
+        const pdf = caseapi.util.pdf_base64_to_byte(fileinfo.filedata)
         const url = caseapi.util.pdf_getObjectURL(pdf)
-        this.showPdf(url);
+        this.showPdf(url)
       }
-      if(fileinfo.table=='attachment' && fileinfo.id){
-        const info = await caseapi.bankpdf.getFile({ id: fileinfo.id,getfile:true });
-        const pdfdata = info.filedata;
-        const pdf = caseapi.util.pdf_base64_to_byte(pdfdata);
+      if (fileinfo.table == 'attachment' && fileinfo.id) {
+        const info = await caseapi.bankpdf.getFile({ id: fileinfo.id, getfile: true })
+        const pdfdata = info.filedata
+        const pdf = caseapi.util.pdf_base64_to_byte(pdfdata)
         const url = caseapi.util.pdf_getObjectURL(pdf)
-        this.showPdf(url);
+        this.showPdf(url)
       }
-      
+
       // else if (!fileinfo.filedata && fileinfo.id) {
       //   const info = await caseapi.bankpdf.getBankpdf({ id: fileinfo.id,getfile:true });
       //   const pdfdata = info.pdfdata;
@@ -82,27 +84,23 @@ export default {
       //   const url = caseapi.util.pdf_getObjectURL(pdf)
       //   this.showPdf(url);
       // }
-
     },
     async showBankpdf(bankbillno) {
-      const info = await caseapi.bankpdf.getBankpdf({ bankbillno: bankbillno,getfile:true });
+      const info = await caseapi.bankpdf.getBankpdf({ bankbillno: bankbillno, getfile: true })
       // console.log("showBankpdf")
-      const pdfdata = info.pdfdata;
-      const pdf = caseapi.util.pdf_base64_to_byte(pdfdata);
+      const pdfdata = info.pdfdata
+      const pdf = caseapi.util.pdf_base64_to_byte(pdfdata)
       const url = caseapi.util.pdf_getObjectURL(pdf)
-      this.showPdf(url);
+      this.showPdf(url)
     },
     async showPdf(url) {
-      this.loading = true;
-      this.showWindow = true;
+      this.loading = true
+      this.showWindow = true
       this.$nextTick(() => {
-        this.$refs["pdfiframe"].src = url;
+        this.$refs['pdfiframe'].src = url
         this.loading = false
-      });
-    },
-
-
-
+      })
+    }
 
   }
 }

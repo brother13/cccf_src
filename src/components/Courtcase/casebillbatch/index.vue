@@ -397,7 +397,7 @@ export default {
 
     saveCacheConfig() {
       // 保存当前的配置信息
-      let data = {}
+      const data = {}
       data.keyword = this.listQuery.keyword
       data.date = this.listQuery.date
       if (this.tabData && this.tabData.length) {
@@ -411,7 +411,7 @@ export default {
     },
 
     getCacheConfig() {
-      let str = localStorage.getItem(this.lskey)
+      const str = localStorage.getItem(this.lskey)
       if (str) {
         const config = JSON.parse(str)
         return config
@@ -446,11 +446,11 @@ export default {
         }
       }
 
-      for (let i in this.typeList) {
+      for (const i in this.typeList) {
         const info = this.typeList[i]
 
-        let newobj = {}
-        let newquery = Object.assign({}, this.listQuery)
+        const newobj = {}
+        const newquery = Object.assign({}, this.listQuery)
         newquery.type = info.value
 
         newobj['listQuery'] = newquery
@@ -476,7 +476,7 @@ export default {
         this.saveCacheConfig()
       }
 
-      for (let i in this.tabData) {
+      for (const i in this.tabData) {
         this.tabData[i].listQuery.date = this.listQuery.date
         this.tabData[i].listQuery.keyword = this.listQuery.keyword
         if (isnew) {
@@ -520,7 +520,7 @@ export default {
       ) {
         this.exportstatus.totalpage++ // 判断分页
       }
-      let alldata = []
+      const alldata = []
       this.isExporting = true // 标志 是否正在导出
       this.showProgress(
         '正在读取数据',
@@ -533,13 +533,13 @@ export default {
           return false
           // break
         }
-        let query = Object.assign({}, this.tabData[index].listQuery)
+        const query = Object.assign({}, this.tabData[index].listQuery)
         query.page = i
         query.pagesize = this.exportstatus.pagesize
         const res = await caseapi.casesk.getBankMxList(query)
         const data = res.items
         for (let idx = 0; idx < data.length; idx++) {
-          let row = data[idx]
+          const row = data[idx]
           row['_index'] = (i - 1) * this.exportstatus.pagesize + idx + 1
           alldata.push(row)
         }
@@ -551,7 +551,7 @@ export default {
           this.exportstatus.total
         )
       }
-      let title = this.tabData[index].label
+      const title = this.tabData[index].label
 
       if (this.isExporting && alldata.length) {
         this.handleDownload(alldata, title)

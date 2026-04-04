@@ -2,7 +2,7 @@
   <div class="app-container">
 
     <div>
-      {{ tips}}
+      {{ tips }}
       <el-button :loading="downloadLoading" style="margin:0 0 20px 20px;" type="primary" icon="el-icon-document" @click="handleDownload">
         导出Excel
       </el-button>
@@ -64,10 +64,10 @@
           {{ scope.row.pm25 }}
         </template>
       </el-table-column>
-        <el-table-column label="o3" align="center">
-          <template slot-scope="scope">
-            {{ scope.row.o3 }}
-          </template>
+      <el-table-column label="o3" align="center">
+        <template slot-scope="scope">
+          {{ scope.row.o3 }}
+        </template>
       </el-table-column>
     </el-table>
   </div>
@@ -91,7 +91,7 @@ export default {
       downloadLoading: false,
       filename: '',
       autoWidth: true,
-      tips:'',
+      tips: '',
       bookType: 'xlsx'
     }
   },
@@ -104,16 +104,15 @@ export default {
       Qxhours().then(response => {
         console.log(response.data)
         this.list = response.data.data.items
-        this.tips=response.data.data.tips
+        this.tips = response.data.data.tips
         this.listLoading = false
       })
-
     },
     handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
-        const tHeader = ["序号",'区县', '站点名称', '类型','日期', 'aqi', 'co', 'so2', 'no2', 'pm10', 'pm25', 'o3']
-        const filterVal = ["id",'regionname', 'pointname', 'itype','monitortime', 'aqi', 'co', 'so2', 'no2', 'pm10', 'pm25', 'o3']
+        const tHeader = ['序号', '区县', '站点名称', '类型', '日期', 'aqi', 'co', 'so2', 'no2', 'pm10', 'pm25', 'o3']
+        const filterVal = ['id', 'regionname', 'pointname', 'itype', 'monitortime', 'aqi', 'co', 'so2', 'no2', 'pm10', 'pm25', 'o3']
         const list = this.list
         const data = this.formatJson(filterVal, list)
         excel.export_json_to_excel({

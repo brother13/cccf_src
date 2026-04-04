@@ -71,7 +71,7 @@ export default {
       // alert(link)
       // router.push({ path: link })
 
-      this.$emit("clicklink",this.code)
+      this.$emit('clicklink', this.code)
     }
   }
 }

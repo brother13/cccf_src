@@ -1,6 +1,13 @@
 <template>
-  <el-dialog v-dialogDrag v-loading="loading" :title="title" :visible.sync="showWindow" :close-on-click-modal="false"
-    append-to-body width="90%">
+  <el-dialog
+    v-dialogDrag
+    v-loading="loading"
+    :title="title"
+    :visible.sync="showWindow"
+    :close-on-click-modal="false"
+    append-to-body
+    width="90%"
+  >
     <iframe ref="pdfiframe" class="pdfiframe" src="about:blank" style="height: 100%; width: 100%; min-height: 600px" />
 
     <div slot="footer" class="dialog-footer">
@@ -21,10 +28,10 @@ import caseapi from '@/courtcase/api'
 // import { mapGetters } from 'vuex'
 const PAGECONOFIG = {
   typename: '文件预览',
-  typeid: 310,
+  typeid: 310
 }
 export default {
-  name: 'ssfbankpdf-preview',
+  name: 'SsfbankpdfPreview',
   inheritAttrs: false,
   // components: { Moneyinput, Operdate },
 
@@ -34,20 +41,16 @@ export default {
       default: '预览'
     }
   },
-  computed: {
-  },
   data: () => {
     return {
       showWindow: false,
 
-      loading: false,
+      loading: false
       // title:'预览'
 
-
-
-
-
     }
+  },
+  computed: {
   },
   computed: {},
   watch: {},
@@ -57,26 +60,25 @@ export default {
   },
   methods: {
     async doPrint() {
-      this.$refs["pdfiframe"].contentWindow.print();
+      this.$refs['pdfiframe'].contentWindow.print()
     },
 
-
     async showHTML(html) {
-      this.loading = true;
-      this.showWindow = true;
-      
+      this.loading = true
+      this.showWindow = true
+
       setTimeout(() => {
         // this.$refs["pdfiframe"].src = url;
         this.insertHtml('pdfiframe', html)
 
         this.loading = false
-      },1000);
+      }, 1000)
     },
 
     insertHtml(id, html) {
       // let obj = document.getElementById(id)
-      let obj = this.$refs["pdfiframe"];
-      let doc = obj.contentDocument || obj.contentWindow.document
+      const obj = this.$refs['pdfiframe']
+      const doc = obj.contentDocument || obj.contentWindow.document
 
       // console.log('insertHTML', doc)
       if (doc) {
@@ -85,9 +87,7 @@ export default {
         doc.close()
         // obj.contentWindow.contents = html
       }
-    },
-
-
+    }
 
   }
 }

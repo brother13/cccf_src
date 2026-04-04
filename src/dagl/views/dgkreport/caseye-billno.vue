@@ -12,19 +12,36 @@
           />
         </el-select> -->
         <span class="filter-item">余额截止日期</span>
-        <el-date-picker v-model="fleshye.endtime" type="date" placeholder="截止日期" style="width: 150px"
-          value-format="yyyy-MM-dd" class="filter-item" />
-        <el-button v-waves class="filter-item" type="danger" :icon="fleshing ? 'el-icon-loading' : 'el-icon-refresh'"
-          :disabled="fleshing" @click="fleshData">重新计算</el-button>
-
+        <el-date-picker
+          v-model="fleshye.endtime"
+          type="date"
+          placeholder="截止日期"
+          style="width: 150px"
+          value-format="yyyy-MM-dd"
+          class="filter-item"
+        />
+        <el-button
+          v-waves
+          class="filter-item"
+          type="danger"
+          :icon="fleshing ? 'el-icon-loading' : 'el-icon-refresh'"
+          :disabled="fleshing"
+          @click="fleshData"
+        >重新计算</el-button>
 
         <span v-if="fleshye.lasttime" class="filter-item">数据刷新时间：{{ fleshye.lasttime }}，余额截止时间为{{ fleshye.endtime
         }}</span>
       </div>
 
       <div class="filter-container">
-        <el-input v-model="listQuery.keyword" clearable placeholder="请输入关键字" style="width: 300px" class="filter-item"
-          @keyup.enter.native="handleFilter">
+        <el-input
+          v-model="listQuery.keyword"
+          clearable
+          placeholder="请输入关键字"
+          style="width: 300px"
+          class="filter-item"
+          @keyup.enter.native="handleFilter"
+        >
           <i slot="prefix" class="el-input__icon el-icon-search" />
         </el-input>
         <!-- <span class="filter-item">时间范围：</span>
@@ -37,14 +54,24 @@
         <el-date-picker v-model="listQuery.endtime" type="date" placeholder="截止日期" style="width: 150px"
           value-format="yyyy-MM-dd" class="filter-item" /> -->
 
-        <el-button v-waves class="filter-item" type="primary" style="margin-left: 10px" icon="el-icon-search"
-          @click="handleFilter">搜索</el-button>
+        <el-button
+          v-waves
+          class="filter-item"
+          type="primary"
+          style="margin-left: 10px"
+          icon="el-icon-search"
+          @click="handleFilter"
+        >搜索</el-button>
 
-
-
-
-        <el-dropdown split-button type="primary" icon="el-icon-download" trigger="click" class="filter-item"
-          @command="handleCommand" @click="handleExport_table">
+        <el-dropdown
+          split-button
+          type="primary"
+          icon="el-icon-download"
+          trigger="click"
+          class="filter-item"
+          @command="handleCommand"
+          @click="handleExport_table"
+        >
           <i class="el-icon-download" />导出数据
           <el-dropdown-menu slot="dropdown">
             <!-- <el-dropdown-item icon="el-icon-download"
@@ -70,19 +97,21 @@
           @click="handleExport">导出</el-button> -->
       </div>
 
-
-
-
-
-
       <el-tabs v-model="activeName" type="card">
         <el-tab-pane label="汇总统计" name="count">
           <div class="report-chart">
             <el-row :gutter="10" class="panel-group">
               <template v-for="(item, index) in countList">
                 <el-col :span="6">
-                  <count-card :key="index" :cardname="item.label" :num="item.num" :money="item.ye" :icon="item.icon"
-                    :code="item.code" @clicklink="clicklink" />
+                  <count-card
+                    :key="index"
+                    :cardname="item.label"
+                    :num="item.num"
+                    :money="item.ye"
+                    :icon="item.icon"
+                    :code="item.code"
+                    @clicklink="clicklink"
+                  />
                 </el-col>
               </template>
             </el-row>
@@ -92,8 +121,15 @@
         <template v-for="(item, index) in detailList">
           <el-tab-pane :label="item.info.label + '(' + item.total.num + ')'" :name="item.info.code">
 
-            <el-table v-loading="listLoading" :data="item.items" border fit highlight-current-row style="width: 100%"
-              :row-class-name="tableRowClassName">
+            <el-table
+              v-loading="listLoading"
+              :data="item.items"
+              border
+              fit
+              highlight-current-row
+              style="width: 100%"
+              :row-class-name="tableRowClassName"
+            >
               <el-table-column type="index" width="80" align="center" label="序号">
                 <template slot-scope="{ $index }">
                   {{ $index + item.query.pagesize * (item.query.page - 1) + 1 }}
@@ -101,9 +137,14 @@
               </el-table-column>
               <template v-for="field in fieldList">
                 <template v-if="field.show">
-                  <el-table-column :key="field.field" :label="field.label" :prop="field.field"
-                    :align="field.align ? field.align : 'center'" :width="field.width ? field.width : 120"
-                    :sortable="field.order ? 'custom' : false">
+                  <el-table-column
+                    :key="field.field"
+                    :label="field.label"
+                    :prop="field.field"
+                    :align="field.align ? field.align : 'center'"
+                    :width="field.width ? field.width : 120"
+                    :sortable="field.order ? 'custom' : false"
+                  >
                     <template slot-scope="{ row }">
                       <template v-if="field.align == 'right'">
                         {{ formatNumber(row[field.field]) }}
@@ -116,24 +157,37 @@
                 </template>
               </template>
 
-
-              <el-table-column label="操作" align="center" width="150" fixed="right"
-                class-name="small-padding fixed-width">
+              <el-table-column
+                label="操作"
+                align="center"
+                width="150"
+                fixed="right"
+                class-name="small-padding fixed-width"
+              >
                 <template slot-scope="{ row }">
-                  <el-dropdown split-button type="primary" icon="el-icon-edit" trigger="click" @click="handleQuery(row)"
-                    @command="handleCommand">
+                  <el-dropdown
+                    split-button
+                    type="primary"
+                    icon="el-icon-edit"
+                    trigger="click"
+                    @click="handleQuery(row)"
+                    @command="handleCommand"
+                  >
                     <i class="el-icon-edit" />查询
                     <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item icon="el-icon-view"
-                        :command="{ id: 'stlist', data: row }">查询收退</el-dropdown-item>
-                      <el-dropdown-item icon="el-icon-edit"
-                        :command="{ id: 'viewnote', data: row }">备注</el-dropdown-item>
+                      <el-dropdown-item
+                        icon="el-icon-view"
+                        :command="{ id: 'stlist', data: row }"
+                      >查询收退</el-dropdown-item>
+                      <el-dropdown-item
+                        icon="el-icon-edit"
+                        :command="{ id: 'viewnote', data: row }"
+                      >备注</el-dropdown-item>
 
                     </el-dropdown-menu>
                   </el-dropdown>
                 </template>
               </el-table-column>
-
 
             </el-table>
 
@@ -142,30 +196,35 @@
               <el-tag> {{ item.total.num }} </el-tag>
               笔，现有余额<el-tag>{{ formatNumber(item.total.ye) }}元</el-tag>
             </div>
-            <pagination v-show="item.total.num > 0" :total="item.total.num" :page.sync="item.query.page"
-              :limit.sync="item.query.pagesize" @pagination="getDetail(item.info.code)" />
+            <pagination
+              v-show="item.total.num > 0"
+              :total="item.total.num"
+              :page.sync="item.query.page"
+              :limit.sync="item.query.pagesize"
+              @pagination="getDetail(item.info.code)"
+            />
           </el-tab-pane>
         </template>
       </el-tabs>
-
-
-
-
-
 
     </div>
 
     <el-dialog title="单据备注" :visible.sync="noteinfo.showWin" :close-on-click-modal="false">
       <el-form ref="dataForm" label-position="left" label-width="120px" style="width: 600px; margin-left:50px;">
 
-        <el-form-item label="单据信息" v-if="noteinfo.info">
+        <el-form-item v-if="noteinfo.info" label="单据信息">
           单据号：【{{ noteinfo.info.billno }}】，案号：【{{ noteinfo.info.caseinfo }}】
         </el-form-item>
         <el-form-item label="备注内容">
-          <el-input v-model="noteinfo.note" :autosize="{ minRows: 3, maxRows: 6 }" type="textarea" maxlength="180"
-            show-word-limit />
+          <el-input
+            v-model="noteinfo.note"
+            :autosize="{ minRows: 3, maxRows: 6 }"
+            type="textarea"
+            maxlength="180"
+            show-word-limit
+          />
         </el-form-item>
-        <el-form-item label="信息" v-if="noteinfo.username">操作员：{{ noteinfo.username }}，
+        <el-form-item v-if="noteinfo.username" label="信息">操作员：{{ noteinfo.username }}，
           首次备注时间：{{ noteinfo.createtime }}<template v-if="noteinfo.updatetime != noteinfo.createtime">，最后一次修改时间：{{
             noteinfo.updatetime
           }}</template>。</el-form-item>
@@ -177,12 +236,10 @@
       </div>
     </el-dialog>
 
-
     <div id="temp_html2text" style="display: none" />
     <Caselog ref="caselog" />
     <LoadingProgress ref="progress" @cancel="stopExport" />
     <CaseStList ref="STlist" />
-
 
   </div>
 </template>
@@ -206,7 +263,6 @@ import Operdate from '@/components/Courtcase/Operdate' // secondary package base
 import { mapGetters } from 'vuex'
 import LoadingProgress from '@/components/Courtcase/LoadingProgress'
 import CountCard from '@/components/Courtcase/CountCard'
-
 
 const fieldList = [
   { field: '_index', label: '序号', export: true, show: false },
@@ -292,7 +348,6 @@ const fieldList = [
   // { field: 'jarq', label: '结案日期', export: true, show: true, width: 140 },
   // { field: 'bd', label: '标的', export: true, show: true, align: 'right', width: 140 },
 
-
   // {
   //   field: 'dwname',
   //   label: '缴款单位',
@@ -339,7 +394,7 @@ const fieldList = [
   { field: 'cbr', label: '承办人', export: true, show: true, order: true },
   { field: 'sjy', label: '书记员', export: true, show: true, order: true },
 
-  { field: 'username', label: '操作员', export: true, show: true },
+  { field: 'username', label: '操作员', export: true, show: true }
 
 ]
 
@@ -401,7 +456,7 @@ export default {
         casetypeList: [],
         casetypeClassList: [],
         yearList: [],
-        dateRangeList: [],
+        dateRangeList: []
       },
       count: {
         num: 0,
@@ -441,7 +496,6 @@ export default {
         pagesize: 5000 // 默认分页数
       },
 
-
       // 以下是汇总信息
 
       countList: [], // 统计汇总的
@@ -451,7 +505,6 @@ export default {
       ], // 所有的分类信息
 
       detailList: [], // 明细记录
-
 
       noteinfo: {
         note: '',
@@ -480,7 +533,6 @@ export default {
   },
   methods: {
 
-
     /**
      * 检查地址变化，并自动进行搜索
      */
@@ -488,49 +540,40 @@ export default {
 
     },
     async init() {
-
-
-      this.getLasttime();
-      this.getReport();
+      this.getLasttime()
+      this.getReport()
       this.initExport()
       this.getBasedata()
-
     },
 
     async getReport() {
-      const res = await caseapi.plugins.dgkreport_count();
-      this.countList = res;
+      const res = await caseapi.plugins.dgkreport_count()
+      this.countList = res
 
       const alltype = await caseapi.plugins.dgkreport_getDataRange()
 
-      this.alltype = alltype;
+      this.alltype = alltype
 
-      this.detailList = [];
+      this.detailList = []
       for (let i = 0; i < alltype.length; i++) {
-        let type = alltype[i];
-        let info = {};
-        info['query'] = Object.assign({}, this.listQuery);
-        info['query']['loading'] = false;
-        info['query']['code'] = type.code;
-        info['info'] = type;
+        const type = alltype[i]
+        const info = {}
+        info['query'] = Object.assign({}, this.listQuery)
+        info['query']['loading'] = false
+        info['query']['code'] = type.code
+        info['info'] = type
         info['total'] = { num: 0, je: 0 }
-        info['items'] = [];
-        this.detailList.push(info);
+        info['items'] = []
+        this.detailList.push(info)
       }
 
-      console.log("detailList:", this.detailList);
+      console.log('detailList:', this.detailList)
 
       // 创建分级并开始获取列表
 
-      this.getDetail('ALL');
+      this.getDetail('ALL')
 
-
-
-
-      return true;
-
-
-
+      return true
     },
     // 初始化 导出的列表
     initExport() {
@@ -566,16 +609,11 @@ export default {
       return caseapi.util.number_format(num, 2)
     },
 
-
-
     /**
      * 获取基础资料，如案件字号，部门，用户，收退款方式，案件类型 等
      *
      */
     async getBasedata() {
-
-
-
       caseapi.base.getYearList().then((res) => {
         this.basedata.yearList = res
       })
@@ -585,64 +623,54 @@ export default {
 
       // this.getRefreshConfig();
 
-
       return true
     },
 
     async getLasttime() {
       caseapi.plugins.dgkreport_getendtime().then((res) => {
         this.fleshye.endtime = res.endtime
-        this.fleshye.lasttime = res.lasttime;
-      });
+        this.fleshye.lasttime = res.lasttime
+      })
     },
 
     getIndexMap() {
-      let indexMap = {};
+      const indexMap = {}
       for (let i = 0; i < this.detailList.length; i++) {
-        const row = this.detailList[i];
-        const scode = row.info.code;
-        indexMap[scode] = i;
+        const row = this.detailList[i]
+        const scode = row.info.code
+        indexMap[scode] = i
       }
-      return indexMap;
+      return indexMap
     },
     async getDetail(code = 'ALL') {
-      const indexMap = this.getIndexMap();
-      this.listLoading = true;
+      const indexMap = this.getIndexMap()
+      this.listLoading = true
 
-
-
-
-      let query = Object.assign({}, this.listQuery);
+      let query = Object.assign({}, this.listQuery)
       if (code != 'ALL') {
-        const index = indexMap[code];
-        query = this.detailList[index].query;
-        query['code'] = code;
+        const index = indexMap[code]
+        query = this.detailList[index].query
+        query['code'] = code
       }
       const res = await caseapi.plugins.dgkreport_getList(query).finally(() => {
-        this.listLoading = false;
-
-      });
-
-
+        this.listLoading = false
+      })
 
       if (code == 'ALL') {
-        for (let k in res) {
-          const info = res[k];
-          const scode = info.info.code;
-          const index = indexMap[scode];
-          this.detailList[index].total = info.total;
-          this.detailList[index].items = info.items;
+        for (const k in res) {
+          const info = res[k]
+          const scode = info.info.code
+          const index = indexMap[scode]
+          this.detailList[index].total = info.total
+          this.detailList[index].items = info.items
         }
       } else {
-        const index = indexMap[code];
-        const info = res[code];
-        this.detailList[index].total = info.total;
-        this.detailList[index].items = info.items;
+        const index = indexMap[code]
+        const info = res[code]
+        this.detailList[index].total = info.total
+        this.detailList[index].items = info.items
       }
-
     },
-
-
 
     changeDateRange() {
       // 调整日期范围
@@ -653,7 +681,7 @@ export default {
     handleFilter() {
       this.listQuery.page = 1
       // this.getDetail()
-      this.getReport();
+      this.getReport()
     },
 
     sortChange(data) {
@@ -674,14 +702,12 @@ export default {
       this.handleFilter()
     },
 
-
-
     async handleExport() {
       // 导出数据
       const maxnum = this.config.ExportConfirmNum
       if (this.config.exportConfirm) {
         try {
-          let confirm = await this.$confirm(
+          const confirm = await this.$confirm(
             '当前列表共' +
             this.count.num +
             '笔，共计' +
@@ -704,7 +730,7 @@ export default {
       if (this.total > maxnum) {
         // 做提示
         try {
-          let confirm = await this.$confirm(
+          const confirm = await this.$confirm(
             '当前记录数超过' + maxnum + '笔,导出可能较慢,是否继续导出?',
             '提示',
             {
@@ -737,7 +763,7 @@ export default {
       if (this.total > this.exportstatus.pagesize * this.exportstatus.totalpage) {
         this.exportstatus.totalpage++ // 判断分页
       }
-      let alldata = []
+      const alldata = []
       this.isExporting = true // 标志 是否正在导出
       this.showProgress('正在读取数据', this.exportstatus.done, this.exportstatus.total)
       for (let i = 1; i <= this.exportstatus.totalpage; i++) {
@@ -746,13 +772,13 @@ export default {
           return false
           // break
         }
-        let query = Object.assign({}, this.listQuery)
+        const query = Object.assign({}, this.listQuery)
         query.page = i
         query.pagesize = this.exportstatus.pagesize
         const res = await caseapi.report.getCaseYeBill(query)
         const data = res.items
         for (let idx = 0; idx < data.length; idx++) {
-          let row = data[idx]
+          const row = data[idx]
           row['_index'] = (i - 1) * this.exportstatus.pagesize + idx + 1
           alldata.push(row)
         }
@@ -832,7 +858,7 @@ export default {
         })
       )
     },
-    getSortClass: function (key) {
+    getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : sort === `-${key}` ? 'descending' : ''
     },
@@ -841,14 +867,14 @@ export default {
       const { id, data } = command
       switch (id) {
         case 'handleExportTable':
-          this.handleExportTable(data);
-          break;
+          this.handleExportTable(data)
+          break
         case 'stlist': // 查询收退情况
-          this.showStList(data);
-          break;
+          this.showStList(data)
+          break
         case 'viewnote': // 查看备注
-          this.showNote(data);
-          break;
+          this.showNote(data)
+          break
 
         default:
         // do nothing
@@ -858,15 +884,15 @@ export default {
     // 显示收退情况
     showStList(row) {
       try {
-        const stobj = this.$refs["STlist"];
+        const stobj = this.$refs['STlist']
         if (stobj) {
-          stobj.showListByBill(row.billno, row.caseinfo);
+          stobj.showListByBill(row.billno, row.caseinfo)
         } else {
-          this.$message.error("显示收退列表错误：对象没找到");
+          this.$message.error('显示收退列表错误：对象没找到')
         }
       } catch (e) {
-        console.log(e);
-        this.$message.error("显示收退列表发生错误:" + e.description);
+        console.log(e)
+        this.$message.error('显示收退列表发生错误:' + e.description)
       }
     },
 
@@ -895,67 +921,57 @@ export default {
 
     clicklink(code) {
       // console.log("clicklink", code);
-      this.activeName = code;
-
+      this.activeName = code
     },
     tableRowClassName({ row, rowIndex }) {
-
-
-      const leftdays = row.leftdays;
+      const leftdays = row.leftdays
 
       if (leftdays >= 0 && leftdays <= 5) {
-        return 'row-warning';
+        return 'row-warning'
       } else if (leftdays < 0) {
-        return 'row-danger';
+        return 'row-danger'
       }
-      return '';
+      return ''
     },
     async handleExport_table() {
-
-
-      this.downloadLoading = true;
+      this.downloadLoading = true
 
       // console.log("handleExportTable:", typeinfo);
 
-      let query = Object.assign({}, this.listQuery);
-      query['page'] = 1;
-      query['pagesize'] = 99999;
-      query['code'] = 'ALL';
-      const res = await caseapi.plugins.dgkreport_getList(query);
+      const query = Object.assign({}, this.listQuery)
+      query['page'] = 1
+      query['pagesize'] = 99999
+      query['code'] = 'ALL'
+      const res = await caseapi.plugins.dgkreport_getList(query)
 
-
-      let alldata = [];
-      const filterVal = this.export.field2;
-      for (let k in res) {
-        const item = res[k];
-        let info = {};
-        info['sheet'] = item.info.label + "(" + item.total.num + ")";
-        info['head'] = this.export.header;
+      const alldata = []
+      const filterVal = this.export.field2
+      for (const k in res) {
+        const item = res[k]
+        const info = {}
+        info['sheet'] = item.info.label + '(' + item.total.num + ')'
+        info['head'] = this.export.header
         for (let j = 0; j < item.items.length; j++) {
-          item.items[j]['_index'] = j + 1;
+          item.items[j]['_index'] = j + 1
         }
 
-
-        info['data'] = this.formatJson_new(filterVal, item.items);
-        alldata.push(info);
+        info['data'] = this.formatJson_new(filterVal, item.items)
+        alldata.push(info)
       }
-      const filename = '代管款台账';
+      const filename = '代管款台账'
 
-      const excel = await import('@/vendor/Export2Excel');
+      const excel = await import('@/vendor/Export2Excel')
       excel.export_json_to_excel_multiTabs({
         alldata: alldata,
         filename: filename
       })
       // this.listLoading = false
 
-      this.downloadLoading = false;
-
-
+      this.downloadLoading = false
 
       // this.listLoading = false
 
-      this.downloadLoading = false;
-
+      this.downloadLoading = false
     },
     func_base64_to_blob(data, mime) {
       data = window.atob(data)
@@ -968,124 +984,104 @@ export default {
       })
     },
 
-
-
-
     formatJson_new(filterVal, jsonData) {
       return jsonData.map((v) =>
         filterVal.map((field) => {
           // 判断是否居右，如果居右，则说明是数字
-          const j = field.field;
-          if (field.align && field.align === "right") {
-            return v[j] - 0;
+          const j = field.field
+          if (field.align && field.align === 'right') {
+            return v[j] - 0
           } else {
-            return v[j];
+            return v[j]
           }
         })
-      );
+      )
     },
     async handleExportTable(index) {
-
-      this.downloadLoading = true;
+      this.downloadLoading = true
       const info = this.detailList[index]
-      const code = info.info.code;
-      console.log("handleExportTable:", info);
+      const code = info.info.code
+      console.log('handleExportTable:', info)
 
-      let query = Object.assign({}, info.query);
-      query['page'] = 1;
-      query['pagesize'] = 99999;
-      const res = await caseapi.plugins.dgkreport_getList(query);
-      let alldata = res[code].items;
+      const query = Object.assign({}, info.query)
+      query['page'] = 1
+      query['pagesize'] = 99999
+      const res = await caseapi.plugins.dgkreport_getList(query)
+      const alldata = res[code].items
 
       for (let i = 0; i < alldata.length; i++) {
-        alldata[i]['_index'] = i + 1;
+        alldata[i]['_index'] = i + 1
       }
 
-      import("@/vendor/Export2Excel").then((excel) => {
-
+      import('@/vendor/Export2Excel').then((excel) => {
         const filterVal = this.export.field2
-        const tHeader = this.export.header;
-        const data = this.formatJson(filterVal, alldata);
+        const tHeader = this.export.header
+        const data = this.formatJson(filterVal, alldata)
         excel.export_json_to_excel({
           header: tHeader,
           data,
           sheetname: info.info.label,
           // filename: "table-list"
-          filename: "代管款台账_" + info.info.label,
-        });
+          filename: '代管款台账_' + info.info.label
+        })
       })
-
-
-
 
       // this.listLoading = false
 
-      this.downloadLoading = false;
-
+      this.downloadLoading = false
     },
     handleQuery(row) {
-
-      this.showStList(row);
+      this.showStList(row)
     },
     showNote(row) {
-
-      this.noteinfo.username = '';
-      this.noteinfo.createtime = '';
-      this.noteinfo.note = "";
-      this.noteinfo.updatetime = '';
-      this.noteinfo.info = null;
-      this.noteinfo.info = Object.assign({}, row);
+      this.noteinfo.username = ''
+      this.noteinfo.createtime = ''
+      this.noteinfo.note = ''
+      this.noteinfo.updatetime = ''
+      this.noteinfo.info = null
+      this.noteinfo.info = Object.assign({}, row)
       caseapi.plugins.getNote(row).then((res) => {
-
         if (res) {
-          this.noteinfo.username = res.username;
-          this.noteinfo.createtime = res.createtime;
-          this.noteinfo.note = res.note;
-          this.noteinfo.updatetime = res.updatetime;
+          this.noteinfo.username = res.username
+          this.noteinfo.createtime = res.createtime
+          this.noteinfo.note = res.note
+          this.noteinfo.updatetime = res.updatetime
         }
 
-
         this.$nextTick(() => {
-          this.noteinfo.showWin = true;
+          this.noteinfo.showWin = true
         })
-
       })
-
     },
 
     async addNote() {
+      console.log('addNote > noteinfo', this.noteinfo)
 
-
-      console.log("addNote > noteinfo", this.noteinfo);
-
-      const billno = this.noteinfo.info.billno || '';
+      const billno = this.noteinfo.info.billno || ''
       const caseinfo = this.noteinfo.info.caseinfo || ''
-      const note = this.noteinfo.note;
-      const bankdate = this.noteinfo.info.bankdate || '';
+      const note = this.noteinfo.note
+      const bankdate = this.noteinfo.info.bankdate || ''
       if (!note || note.length < 3) {
-        this.$alert("备注不能少于3个字")
-        return false;
+        this.$alert('备注不能少于3个字')
+        return false
       }
 
+      const query = { note: note, billno: billno, caseinfo: caseinfo, bankdate: bankdate }
+      const res = await caseapi.plugins.addNote(query)
 
-      let query = { note: note, billno: billno, caseinfo: caseinfo, bankdate: bankdate }
-      const res = await caseapi.plugins.addNote(query);
-
-      this.$alert("保存成功");
-      this.freshAllList();
+      this.$alert('保存成功')
+      this.freshAllList()
       this.$nextTick(() => {
-        this.noteinfo.showWin = false;
+        this.noteinfo.showWin = false
       })
       // this.getDetail();
     },
 
     freshAllList() {
-
       for (let i = 0; i < this.detailList.length; i++) {
-        const code = this.detailList[i].info.code;
-        this.getDetail(code);
+        const code = this.detailList[i].info.code
+        this.getDetail(code)
       }
-
     }
 
   }

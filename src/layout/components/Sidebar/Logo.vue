@@ -32,7 +32,7 @@ export default {
   },
   mounted() {
     this.title = defaultSettings.shorttitle
-  },
+  }
 }
 </script>
 

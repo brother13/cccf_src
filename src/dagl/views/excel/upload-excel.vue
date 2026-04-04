@@ -8,15 +8,13 @@
           目录
         </el-button>
         <el-button :loading="loading" icon="el-icon-delete-solid" style="margin-left:16px;" size="mini" type="primary" @click="qingkong">
-        清空
+          清空
         </el-button>
         <el-button :loading="loading" icon="el-icon-upload2" style="margin-left:16px;" size="mini" type="primary" @click="uploaddata">
           导入
         </el-button>
       </div>
     </div>
-
-
 
     <el-table :data="tableData" border highlight-current-row style="width: 100%;margin-top:20px;">
       <el-table-column v-for="item of tableHeader" :key="item" :prop="item" :label="item" />
@@ -27,12 +25,12 @@
 
 <script>
 import XLSX from 'xlsx'
-  import {
-    postdata
-  } from '@/dagl/api/common'
-  import {
-    Savecccf
-  } from '@/dagl/api/common'
+import {
+  postdata
+} from '@/dagl/api/common'
+import {
+  Savecccf
+} from '@/dagl/api/common'
 
 export default {
   data() {
@@ -40,7 +38,7 @@ export default {
       tableData: [],
       tableHeader: [],
       loading: false,
-      excelOKnum:0,
+      excelOKnum: 0
     }
   },
   methods: {
@@ -59,29 +57,28 @@ export default {
     },
     uploaddata() {
       // 判断是否要删除
-      this.$confirm('此操作将新增条'+this.tableData.length+'记录, 是否继续?', '提示', {
+      this.$confirm('此操作将新增条' + this.tableData.length + '记录, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.loading=true
+        this.loading = true
         Savecccf(this.tableData).then(response => {
-          if(response.data.code==20000){
+          if (response.data.code == 20000) {
             this.$notify({
               title: '操作成功',
-              message: '操作成功，成功上传'+response.data.cnum+"条记录",
+              message: '操作成功，成功上传' + response.data.cnum + '条记录',
               type: 'success',
               duration: 10000
             })
-            this.loading=false
+            this.loading = false
           }
         })
       })
-
     },
     qingkong() {
-      this.tableData=[]
-      this.tableHeader=[]
+      this.tableData = []
+      this.tableHeader = []
     },
     handleDrop(e) {
       e.stopPropagation()
@@ -142,29 +139,29 @@ export default {
           const header = this.getHeaderRow(worksheet)
           const results = XLSX.utils.sheet_to_json(worksheet, {
             range: 1
-          }) //标题不取第一行
+          }) // 标题不取第一行
 
-         for (let i = 0; i < header.length; i++) {
+          for (let i = 0; i < header.length; i++) {
             // 遍历数组，对日期进行调整
-            if(header[i].includes("日期")){
-              for(let j = 0; j < results.length; j++){
-                results[j][header[i]]=this.formatExcelDate(results[j][header[i]])
+            if (header[i].includes('日期')) {
+              for (let j = 0; j < results.length; j++) {
+                results[j][header[i]] = this.formatExcelDate(results[j][header[i]])
               }
             }
           }
-          this.tableHeader=header
-          this.excelOKnum=0
+          this.tableHeader = header
+          this.excelOKnum = 0
 
-          this.testrow(header,"案号")
-          this.testrow(header,"承办人")
-          this.testrow(header,"查封开始日期")
-          this.testrow(header,"查封届满日期")
+          this.testrow(header, '案号')
+          this.testrow(header, '承办人')
+          this.testrow(header, '查封开始日期')
+          this.testrow(header, '查封届满日期')
           console.log(this.excelOKnum)
-          if(this.excelOKnum<4){
-            this.tableData=[]
+          if (this.excelOKnum < 4) {
+            this.tableData = []
             this.loading = false
-          }else{
-            this.tableData=results
+          } else {
+            this.tableData = results
             this.loading = false
           }
           resolve()
@@ -176,7 +173,7 @@ export default {
       const headers = []
       const range = XLSX.utils.decode_range(sheet['!ref'])
       let C
-      const R = range.s.r + 1; //range.s.r + 1不取第一行
+      const R = range.s.r + 1 // range.s.r + 1不取第一行
       /* start in the first row */
       for (C = range.s.c; C <= range.e.c; ++C) {
         /* walk every column in the range */
@@ -186,10 +183,10 @@ export default {
         })]
         /* find the cell in the first row */
         let hdr = 'UNKNOWN ' + C // <-- replace with your desired default
-        if (cell && cell.t) {//表头有数据，则添加到表头
-            hdr = XLSX.utils.format_cell(cell)
-            headers.push(hdr)
-          }
+        if (cell && cell.t) { // 表头有数据，则添加到表头
+          hdr = XLSX.utils.format_cell(cell)
+          headers.push(hdr)
+        }
       }
       return headers
     },
@@ -213,13 +210,12 @@ export default {
       const dd = d >= 10 ? d : '0' + d
       return yy + format + mm + format + dd // 返回格式化后的日期
     },
-    testrow(header,str){
-      if(header.indexOf(str) === -1){
-        this.$message.error('缺少列【'+str+"】,请修改")
-      }else{
-        this.excelOKnum=this.excelOKnum+1
+    testrow(header, str) {
+      if (header.indexOf(str) === -1) {
+        this.$message.error('缺少列【' + str + '】,请修改')
+      } else {
+        this.excelOKnum = this.excelOKnum + 1
       }
-
     }
   }
 }

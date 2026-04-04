@@ -72,7 +72,7 @@ var basedata = {
   },
   async getYearList() {
     const todayYear = new Date().getFullYear() + 2 // 今年加2年
-    let yearList = []
+    const yearList = []
     yearList.push(null)
 
     for (let i = todayYear; i >= 1990; i--) {
@@ -85,7 +85,7 @@ var basedata = {
    * 获取日期快速选择的列表
    */
   getDateRangeList() {
-    let alloption = []
+    const alloption = []
     alloption.push({
       label: '今天',
       value: 'today'
@@ -134,7 +134,7 @@ var basedata = {
    * @param {*} type
    */
   getDateRange(type) {
-    let data = {
+    const data = {
       starttime: '',
       endtime: ''
     }
@@ -152,7 +152,7 @@ var basedata = {
       if (day === 0) {
         day = 7
       }
-      let startdate = new Date(today - (day - 1) * 86400000)
+      const startdate = new Date(today - (day - 1) * 86400000)
       // console.log(startdate)
       data.starttime = this.formatDate(startdate)
       data.endtime = this.formatDate(new Date(today - (day - 7) * 86400000))
@@ -171,12 +171,12 @@ var basedata = {
       if (day === 0) {
         day = 7
       }
-      let startdate = new Date(today - (day + 6) * 86400000)
+      const startdate = new Date(today - (day + 6) * 86400000)
       data.starttime = this.formatDate(startdate)
       data.endtime = this.formatDate(new Date(today - (day) * 86400000))
     }
     if (type === 'last7day') {
-      let startdate = new Date(today - 7 * 86400000)
+      const startdate = new Date(today - 7 * 86400000)
       data.starttime = this.formatDate(startdate)
       data.endtime = this.formatDate(today)
     }
@@ -231,7 +231,7 @@ var basedata = {
     const hour = today.getHours() // 得到小时数
     const minute = today.getMinutes() // 得到分钟数
     const second = today.getSeconds() // 得到秒数
-    let format = []
+    const format = []
     format.push({
       text: 'yyyy',
       value: year
@@ -264,7 +264,7 @@ var basedata = {
     for (var i = 0; i < format.length; i++) {
       const f = format[i]
       let v = f.value
-      let l = '{' + f.text + '}'
+      const l = '{' + f.text + '}'
       if (v < 10) {
         v = '0' + v
       }
@@ -300,7 +300,7 @@ var basedata = {
   // 配置一些常用配置，方便修改，改用异步方式，便于以后修改为服务器端配置
 
   async getBillConfig() {
-    let config = {
+    const config = {
       noticeDuplicate: false, // 允许重复使用通知书号
       jumpToDetail: true, // 点击收退跳转时，是否直接跳至明细编辑页面，而非列表
       createNewAfterPrint: true, // 打印之后自动创建新单据
@@ -321,7 +321,7 @@ var basedata = {
   // 获得作废状态（已退票等）
   getVoidStatusList(typeid) {
     // console.log('getVoidStatusList', typeid)
-    let result = []
+    const result = []
 
     result.push({ id: 1, label: '正常状态', value: '0' })
     result.push({ id: 2, label: '已作废单据', value: '1' })

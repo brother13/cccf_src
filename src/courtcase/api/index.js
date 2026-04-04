@@ -2,7 +2,6 @@ import util from './util'
 
 import api_user from './user'
 
-
 import api_basedata from './basedata'
 import api_casesk from './casesk'
 import api_casetk from './casetk'
@@ -34,7 +33,7 @@ const webapi = {
   report: api_report,
   interface: api_caseinterface,
   plugins: api_plugins,
-  tz:api_tz
+  tz: api_tz
 
 }
 

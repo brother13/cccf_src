@@ -4,11 +4,17 @@
 
       <template v-if="showCaseinfo">
 
-        <el-descriptions class="margin-top margin-bottom" title="退款信息" :column="2" :size="size" border
-          style="margin-bottom:20px;">
+        <el-descriptions
+          class="margin-top margin-bottom"
+          title="退款信息"
+          :column="2"
+          :size="size"
+          border
+          style="margin-bottom:20px;"
+        >
 
           <template v-for="(item, index) in FieldList">
-            <el-descriptions-item :label="item.label" :key="index">
+            <el-descriptions-item :key="index" :label="item.label">
               {{ (item.align || '') == 'right' ? formatNumber(tkinfo[item.field]) : tkinfo[item.field] }}
 
             </el-descriptions-item>
@@ -18,14 +24,23 @@
 
       </template>
       <el-form-item label="退票日期">
-        <el-date-picker v-model="temp.tpdate" type="date" placeholder="退票日期" style="width: 100%"
-          value-format="yyyy-MM-dd" />
+        <el-date-picker
+          v-model="temp.tpdate"
+          type="date"
+          placeholder="退票日期"
+          style="width: 100%"
+          value-format="yyyy-MM-dd"
+        />
       </el-form-item>
 
       <el-form-item label="退票理由">
         <el-select v-model="temp.tpreason2" style="width: 100%" class="form-item">
-          <el-option v-for="(item, index) in tpReasonList" :key="index" :label="item.classname"
-            :value="item.classname" />
+          <el-option
+            v-for="(item, index) in tpReasonList"
+            :key="index"
+            :label="item.classname"
+            :value="item.classname"
+          />
           <el-option label="其它" value="-1" />
         </el-select>
         <!-- <el-autocomplete
@@ -64,7 +79,7 @@ const FieldList = [
   { field: 'operdate', label: '退款时间' },
   { field: 'bankaccount', label: '银行账号' },
   { field: 'je', label: '金额', align: 'right' },
-  { field: 'bankname', label: '开户行' },
+  { field: 'bankname', label: '开户行' }
 
 ]
 export default {
@@ -83,7 +98,7 @@ export default {
         id: '',
         dwname: '',
         caseinfo: '',
-        je: '',
+        je: ''
       },
       temp: {
         typeid: 0,
@@ -104,17 +119,15 @@ export default {
     init() {
       this.temp.tpdate = caseapi.base.getLogindate()
       this.getTpReason()
-      this.showCaseinfo = false;
-
+      this.showCaseinfo = false
     },
     async getConfig() {
-      const config = await caseapi.notice.notice_getconfig();
-      this.showCaseinfo = config.banktp_showcaseinfo || false;
+      const config = await caseapi.notice.notice_getconfig()
+      this.showCaseinfo = config.banktp_showcaseinfo || false
       if (this.showCaseinfo) {
         // 获取退款数据
-        const info = await caseapi.casetk.info(this.temp.id, this.temp.typeid);
-        this.tkinfo = info;
-
+        const info = await caseapi.casetk.info(this.temp.id, this.temp.typeid)
+        this.tkinfo = info
       }
     },
     async showTp(typeid, id) {
@@ -130,9 +143,7 @@ export default {
       this.temp.tpreason = ''
       this.showWindow = true
 
-      this.getConfig();
-
-
+      this.getConfig()
     },
     getTpReason() {
       caseapi.base.getTpReasonList().then((data) => {
@@ -142,7 +153,7 @@ export default {
     },
 
     formatNumber(str) {
-      return caseapi.util.formatNumber(str);
+      return caseapi.util.formatNumber(str)
     },
     // querySearch(key, callback) {
     //   caseapi.casetk.getTpReason(key).then((data) => {
@@ -154,7 +165,7 @@ export default {
         this.temp.tpreason2 === '-1' ? this.temp.tpreason : this.temp.tpreason2
       if (!tpreason || tpreason === '') {
         this.$message.error('退票理由不能为空')
-        return false;
+        return false
       }
 
       if (this.showCaseinfo) {
@@ -165,9 +176,6 @@ export default {
           return false
         }
       }
-
-
-
 
       const res = await caseapi.casetk.billTP(
         this.temp.typeid,

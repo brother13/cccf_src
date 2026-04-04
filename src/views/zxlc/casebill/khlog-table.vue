@@ -12,7 +12,7 @@
       >
         <i slot="prefix" class="el-input__icon el-icon-search" />
       </el-input>
-     
+
       <el-date-picker
         v-model="listQuery.time1"
         type="date"
@@ -44,7 +44,6 @@
         @click="handleExport"
       >导出</el-button>
 
-     
     </div>
 
     <el-table
@@ -59,63 +58,45 @@
       height="600px"
       @selection-change="changeCheck"
       @sort-change="sortChange"
-      
     >
       <!-- <el-table-column type="selection" label="选择" /> -->
       <el-table-column
-      type="index"
-      label="序号"
-      align="center"
-      width="50"
-      :index="indexMethod">
-     
-
-    </el-table-column>
-<el-table-column label="案号信息" prop="caseinfo" align="center" width="250" >
-  <template slot-scope="{row}">
+        type="index"
+        label="序号"
+        align="center"
+        width="50"
+        :index="indexMethod"
+      />
+      <el-table-column label="案号信息" prop="caseinfo" align="center" width="250">
+        <template slot-scope="{row}">
           <span>{{ row.caseinfo }}</span>
-          <br>立案：{{row.larq}}
-        
-         
-          
-          
-        </template>
-      </el-table-column>
-     
-     <el-table-column label="查询结果" prop="ajresult" align="center" width="250" >
-  <template slot-scope="{row}">
-          <span>{{ row.ajresult }}</span>
-        
-         
-          
-          
-        </template>
-      </el-table-column>
-     
-      
+          <br>立案：{{ row.larq }}
 
-      
-<el-table-column label="任务时间" align="center" prop="starttime" width="220" class-name="small-padding fixed-width">
+        </template>
+      </el-table-column>
+
+      <el-table-column label="查询结果" prop="ajresult" align="center" width="250">
+        <template slot-scope="{row}">
+          <span>{{ row.ajresult }}</span>
+
+        </template>
+      </el-table-column>
+
+      <el-table-column label="任务时间" align="center" prop="starttime" width="220" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <span>开始：{{ row.querystart }}</span>
-        <br><span>结束：{{ row.queryend }}</span>
-         
-          
-          
+          <br><span>结束：{{ row.queryend }}</span>
+
         </template>
       </el-table-column>
       <el-table-column label="查询" align="center" prop="starttime" width="220" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
           <span>开始：{{ row.starttime }}</span>
-        <br><span>结束：{{ row.endtime }}</span>
-         
-          
-          
+          <br><span>结束：{{ row.endtime }}</span>
+
         </template>
       </el-table-column>
     </el-table>
-
-    
 
     <pagination
       v-show="total>0"
@@ -159,7 +140,7 @@ export default {
         timetype: '',
         time1: '',
         time2: '',
-        sort:''
+        sort: ''
       },
       checkedList: [],
       querytimeList: [],
@@ -176,7 +157,7 @@ export default {
           '立案日期',
           '任务开始日期',
           '任务结束日期'
-         
+
         ],
         field: [
           'caseinfo',
@@ -199,8 +180,8 @@ export default {
         ye2: '',
         jkdw: '',
         fullaccount: '',
-        idkey: '',
-       }
+        idkey: ''
+      }
     }
   },
 
@@ -210,10 +191,10 @@ export default {
   },
   methods: {
     init() {
-      
+
     },
-    indexMethod(index){
-      return (this.listQuery.page-1)*this.listQuery.pagesize+index+1
+    indexMethod(index) {
+      return (this.listQuery.page - 1) * this.listQuery.pagesize + index + 1
     },
     getList() {
       this.listLoading = true
@@ -262,7 +243,7 @@ export default {
         ye2: '',
         jkdw: '',
         fullaccount: '',
-        idkey: '',
+        idkey: ''
       }
     },
 

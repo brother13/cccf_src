@@ -252,9 +252,9 @@ export default {
     },
     // 关联案号
     linkcase(caseinfo, cbr, cbbm, cbbmdm) {
-      let data = { id: this.listQuery.id, caseinfo: caseinfo, cbr: cbr, cbbm: cbbm, cbbmdm: cbbmdm }
+      const data = { id: this.listQuery.id, caseinfo: caseinfo, cbr: cbr, cbbm: cbbm, cbbmdm: cbbmdm }
 
-      let str = '您是否要将单据【' + this.info.billno + '】的关联案号调整为【' + caseinfo + '】，承办人调整为【' + (cbbm || '') + '  /  ' + cbr + '】？'
+      const str = '您是否要将单据【' + this.info.billno + '】的关联案号调整为【' + caseinfo + '】，承办人调整为【' + (cbbm || '') + '  /  ' + cbr + '】？'
 
       this.$confirm(str, '提示', {
         confirmButtonText: '确定',

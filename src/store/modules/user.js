@@ -39,7 +39,7 @@ const actions = {
   login({ commit }, userInfo) {
     const { username, password, dwid } = userInfo
     return new Promise((resolve, reject) => {
-      //const newpass = md5(password + '_RLF2020')//登录不加密
+      // const newpass = md5(password + '_RLF2020')//登录不加密
       const newpass = password
 
       login({ username: username.trim(), password: newpass, dwid: dwid }).then(response => {
@@ -63,7 +63,7 @@ const actions = {
           reject('Verification failed, please Login again.')
         }
 
-        const { roles, username, avatar, introduction, deptname,ahmc } = data
+        const { roles, username, avatar, introduction, deptname, ahmc } = data
 
         // roles must be a non-empty array
         if (!roles || roles.length <= 0) {

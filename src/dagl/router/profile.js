@@ -56,7 +56,7 @@ const Router_profile = {
         title: '我的消息',
         icon: 'email'
       }
-    },
+    }
 
   ]
 }

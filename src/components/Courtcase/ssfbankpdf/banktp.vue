@@ -3,15 +3,23 @@
     <el-form ref="dataForm" :model="temp" label-position="left" label-width="80px" style="padding: 30px">
 
       <transition name="fade">
-        <el-table key="ssftemp" v-loading="listLoading" :data="tableData" border fit highlight-current-row
-          style="width: 100%" height="250" size="mini">
+        <el-table
+          key="ssftemp"
+          v-loading="listLoading"
+          :data="tableData"
+          border
+          fit
+          highlight-current-row
+          style="width: 100%"
+          height="250"
+          size="mini"
+        >
           <el-table-column type="index" width="180" align="center" label="操作">
             <template slot-scope="{ row }">
 
-
               <el-button-group>
                 <el-button size="mini" @click="importfrombankbill(row.bankbillno)">导入</el-button>
-                <el-button size="mini" @click="showbankbill(row.bankbillno)" icon="el-icon-view">查看</el-button>
+                <el-button size="mini" icon="el-icon-view" @click="showbankbill(row.bankbillno)">查看</el-button>
               </el-button-group>
 
             </template>
@@ -19,9 +27,14 @@
 
           <template v-for="field in fieldList">
             <template v-if="field.show">
-              <el-table-column :key="field.field" :label="field.label" :prop="field.field"
-                :align="field.align ? field.align : 'center'" :width="field.width ? field.width : 120"
-                :sortable="field.order ? field.order : false">
+              <el-table-column
+                :key="field.field"
+                :label="field.label"
+                :prop="field.field"
+                :align="field.align ? field.align : 'center'"
+                :width="field.width ? field.width : 120"
+                :sortable="field.order ? field.order : false"
+              >
                 <template slot-scope="{ row }">
                   <template v-if="field.align == 'right'">
                     {{ formatNumber(row[field.field]) }}
@@ -39,9 +52,13 @@
         </el-table>
 
       </transition>
-      <pagination v-show="total > 0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.pagesize"
-        @pagination="getBankList" />
-
+      <pagination
+        v-show="total > 0"
+        :total="total"
+        :page.sync="listQuery.page"
+        :limit.sync="listQuery.pagesize"
+        @pagination="getBankList"
+      />
 
       <el-row :gutter="20">
         <el-col :span="12">
@@ -52,13 +69,16 @@
         </el-col>
         <el-col :span="12">
           <el-form-item label="退票日期">
-            <el-date-picker v-model="temp.tpdate" type="date" placeholder="退票日期" style="width: 100%"
-              value-format="yyyy-MM-dd" />
+            <el-date-picker
+              v-model="temp.tpdate"
+              type="date"
+              placeholder="退票日期"
+              style="width: 100%"
+              value-format="yyyy-MM-dd"
+            />
           </el-form-item>
         </el-col>
       </el-row>
-
-
 
       <el-form-item label="退票理由">
         <el-input v-model="temp.tpreason" class="form-item" placeholder="请输入退票理由" />
@@ -70,7 +90,7 @@
         退票
       </el-button>
     </div>
-    <previewfile ref="previewfile"></previewfile>
+    <previewfile ref="previewfile" />
 
   </el-dialog>
 
@@ -78,76 +98,73 @@
 <script>
 import caseapi from '@/courtcase/api'
 
-import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
-import previewfile from "@/components/Courtcase/previewfile"
+import Pagination from '@/components/Pagination' // secondary package based on el-pagination
+import previewfile from '@/components/Courtcase/previewfile'
 
 const fieldList = [
 
-
   {
-    field: "bankbillno",
-    label: "回单编号",
+    field: 'bankbillno',
+    label: '回单编号',
     export: true,
     show: true,
     order: true,
     width: 180
   },
   {
-    field: "transtime",
-    label: "交易时间",
+    field: 'transtime',
+    label: '交易时间',
     export: true,
     show: true,
     order: true,
     width: 180
   },
   {
-    field: "je",
-    label: "金额",
+    field: 'je',
+    label: '金额',
     export: true,
     show: true,
-    align: "right",
-    order: true,
+    align: 'right',
+    order: true
   },
-  { field: "sk_dwname", label: "收款单位", export: true, show: true, width: 180 },
-  { field: "sk_bankaccount", label: "收款账号", export: true, show: true, width: 160 },
-  { field: "sk_bankname", label: "收款开户行", export: true, show: true, width: 160 },
-  { field: "tk_dwname", label: "付款单位", export: true, show: true, width: 180 },
-  { field: "tk_bankaccount", label: "付款账号", export: true, show: true, width: 160 },
-  { field: "tk_bankname", label: "付款开户行", export: true, show: true, width: 160 },
-
-
+  { field: 'sk_dwname', label: '收款单位', export: true, show: true, width: 180 },
+  { field: 'sk_bankaccount', label: '收款账号', export: true, show: true, width: 160 },
+  { field: 'sk_bankname', label: '收款开户行', export: true, show: true, width: 160 },
+  { field: 'tk_dwname', label: '付款单位', export: true, show: true, width: 180 },
+  { field: 'tk_bankaccount', label: '付款账号', export: true, show: true, width: 160 },
+  { field: 'tk_bankname', label: '付款开户行', export: true, show: true, width: 160 },
 
   // { field: "bankvoucherno", label: "银行凭证号", export: true, show: true, order: true },
-  { field: "note", label: "摘要", export: true, show: true, order: true },
-  { field: "remark", label: "附言", export: true, show: true, order: true, width: 250 },
+  { field: 'note', label: '摘要', export: true, show: true, order: true },
+  { field: 'remark', label: '附言', export: true, show: true, order: true, width: 250 },
 
   {
-    field: "bindstatus",
-    label: "绑定状态",
+    field: 'bindstatus',
+    label: '绑定状态',
     export: true,
     show: true,
     order: false,
     width: 180
   },
   {
-    field: "createtime",
-    label: "导入时间",
+    field: 'createtime',
+    label: '导入时间',
     export: true,
     show: true,
     width: 180,
-    order: true,
-  },
+    order: true
+  }
 
 ]
 export default {
-  name: 'Banktp_new',
-  inheritAttrs: false,
-  props: {},
+  name: 'BanktpNew',
   components: {
     Pagination,
     previewfile
 
   },
+  inheritAttrs: false,
+  props: {},
   data: () => {
     return {
       showWindow: false, // 是否显示提示框，
@@ -196,27 +213,24 @@ export default {
       this.temp.typeid = typeid
       this.temp.id = id
 
-      const data = await caseapi.casetk.info(id, typeid);
-      this.info = data;
+      const data = await caseapi.casetk.info(id, typeid)
+      this.info = data
       this.temp.tpreason = ''
-      this.listQuery.page = 1;
-      this.getBankList();
-
-
+      this.listQuery.page = 1
+      this.getBankList()
 
       this.showWindow = true
     },
     getBankList() {
-
-      let query = Object.assign({}, this.info);
-      query.page = this.listQuery.page;
-      query.pagesize = this.listQuery.pagesize;
+      const query = Object.assign({}, this.info)
+      query.page = this.listQuery.page
+      query.pagesize = this.listQuery.pagesize
       caseapi.bankpdf.queryBanktpFile(query).then((res) => {
-        this.total = res.total;
-        this.tableData = res.items;
+        this.total = res.total
+        this.tableData = res.items
 
-        if(this.tableData && this.tableData.length==1){
-          this.importfrombankbill(this.tableData[0].bankbillno);
+        if (this.tableData && this.tableData.length == 1) {
+          this.importfrombankbill(this.tableData[0].bankbillno)
         }
       })
     },
@@ -237,15 +251,14 @@ export default {
       const info = await caseapi.bankpdf.getBankpdf({ bankbillno: bankbillno }).catch((err) => {
         this.$message.error('获取银行流水信息失败')
         return
-      });
-      this.temp.tpbankbillno = bankbillno;
+      })
+      this.temp.tpbankbillno = bankbillno
 
-      this.temp.tpdate = info.transtime.substr(0, 10);
-      this.temp.tpreason = info.remark;
-
+      this.temp.tpdate = info.transtime.substr(0, 10)
+      this.temp.tpreason = info.remark
     },
     formatNumber(num) {
-      return caseapi.util.number_format(num, 2);
+      return caseapi.util.number_format(num, 2)
     },
 
     async doTP() {
@@ -271,8 +284,7 @@ export default {
     },
 
     showbankbill(billno) {
-      this.$refs['previewfile'].showBankpdf(billno);
-
+      this.$refs['previewfile'].showBankpdf(billno)
     }
   }
 }

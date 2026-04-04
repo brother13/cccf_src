@@ -25,7 +25,7 @@ const Router_logs = {
     //     roles: ['USER']
     //   }
     // },
-   {
+    {
       path: 'userlog',
       component: () => import('@/dagl/views/logs/userlog'),
       name: '平台日志',
@@ -34,7 +34,7 @@ const Router_logs = {
         icon: 'el-icon-notebook-1',
         roles: ['USER']
       }
-    },
+    }
   ]
 }
 export default Router_logs

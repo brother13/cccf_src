@@ -15,17 +15,17 @@ const Router_tz = {
   },
   children: [
 
-     {
-       path: 'xzjl',
-       component: () => import('@/dagl/views/ywcl/xzjl'),
-       hidden:true,
-       name: '新增列表',
-       meta: {
-         title: '新增列表',
-         icon: 'edit',
-         roles: ['USER']
-       }
-     },
+    {
+      path: 'xzjl',
+      component: () => import('@/dagl/views/ywcl/xzjl'),
+      hidden: true,
+      name: '新增列表',
+      meta: {
+        title: '新增列表',
+        icon: 'edit',
+        roles: ['USER']
+      }
+    },
 
     {
       path: 'txcl',
@@ -67,17 +67,16 @@ const Router_tz = {
         roles: ['USER']
       }
     },
-        {
-       path: 'upload-excel',
-       component: () => import('@/dagl/views/ywcl/upload-excel'),
-       name: '批量导入',
-       meta: {
-         title: '批量导入',
-         icon: 'el-icon-upload2',
-         roles: ['USER']
-       }
-     },
-
+    {
+      path: 'upload-excel',
+      component: () => import('@/dagl/views/ywcl/upload-excel'),
+      name: '批量导入',
+      meta: {
+        title: '批量导入',
+        icon: 'el-icon-upload2',
+        roles: ['USER']
+      }
+    }
 
   ]
 }

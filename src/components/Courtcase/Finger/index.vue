@@ -71,7 +71,7 @@ export default {
         }
       }
 
-      let param = {
+      const param = {
         action: action,
         data: data
       }

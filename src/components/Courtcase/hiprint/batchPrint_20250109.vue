@@ -346,7 +346,7 @@ export default {
     },
     // 检查数据情况
     checkDataInfo(data) {
-      let count = {
+      const count = {
         num: 0,
         je: 0,
         id: [],
@@ -447,7 +447,7 @@ export default {
       // let tpldata = data
       // console.log(tpldata)
       // console.log('已获取到模板', data)
-      let template = data
+      const template = data
 
       // 获取数据
 
@@ -457,7 +457,7 @@ export default {
 
       // console.log('准备初始化模板组件')
       hiprint.init()
-      let hiprintTemplate = new hiprint.PrintTemplate({
+      const hiprintTemplate = new hiprint.PrintTemplate({
         template: template
       })
 
@@ -493,7 +493,7 @@ export default {
           const billno = info['billno'] || ''
           if (billno) {
             // 提示 请放入单据号为 XXX 的单据并按回车
-            let text =
+            const text =
               '【' +
               (i + 1) +
               '/' +
@@ -598,7 +598,7 @@ export default {
 
     // 等待2秒
     waittime(timeout = 2000) {
-      let func = new Promise((resolve, reject) => {
+      const func = new Promise((resolve, reject) => {
         setTimeout(() => {
           resolve(true)
         }, timeout)
@@ -627,7 +627,7 @@ export default {
       // let tpldata = data
       // console.log(tpldata)
       // console.log('已获取到模板', data)
-      let template = data
+      const template = data
 
       // 获取数据
       const resdata = await caseapi.template.getPrintData(
@@ -645,7 +645,7 @@ export default {
 
       // console.log('准备初始化模板组件')
       hiprint.init()
-      let hiprintTemplate = new hiprint.PrintTemplate({
+      const hiprintTemplate = new hiprint.PrintTemplate({
         template: template
       })
       // 调用打印

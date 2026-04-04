@@ -1,13 +1,22 @@
 <template>
   <div v-bind="$attrs" style="display: inline" v-on="$listeners">
     <el-dialog v-dialogDrag :visible.sync="showWindow" title="打印窗口" :close-on-click-modal="false">
-      <el-form ref="dataForm" :model="temp" label-position="left" label-width="100px"
-        style="margin-left: 50px; margin-right: 50px">
+      <el-form
+        ref="dataForm"
+        :model="temp"
+        label-position="left"
+        label-width="100px"
+        style="margin-left: 50px; margin-right: 50px"
+      >
         <el-form-item label="打印模板" prop="templateid">
           <template v-if="basedata.templateList.length > 0">
             <el-select v-model="temp.templateid" class="form-item" placeholder="打印模板" @change="changeTemplate">
-              <el-option v-for="(item, index) in basedata.templateList" :key="index" :label="item.tplname"
-                :value="item.id" />
+              <el-option
+                v-for="(item, index) in basedata.templateList"
+                :key="index"
+                :label="item.tplname"
+                :value="item.id"
+              />
             </el-select>
           </template>
           <template v-else>
@@ -25,10 +34,15 @@
           <el-checkbox v-model="autoInfo.enable" @change="saveConfig">自动打印</el-checkbox>
         </div>
         <!-- <el-button @click="showWindow = false"> 取消 </el-button> -->
-        <el-button @click="closeWin" icon="el-icon-close"> 取消 </el-button>
+        <el-button icon="el-icon-close" @click="closeWin"> 取消 </el-button>
 
-        <el-button type="primary" icon="el-icon-printer" ref="btn-print"
-          :disabled="basedata.templateList.length == 0 || !temp.templateid" @click="doPrint">
+        <el-button
+          ref="btn-print"
+          type="primary"
+          icon="el-icon-printer"
+          :disabled="basedata.templateList.length == 0 || !temp.templateid"
+          @click="doPrint"
+        >
           打印<template v-if="autoInfo.timing && autoInfo.enable && autoInfo.left > 0">({{ (autoInfo.left / 1000).toFixed(1) }}s)</template>
         </el-button>
       </div>
@@ -71,14 +85,14 @@ export default {
       },
       config: null,
       autoInfo: {
-        enable: true,// 自动打印
+        enable: true, // 自动打印
         key: 'courtcase_print_auto', // 是否自动打印的框
         cancel: false, // 默认不取消，如果是true则取消自动打印
         timeout: 2000, // 如果有超过1个模板时，默认等待2秒，如果没有反应则自动打印,
         left: 0,
         timing: false, // 是否在计时
         intval: 100, // 100ms
-        handle: null //句柄
+        handle: null // 句柄
       }
     }
   },
@@ -89,26 +103,24 @@ export default {
     caseapi.base.getBillConfig().then((data) => {
       this.config = data
     })
-    this.init();
+    this.init()
   },
   methods: {
 
     init() {
-      const value = caseapi.store.get(this.autoInfo.key);
-      this.autoInfo.enable = value == '1';
-
+      const value = caseapi.store.get(this.autoInfo.key)
+      this.autoInfo.enable = value == '1'
     },
-    saveConfig(){
-      const value = this.autoInfo.enable ? '1' : '0';
-      caseapi.store.set(this.autoInfo.key, value);
+    saveConfig() {
+      const value = this.autoInfo.enable ? '1' : '0'
+      caseapi.store.set(this.autoInfo.key, value)
     },
     closeWin() {
-      this.autoInfo.cancel = true;
+      this.autoInfo.cancel = true
       this.showWindow = false
-
     },
     changeTemplate() {
-      this.autoInfo.cancel = true; // 选择模板之后，关闭自动开始的任务
+      this.autoInfo.cancel = true // 选择模板之后，关闭自动开始的任务
     },
     showPrint(typeid, id) {
       this.showPreview = false
@@ -134,16 +146,16 @@ export default {
 
     async focusBtn() {
       // console.log("focusBtn");
-      const timeout = 1000;
+      const timeout = 1000
       setTimeout(() => {
-        const obj = this.$refs['btn-print'];
+        const obj = this.$refs['btn-print']
         if (obj) {
           // console.log("obj",obj);
           // console.log("find btn-print")
           try {
             // obj.$el.focus();
           } catch (e) {
-            console.log("print focusBtn error", e);
+            console.log('print focusBtn error', e)
           }
         }
         // this.$refs.btnPrint.$el.focus()
@@ -151,12 +163,11 @@ export default {
     },
 
     getTemplateid(typeid) {
-
       const key = 'printtemplate_' + typeid
       const tplid = caseapi.store.get(key)
-      console.log("getTemplateid", key,tplid)
+      console.log('getTemplateid', key, tplid)
       if (tplid) {
-        return tplid-0
+        return tplid - 0
       }
       return null
     },
@@ -196,47 +207,40 @@ export default {
           // 仅在模板只有一个的时候，自动打印
           this.doPrint()
         } else {
-
           // 启用设置
 
           if (this.autoInfo.enable) {
-            this.autoInfo.left = this.autoInfo.timeout;
-            this.autoInfo.timing = true;
-            this.autoInfo.cancel = false;
+            this.autoInfo.left = this.autoInfo.timeout
+            this.autoInfo.timing = true
+            this.autoInfo.cancel = false
             this.autoInfo.handle = setInterval(() => {
-              this.showTimeLeft();
+              this.showTimeLeft()
             }, this.autoInfo.intval)
           }
-
-
-
         }
       }
 
       return true
     },
     async showTimeLeft() {
-
       // console.log("showTimeLeft");
       if (this.autoInfo.cancel || !this.autoInfo.enable) {
         if (this.autoInfo.handle) {
-          clearInterval(this.autoInfo.handle);
-          this.autoInfo.handle = null;
+          clearInterval(this.autoInfo.handle)
+          this.autoInfo.handle = null
         }
-        this.autoInfo.timing = false;
-        this.autoInfo.cancel = true;
-        return false;
+        this.autoInfo.timing = false
+        this.autoInfo.cancel = true
+        return false
       }
       if (this.autoInfo.left <= 0) {
-        this.autoInfo.left = 0;
-        this.autoInfo.timing = false;
-        this.autoInfo.cancel = true;
-        this.doPrint();
+        this.autoInfo.left = 0
+        this.autoInfo.timing = false
+        this.autoInfo.cancel = true
+        this.doPrint()
       } else {
-        this.autoInfo.left -= this.autoInfo.intval;
+        this.autoInfo.left -= this.autoInfo.intval
       }
-
-
     },
 
     async doPrint() {
@@ -245,7 +249,7 @@ export default {
         return false
       }
 
-      this.autoInfo.cancel = true; // 停用自动打印功能
+      this.autoInfo.cancel = true // 停用自动打印功能
 
       // 获取模板
       const info = await caseapi.template.getTemplate(this.temp.templateid)
@@ -260,7 +264,7 @@ export default {
       // let tpldata = data
       // console.log(tpldata)
       // console.log('已获取到模板', data)
-      let template = data
+      const template = data
 
       // 获取数据
       const resdata = await caseapi.template.getPrintData(
@@ -278,7 +282,7 @@ export default {
 
       // console.log('准备初始化模板组件')
       hiprint.init()
-      let hiprintTemplate = new hiprint.PrintTemplate({
+      const hiprintTemplate = new hiprint.PrintTemplate({
         template: template
       })
 
@@ -319,7 +323,7 @@ export default {
       // let tpldata = data
       // console.log(tpldata)
       // console.log('已获取到模板', data)
-      let template = data
+      const template = data
 
       // 获取数据
       const resdata = await caseapi.template.getPrintData(
@@ -337,7 +341,7 @@ export default {
 
       // console.log('准备初始化模板组件')
       hiprint.init()
-      let hiprintTemplate = new hiprint.PrintTemplate({
+      const hiprintTemplate = new hiprint.PrintTemplate({
         template: template
       })
       // 调用打印

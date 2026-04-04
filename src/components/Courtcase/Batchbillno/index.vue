@@ -303,7 +303,7 @@ export default {
         const newrow = this.tableData[i]
 
         // console.log('newrow', i, newrow)
-        let newbillno = newrow.billno
+        const newbillno = newrow.billno
 
         if (parseInt(oldbillno) + 1 === parseInt(newbillno)) {
           // 累加+1
@@ -339,21 +339,18 @@ export default {
       // 修改数据
 
       // 检查单据号是否已存在
-      let allid = [];
-      let allnewbill = [];
-      for(let i=0;i<this.tableData.length;i++){
+      const allid = []
+      const allnewbill = []
+      for (let i = 0; i < this.tableData.length; i++) {
         allid.push(this.tableData[i].id)
         allnewbill.push(this.tableData[i].newbillno)
       }
-      
 
+      const checkres = await caseapi.plugins.batchEdit_checkbill({ id: allid, billno: allnewbill, typeid: this.listQuery.typeid })
 
-      const checkres = await caseapi.plugins.batchEdit_checkbill({id:allid,billno:allnewbill,typeid:this.listQuery.typeid});
-
-      if(!checkres['result']){
-        
-        this.$alert(checkres.message);
-        return false;
+      if (!checkres['result']) {
+        this.$alert(checkres.message)
+        return false
       }
 
       this.loading = true
@@ -390,8 +387,8 @@ export default {
       // 判断一下变更的数据
 
       // 确认是否要处理
-      let query = { id: 0, value: 1, note: '' }
-      let res2 = { code: 0, message: '操作失败' }
+      const query = { id: 0, value: 1, note: '' }
+      const res2 = { code: 0, message: '操作失败' }
 
       try {
         const rtdata = await this.$prompt('请填写作废理由', '作废单据', {

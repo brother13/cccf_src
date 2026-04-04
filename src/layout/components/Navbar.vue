@@ -1,7 +1,11 @@
 <template>
   <div class="navbar">
-    <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container"
-      @toggleClick="toggleSideBar" />
+    <hamburger
+      id="hamburger-container"
+      :is-active="sidebar.opened"
+      class="hamburger-container"
+      @toggleClick="toggleSideBar"
+    />
 
     <breadcrumb id="breadcrumb-container" class="breadcrumb-container" />
 
@@ -10,7 +14,7 @@
         <!-- <search id="header-search" class="right-menu-item" /> -->
         <span class="right-menu-item">当前用户： {{ name }} </span>
 
-<!--        <screenfull id="screenfull" class="right-menu-item hover-effect" />
+        <!--        <screenfull id="screenfull" class="right-menu-item hover-effect" />
 
         <el-tooltip content="字体大小" effect="dark" placement="bottom">
           <size-select id="size-select" class="right-menu-item hover-effect" />
@@ -48,50 +52,50 @@
 </template>
 
 <script>
-  import {
-    mapGetters
-  } from 'vuex'
-  import Breadcrumb from '@/components/Breadcrumb'
-  import Hamburger from '@/components/Hamburger'
-  import ErrorLog from '@/components/ErrorLog'
-  import Screenfull from '@/components/Screenfull'
-  import SizeSelect from '@/components/SizeSelect'
-  // import Search from '@/components/HeaderSearch'
+import {
+  mapGetters
+} from 'vuex'
+import Breadcrumb from '@/components/Breadcrumb'
+import Hamburger from '@/components/Hamburger'
+import ErrorLog from '@/components/ErrorLog'
+import Screenfull from '@/components/Screenfull'
+import SizeSelect from '@/components/SizeSelect'
+// import Search from '@/components/HeaderSearch'
 
-  export default {
-    components: {
-      Breadcrumb,
-      Hamburger,
-      ErrorLog,
-      Screenfull,
-      SizeSelect
-      // Search
-    },
+export default {
+  components: {
+    Breadcrumb,
+    Hamburger,
+    ErrorLog,
+    Screenfull,
+    SizeSelect
+    // Search
+  },
 
-    data() {
-      return {
-        avatar: './assets/images/avatar/head05.png'
-      }
+  data() {
+    return {
+      avatar: './assets/images/avatar/head05.png'
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'sidebar',
+      'name',
+      'deptname',
+      // 'avatar',
+      'device'
+    ])
+  },
+  methods: {
+    toggleSideBar() {
+      this.$store.dispatch('app/toggleSideBar')
     },
-    computed: {
-      ...mapGetters([
-        'sidebar',
-        'name',
-        'deptname',
-        // 'avatar',
-        'device'
-      ])
-    },
-    methods: {
-      toggleSideBar() {
-        this.$store.dispatch('app/toggleSideBar')
-      },
-      async logout() {
-        await this.$store.dispatch('user/logout')
-        this.$router.push(`/login?redirect=${this.$route.fullPath}`)
-      }
+    async logout() {
+      await this.$store.dispatch('user/logout')
+      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }
   }
+}
 </script>
 
 <style lang="scss" scoped>

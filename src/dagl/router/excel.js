@@ -25,7 +25,7 @@ const Router_excel = {
         roles: ['USER']
       }
     },
-   {
+    {
       path: 'upload-excel',
       component: () => import('@/dagl/views/excel/upload-excel'),
       name: '批量导入',
@@ -44,7 +44,7 @@ const Router_excel = {
         icon: 'edit',
         roles: ['USER']
       }
-    },
+    }
   ]
 }
 export default Router_excel

@@ -105,7 +105,7 @@ export default {
       this.loading = true
       this.showWindow = true
 
-      let allurl = []
+      const allurl = []
       for (let i = 0; i < billnoList.length; i++) {
         const billno = billnoList[i]
         this.tiptext = '正在获取【' + billno + '】的电子票据 (' + (i + 1) + '/' + total + ')'
@@ -143,7 +143,7 @@ export default {
     },
 
     getSSFHtml(src) {
-      let html = "<html><head><style>.printimage{max-width:960px}</style></head><body><img src='" + src + "' class='printimage'></body></html>"
+      const html = "<html><head><style>.printimage{max-width:960px}</style></head><body><img src='" + src + "' class='printimage'></body></html>"
 
       return html
     },
@@ -153,7 +153,7 @@ export default {
 
       for (let i = 0; i < srcList.length; i++) {
         const src = srcList[i]
-        let div = "<div class='mainpage'><img src='" + src + "' class='printimage'></div>"
+        const div = "<div class='mainpage'><img src='" + src + "' class='printimage'></div>"
         html += div
       }
       html += '</body></html>'
@@ -162,8 +162,8 @@ export default {
     },
 
     insertHtml(id, html) {
-      let obj = document.getElementById(id)
-      let doc = obj.contentDocument || obj.contentWindow.document
+      const obj = document.getElementById(id)
+      const doc = obj.contentDocument || obj.contentWindow.document
 
       // console.log('insertHTML', doc)
       if (doc) {

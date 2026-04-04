@@ -120,50 +120,50 @@
 </template>
 
 <script>
-import caseapi from "@/courtcase/api";
+import caseapi from '@/courtcase/api'
 const enableList = [
-  { label: "启用", value: 1 },
-  { label: "停用", value: 0 },
-];
+  { label: '启用', value: 1 },
+  { label: '停用', value: 0 }
+]
 const dgktimeShowList = [
-  { label: "显示", value: 1 },
-  { label: "隐藏", value: 0 },
-];
+  { label: '显示', value: 1 },
+  { label: '隐藏', value: 0 }
+]
 
 export default {
-  name: "SSFTKConfig",
+  name: 'SSFTKConfig',
   props: {},
   data() {
     return {
       showWindow: false,
       // configfield: CONFIG_FIELD,
       config: {
-        dgk: "",
-        dgk_notetime:'',
-        oldcase: "",
+        dgk: '',
+        dgk_notetime: '',
+        oldcase: '',
         enable_dgk: 0,
         enable_oldcase: 0,
         show_dgk: 0,
         show_oldcase: 0,
         export_dgk: 0, // 是否导出未发还理由的列
-        export_oldcase: 0, // 是否导出不上缴的相关列
+        export_oldcase: 0 // 是否导出不上缴的相关列
       },
       basedata: {
         enableList: enableList,
-        dgktimeShowList: dgktimeShowList,
+        dgktimeShowList: dgktimeShowList
       },
       fields: [
-        "dgk",
+        'dgk',
         'dgk_notetime',
-        "oldcase",
-        "enable_dgk",
-        "enable_oldcase",
-        "show_dgk",
-        "show_oldcase",
-        "export_dgk",
-        "export_oldcase",
-      ],
-    };
+        'oldcase',
+        'enable_dgk',
+        'enable_oldcase',
+        'show_dgk',
+        'show_oldcase',
+        'export_dgk',
+        'export_oldcase'
+      ]
+    }
   },
   computed: {},
 
@@ -172,29 +172,29 @@ export default {
   },
   methods: {
     async showWin() {
-      await this.getConfig();
-      this.showWindow = true;
+      await this.getConfig()
+      this.showWindow = true
     },
     async getConfig() {
-      const data = await caseapi.userconfig.dgktime_get();
+      const data = await caseapi.userconfig.dgktime_get()
       // this.config = data
       for (let i = 0; i < this.fields.length; i++) {
-        const f = this.fields[i];
-        this.config[f] = data[f];
+        const f = this.fields[i]
+        this.config[f] = data[f]
       }
     },
     saveConfig() {
       caseapi.userconfig.dgktime_set(this.config).then((res) => {
-        this.$alert("保存配置成功！");
-        this.$emit("done");
+        this.$alert('保存配置成功！')
+        this.$emit('done')
         this.$nextTick(() => {
-          this.showWindow = false;
-        });
+          this.showWindow = false
+        })
         // this.$emit("done");
-      });
-    },
-  },
-};
+      })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>

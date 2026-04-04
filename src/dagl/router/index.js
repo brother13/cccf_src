@@ -16,22 +16,22 @@ import Router_xdgl from './xdgl'
 import Router_zxktz from './zxktz'
 import Router_pz from './pz'
 
-//import Router_dagl from './dagl'
+// import Router_dagl from './dagl'
 const webRouter = [
   Router_dashboard,
-  //Router_ywcl,
+  // Router_ywcl,
   Router_tz,
   Router_xdgl,
   Router_zxktz,
-  //Router_pz,
-  //Router_dagl,
-  //Router_table,
-  //Router_link,
-  //Router_news,
-  //Router_contact,
-  //Router_basedata,
-  //Router_logs,
-  //Router_report,
+  // Router_pz,
+  // Router_dagl,
+  // Router_table,
+  // Router_link,
+  // Router_news,
+  // Router_contact,
+  // Router_basedata,
+  // Router_logs,
+  // Router_report,
   Router_setting
 ]
 

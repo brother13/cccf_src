@@ -201,8 +201,8 @@ export default {
       const testData = this.tableData.items[0]
       console.log(testData)
 
-      let allfield = []
-      for (let i in testData) {
+      const allfield = []
+      for (const i in testData) {
         const field = { field: i, label: i }
         allfield.push(field)
       }
@@ -233,7 +233,7 @@ export default {
       const testData = this.tableData.items[0]
 
       // let allfield = []
-      for (let i in testData) {
+      for (const i in testData) {
         this.export.header.push(i)
         // this.export.field.push(i)
 
@@ -299,7 +299,7 @@ export default {
 
       if (this.config.exportConfirm) {
         try {
-          let confirm = await this.$confirm(
+          const confirm = await this.$confirm(
             '当前列表共' + total + '笔，是否确认导出?',
             '提示',
             {
@@ -318,7 +318,7 @@ export default {
       if (total > maxnum) {
         // 做提示
         try {
-          let confirm = await this.$confirm(
+          const confirm = await this.$confirm(
             '当前记录数超过' + maxnum + '笔,导出可能较慢,是否继续导出?',
             '提示',
             {
@@ -345,7 +345,7 @@ export default {
       // 以下改用分页导出数据的方法，用以实现超大数据量级的导出
 
       if (total <= pagemax) {
-        let query = Object.assign({}, param)
+        const query = Object.assign({}, param)
         // query.flesh = 0
         this.isExporting = true // 标志 是否正在导出
 
@@ -372,7 +372,7 @@ export default {
         ) {
           this.exportstatus.totalpage++ // 判断分页
         }
-        let alldata = []
+        const alldata = []
         this.isExporting = true // 标志 是否正在导出
         this.showProgress(
           '正在读取数据',
@@ -385,7 +385,7 @@ export default {
             return false
             // break
           }
-          let query = Object.assign({}, param)
+          const query = Object.assign({}, param)
           // query.flesh = 0
           query.page = i
           query.pagesize = this.exportstatus.pagesize
@@ -400,7 +400,7 @@ export default {
           )
 
           for (let idx = 0; idx < data.length; idx++) {
-            let row = data[idx]
+            const row = data[idx]
             row['_index'] = (i - 1) * this.exportstatus.pagesize + idx + 1
             alldata.push(row)
           }
@@ -482,26 +482,26 @@ export default {
     // 创建csv文件
     createCSV(filename, header, data) {
       console.log('createCSV', header, data.length)
-      let filedata = []
+      const filedata = []
       // 先加头信息
-      let row = []
+      const row = []
       for (let i = 0; i < header.length; i++) {
         let field = header[i]
         field = this.cvs_replaceQuote(field)
         row.push(field)
       }
-      let str = '"' + row.join('","') + '"'
+      const str = '"' + row.join('","') + '"'
       filedata.push(str)
 
       // 将data也这样加进来
       for (let i = 0; i < data.length; i++) {
-        let row = data[i]
+        const row = data[i]
 
-        let str = '"' + row.join('","') + '"'
+        const str = '"' + row.join('","') + '"'
         filedata.push(str)
       }
       // 将filedata以\r\n来分开
-      let csvdata = filedata.join('\r\n')
+      const csvdata = filedata.join('\r\n')
       // 将csv内容用saveas保存
       saveAs(new Blob([csvdata], { type: 'text/plain;charset=utf-8' }), filename)
     },
@@ -509,7 +509,6 @@ export default {
     cvs_replaceQuote(str) {
       if (str.indexOf('"') > -1) {
         str = str.replace(/"/g, '""')
-
       }
       return str
     },

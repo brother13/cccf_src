@@ -65,8 +65,8 @@ export default {
     },
 
     insertHtml(id, html) {
-      let obj = document.getElementById(id)
-      let doc = obj.contentDocument || obj.contentWindow.document
+      const obj = document.getElementById(id)
+      const doc = obj.contentDocument || obj.contentWindow.document
 
       // console.log('insertHTML', doc)
       if (doc) {

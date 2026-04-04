@@ -28,9 +28,7 @@ const Router_website = {
         title: '用户日志',
         icon: 'el-icon-notebook-1'
       }
-    },
-
-
+    }
 
   ]
 }

@@ -573,7 +573,7 @@ export default {
       // console.log('正在跳转至单据类型' + typeid + '，单据号为' + billno)
       let page = ''
       const rn = Math.random()
-      let query = { key: billno, id: id, t: rn }
+      const query = { key: billno, id: id, t: rn }
       switch (typeid) {
         case 101: // 收代管款
           page = '/casesk/dgksk'
@@ -622,12 +622,12 @@ export default {
     },
     handleExport_sk() {
       const alldata = this.table_bill.data
-      let title = '案款收退情况【' + this.caseinfo.billno + '】'
+      const title = '案款收退情况【' + this.caseinfo.billno + '】'
       this.handleDownload(alldata, title)
     },
     handleExport_case() {
       const alldata = this.table_case.data
-      let title = '案款收退情况'
+      const title = '案款收退情况'
       this.handleDownload(alldata, title)
     },
     initExport() {

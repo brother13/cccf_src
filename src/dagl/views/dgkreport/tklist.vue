@@ -2,32 +2,59 @@
   <div class="app-container">
     <div>
 
-
       <div class="filter-container">
-        <el-input v-model="listQuery.keyword" clearable placeholder="请输入关键字" style="width: 300px" class="filter-item"
-          @keyup.enter.native="handleFilter">
+        <el-input
+          v-model="listQuery.keyword"
+          clearable
+          placeholder="请输入关键字"
+          style="width: 300px"
+          class="filter-item"
+          @keyup.enter.native="handleFilter"
+        >
           <i slot="prefix" class="el-input__icon el-icon-search" />
         </el-input>
 
         <span class="filter-item">时间范围：</span>
         <el-select v-model="dateRange" style="width: 100px" class="filter-item" @change="changeDateRange">
-          <el-option v-for="(item, index) in basedata.dateRangeList" :key="index" :label="item.label"
-            :value="item.value" />
+          <el-option
+            v-for="(item, index) in basedata.dateRangeList"
+            :key="index"
+            :label="item.label"
+            :value="item.value"
+          />
         </el-select>
         <!-- <el-select v-model="listQuery.datetype" style="width: 120px" class="filter-item">
           <el-option v-for="(item, index) in basedata.datetypeList" :key="index" :label="item.label"
             :value="item.value" />
         </el-select> -->
-        <el-date-picker v-model="listQuery.starttime" type="date" placeholder="起始日期" style="width: 150px"
-          value-format="yyyy-MM-dd" class="filter-item" />
+        <el-date-picker
+          v-model="listQuery.starttime"
+          type="date"
+          placeholder="起始日期"
+          style="width: 150px"
+          value-format="yyyy-MM-dd"
+          class="filter-item"
+        />
         <span class="filter-item">~</span>
-        <el-date-picker v-model="listQuery.endtime" type="date" placeholder="截止日期" style="width: 150px"
-          value-format="yyyy-MM-dd" class="filter-item" />
+        <el-date-picker
+          v-model="listQuery.endtime"
+          type="date"
+          placeholder="截止日期"
+          style="width: 150px"
+          value-format="yyyy-MM-dd"
+          class="filter-item"
+        />
 
         <span class="filter-item">金额</span>
-        <el-input v-model="listQuery.je" type="number" clearable placeholder="精确金额" style="width: 120px"
-          class="filter-item" @keyup.enter.native="handleFilter" />
-
+        <el-input
+          v-model="listQuery.je"
+          type="number"
+          clearable
+          placeholder="精确金额"
+          style="width: 120px"
+          class="filter-item"
+          @keyup.enter.native="handleFilter"
+        />
 
         <template v-if="canQueryAll">
           <span class="filter-item">承办人</span>
@@ -42,13 +69,30 @@
         </template>
         <span class="filter-item">备注情况：</span>
         <el-select v-model="listQuery.notestatus" style="width: 120px" class="filter-item" @change="handleFilter">
-          <el-option v-for="(item, index) in basedata.noteStatusList" :key="index" :label="item.label"
-            :value="item.value" />
+          <el-option
+            v-for="(item, index) in basedata.noteStatusList"
+            :key="index"
+            :label="item.label"
+            :value="item.value"
+          />
         </el-select>
-        <el-button v-waves class="filter-item" type="primary" style="margin-left: 10px" icon="el-icon-search"
-          @click="handleFilter">搜索</el-button>
-        <el-button v-waves class="filter-item" type="primary" style="margin-left: 10px" :disabled="isExporting"
-          :icon="isExporting ? 'el-icon-loading' : 'el-icon-download'" @click="handleExport">导出</el-button>
+        <el-button
+          v-waves
+          class="filter-item"
+          type="primary"
+          style="margin-left: 10px"
+          icon="el-icon-search"
+          @click="handleFilter"
+        >搜索</el-button>
+        <el-button
+          v-waves
+          class="filter-item"
+          type="primary"
+          style="margin-left: 10px"
+          :disabled="isExporting"
+          :icon="isExporting ? 'el-icon-loading' : 'el-icon-download'"
+          @click="handleExport"
+        >导出</el-button>
         <!-- <el-dropdown split-button type="primary" icon="el-icon-download" trigger="click" class="filter-item"
           @command="handleCommand" @click="handleExport_table">
           <i class="el-icon-download" />导出数据
@@ -74,17 +118,28 @@
           @click="handleExport">导出</el-button> -->
       </div>
 
-
       <div v-if="count.num" class="courtcase-countinfo">
         当前记录数
         <el-tag> {{ count.num }} </el-tag>
         笔，合计金额<el-tag>{{ formatNumber(count.je) }}</el-tag>元
       </div>
-      <pagination v-show="count.num > 0" :total="count.num" :page.sync="listQuery.page" :limit.sync="listQuery.pagesize"
-        @pagination="getList" />
+      <pagination
+        v-show="count.num > 0"
+        :total="count.num"
+        :page.sync="listQuery.page"
+        :limit.sync="listQuery.pagesize"
+        @pagination="getList"
+      />
 
-      <el-table v-loading="listLoading" :data="tableData" border fit highlight-current-row style="width: 100%"
-        @sort-change="sortChange">
+      <el-table
+        v-loading="listLoading"
+        :data="tableData"
+        border
+        fit
+        highlight-current-row
+        style="width: 100%"
+        @sort-change="sortChange"
+      >
         <el-table-column type="index" width="80" align="center" label="序号">
           <template slot-scope="{ $index }">
             {{ $index + listQuery.pagesize * (listQuery.page - 1) + 1 }}
@@ -92,9 +147,14 @@
         </el-table-column>
         <template v-for="field in fieldList">
           <template v-if="field.show">
-            <el-table-column :key="field.field" :label="field.label" :prop="field.field"
-              :align="field.align ? field.align : 'center'" :width="field.width ? field.width : 120"
-              :sortable="field.order ? 'custom' : false">
+            <el-table-column
+              :key="field.field"
+              :label="field.label"
+              :prop="field.field"
+              :align="field.align ? field.align : 'center'"
+              :width="field.width ? field.width : 120"
+              :sortable="field.order ? 'custom' : false"
+            >
               <template slot-scope="{ row }">
                 <template v-if="field.align == 'right'">
                   {{ formatNumber(row[field.field]) }}
@@ -107,11 +167,16 @@
           </template>
         </template>
 
-
         <el-table-column label="操作" align="center" width="150" fixed="right" class-name="small-padding fixed-width">
           <template slot-scope="{ row }">
-            <el-dropdown split-button type="primary" icon="el-icon-edit" trigger="click" @click="showNote(row)"
-              @command="handleCommand">
+            <el-dropdown
+              split-button
+              type="primary"
+              icon="el-icon-edit"
+              trigger="click"
+              @click="showNote(row)"
+              @command="handleCommand"
+            >
               <i class="el-icon-edit" />备注
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item icon="el-icon-edit" :command="{ id: 'viewnote', data: row }">备注</el-dropdown-item>
@@ -122,7 +187,6 @@
           </template>
         </el-table-column>
 
-
       </el-table>
 
       <div v-if="count.num" class="courtcase-countinfo">
@@ -130,19 +194,21 @@
         <el-tag> {{ count.num }} </el-tag>
         笔，现有余额<el-tag>{{ formatNumber(count.je) }}</el-tag>元
       </div>
-      <pagination v-show="count.num > 0" :total="count.num" :page.sync="listQuery.page" :limit.sync="listQuery.pagesize"
-        @pagination="getList" />
+      <pagination
+        v-show="count.num > 0"
+        :total="count.num"
+        :page.sync="listQuery.page"
+        :limit.sync="listQuery.pagesize"
+        @pagination="getList"
+      />
 
     </div>
-
-
 
     <div id="temp_html2text" style="display: none" />
     <!-- <Caselog ref="caselog" /> -->
     <LoadingProgress ref="progress" @cancel="stopExport" />
     <CaseStList ref="STlist" />
-    <dgknote ref="dgknote"></dgknote>
-
+    <dgknote ref="dgknote" />
 
   </div>
 </template>
@@ -205,7 +271,7 @@ const fieldList = [
     export: true,
     show: true,
     order: true,
-    width:180
+    width: 180
   },
   {
     field: 'je',
@@ -255,7 +321,7 @@ const fieldList = [
     show: true,
     width: 200,
     order: true
-  },
+  }
   // { field: 'username', label: '操作员', export: true, show: true },
 
 ]
@@ -263,7 +329,7 @@ const fieldList = [
 const datetypeList = [
   { label: '开票日期', value: 'kpdate' },
   { label: '到账日期', value: 'dzdate' },
-  { label: '进账日期', value: 'jzdate' },
+  { label: '进账日期', value: 'jzdate' }
 ]
 const PAGECONFIG = {
   pagename: '退款明细表', // 标题
@@ -312,8 +378,6 @@ export default {
       dateRange: 'thismonth',
       store_key: PAGECONFIG.pagecode,
 
-
-
       listQuery: {
         page: 1,
         pagesize: 10,
@@ -324,7 +388,7 @@ export default {
         cbr: undefined,
         starttime: undefined,
         endtime: undefined,
-        notestatus:0
+        notestatus: 0
       },
       basedata: {
         deptList: [],
@@ -375,7 +439,6 @@ export default {
         pagesize: 5000 // 默认分页数
       },
 
-
       // 以下是汇总信息
 
       countList: [], // 统计汇总的
@@ -385,7 +448,6 @@ export default {
       ], // 所有的分类信息
 
       detailList: [], // 明细记录
-
 
       noteinfo: {
         note: '',
@@ -401,16 +463,16 @@ export default {
   },
   computed: {
     ...mapGetters(['name']),
-    
+
     canQueryAll() {
-      const roles = this.$store.state.user.roles;
-      const key = "ZXTZ_QUERY_ALL";
+      const roles = this.$store.state.user.roles
+      const key = 'ZXTZ_QUERY_ALL'
 
       if (roles && roles.includes(key)) {
-        return true;
+        return true
       }
-      return false;
-    },
+      return false
+    }
   },
   watch: {
     $route() {
@@ -424,7 +486,6 @@ export default {
   },
   methods: {
 
-
     /**
      * 检查地址变化，并自动进行搜索
      */
@@ -432,24 +493,22 @@ export default {
 
     },
     async init() {
-if (!this.canQueryAll) {
-        this.listQuery.cbr = this.name;
+      if (!this.canQueryAll) {
+        this.listQuery.cbr = this.name
       }
 
       // this.getLasttime();
       // this.getReport();
       this.initExport()
       this.getBasedata()
-
     },
 
-
     async getList() {
-      this.listLoading = true;
+      this.listLoading = true
       caseapi.plugins.queryList_tk(this.listQuery).then((res) => {
-        this.count = res.total;
-        this.tableData = res.items;
-        this.listLoading = false;
+        this.count = res.total
+        this.tableData = res.items
+        this.listLoading = false
       })
     },
     // 初始化 导出的列表
@@ -486,16 +545,11 @@ if (!this.canQueryAll) {
       return caseapi.util.number_format(num, 2)
     },
 
-
-
     /**
      * 获取基础资料，如案件字号，部门，用户，收退款方式，案件类型 等
      *
      */
     async getBasedata() {
-
-
-
       caseapi.base.getYearList().then((res) => {
         this.basedata.yearList = res
       })
@@ -503,15 +557,14 @@ if (!this.canQueryAll) {
       this.basedata.dateRangeList = caseapi.base.getDateRangeList()
       // console.log(this.basedata)
 
-      const datetype = caseapi.store.get(this.store_key);
+      const datetype = caseapi.store.get(this.store_key)
       if (datetype) {
-        this.dateRange = datetype;
+        this.dateRange = datetype
       }
       if (this.dateRange) {
-        this.changeDateRange();
+        this.changeDateRange()
       }
       // this.getRefreshConfig();
-
 
       return true
     },
@@ -519,57 +572,48 @@ if (!this.canQueryAll) {
     async getLasttime() {
       caseapi.plugins.dgkreport_getendtime().then((res) => {
         this.fleshye.endtime = res.endtime
-        this.fleshye.lasttime = res.lasttime;
-      });
+        this.fleshye.lasttime = res.lasttime
+      })
     },
 
     getIndexMap() {
-      let indexMap = {};
+      const indexMap = {}
       for (let i = 0; i < this.detailList.length; i++) {
-        const row = this.detailList[i];
-        const scode = row.info.code;
-        indexMap[scode] = i;
+        const row = this.detailList[i]
+        const scode = row.info.code
+        indexMap[scode] = i
       }
-      return indexMap;
+      return indexMap
     },
     async getDetail(code = 'ALL') {
-      const indexMap = this.getIndexMap();
-      this.listLoading = true;
+      const indexMap = this.getIndexMap()
+      this.listLoading = true
 
-
-
-
-      let query = Object.assign({}, this.listQuery);
+      let query = Object.assign({}, this.listQuery)
       if (code != 'ALL') {
-        const index = indexMap[code];
-        query = this.detailList[index].query;
-        query['code'] = code;
+        const index = indexMap[code]
+        query = this.detailList[index].query
+        query['code'] = code
       }
       const res = await caseapi.plugins.dgkreport_getList(query).finally(() => {
-        this.listLoading = false;
-
-      });
-
-
+        this.listLoading = false
+      })
 
       if (code == 'ALL') {
-        for (let k in res) {
-          const info = res[k];
-          const scode = info.info.code;
-          const index = indexMap[scode];
-          this.detailList[index].total = info.total;
-          this.detailList[index].items = info.items;
+        for (const k in res) {
+          const info = res[k]
+          const scode = info.info.code
+          const index = indexMap[scode]
+          this.detailList[index].total = info.total
+          this.detailList[index].items = info.items
         }
       } else {
-        const index = indexMap[code];
-        const info = res[code];
-        this.detailList[index].total = info.total;
-        this.detailList[index].items = info.items;
+        const index = indexMap[code]
+        const info = res[code]
+        this.detailList[index].total = info.total
+        this.detailList[index].items = info.items
       }
-
     },
-
-
 
     changeDateRange() {
       // 调整日期范围
@@ -577,7 +621,7 @@ if (!this.canQueryAll) {
       this.listQuery.starttime = data.starttime
       this.listQuery.endtime = data.endtime
 
-      caseapi.store.set(this.store_key, this.dateRange);
+      caseapi.store.set(this.store_key, this.dateRange)
     },
     handleFilter() {
       this.listQuery.page = 1
@@ -604,13 +648,11 @@ if (!this.canQueryAll) {
       this.handleFilter()
     },
 
-
-
     async handleExport() {
       // 导出数据
       const maxnum = 5000
       try {
-        let confirm = await this.$confirm(
+        const confirm = await this.$confirm(
           '当前列表共' +
           this.count.num +
           '笔，共计' +
@@ -632,7 +674,7 @@ if (!this.canQueryAll) {
       if (this.count.num > maxnum) {
         // 做提示
         try {
-          let confirm = await this.$confirm(
+          const confirm = await this.$confirm(
             '当前记录数超过' + maxnum + '笔,导出可能较慢,是否继续导出?',
             '提示',
             {
@@ -666,7 +708,7 @@ if (!this.canQueryAll) {
       if (this.total > this.exportstatus.pagesize * this.exportstatus.totalpage) {
         this.exportstatus.totalpage++ // 判断分页
       }
-      let alldata = []
+      const alldata = []
       this.isExporting = true // 标志 是否正在导出
       this.showProgress('正在读取数据', this.exportstatus.done, this.exportstatus.total)
       for (let i = 1; i <= this.exportstatus.totalpage; i++) {
@@ -675,13 +717,13 @@ if (!this.canQueryAll) {
           return false
           // break
         }
-        let query = Object.assign({}, this.listQuery)
+        const query = Object.assign({}, this.listQuery)
         query.page = i
         query.pagesize = this.exportstatus.pagesize
         const res = await caseapi.plugins.queryList_tk(query)
         const data = res.items
         for (let idx = 0; idx < data.length; idx++) {
-          let row = data[idx]
+          const row = data[idx]
           row['_index'] = (i - 1) * this.exportstatus.pagesize + idx + 1
           alldata.push(row)
         }
@@ -763,7 +805,7 @@ if (!this.canQueryAll) {
         })
       )
     },
-    getSortClass: function (key) {
+    getSortClass: function(key) {
       const sort = this.listQuery.sort
       return sort === `+${key}` ? 'ascending' : sort === `-${key}` ? 'descending' : ''
     },
@@ -772,14 +814,14 @@ if (!this.canQueryAll) {
       const { id, data } = command
       switch (id) {
         case 'handleExportTable':
-          this.handleExportTable(data);
-          break;
+          this.handleExportTable(data)
+          break
         case 'stlist': // 查询收退情况
-          this.showStList(data);
-          break;
+          this.showStList(data)
+          break
         case 'viewnote': // 查看备注
-          this.showNote(data);
-          break;
+          this.showNote(data)
+          break
 
         default:
         // do nothing
@@ -789,15 +831,15 @@ if (!this.canQueryAll) {
     // 显示收退情况
     showStList(row) {
       try {
-        const stobj = this.$refs["STlist"];
+        const stobj = this.$refs['STlist']
         if (stobj) {
-          stobj.showListByBill(row.djcode, row.ah);
+          stobj.showListByBill(row.djcode, row.ah)
         } else {
-          this.$message.error("显示收退列表错误：对象没找到");
+          this.$message.error('显示收退列表错误：对象没找到')
         }
       } catch (e) {
-        console.log(e);
-        this.$message.error("显示收退列表发生错误:" + e.description);
+        console.log(e)
+        this.$message.error('显示收退列表发生错误:' + e.description)
       }
     },
 
@@ -826,67 +868,57 @@ if (!this.canQueryAll) {
 
     clicklink(code) {
       // console.log("clicklink", code);
-      this.activeName = code;
-
+      this.activeName = code
     },
     tableRowClassName({ row, rowIndex }) {
-
-
-      const leftdays = row.leftdays;
+      const leftdays = row.leftdays
 
       if (leftdays >= 0 && leftdays <= 5) {
-        return 'row-warning';
+        return 'row-warning'
       } else if (leftdays < 0) {
-        return 'row-danger';
+        return 'row-danger'
       }
-      return '';
+      return ''
     },
     async handleExport_table() {
-
-
-      this.downloadLoading = true;
+      this.downloadLoading = true
 
       // console.log("handleExportTable:", typeinfo);
 
-      let query = Object.assign({}, this.listQuery);
-      query['page'] = 1;
-      query['pagesize'] = 99999;
-      query['code'] = 'ALL';
-      const res = await caseapi.plugins.dgkreport_getList(query);
+      const query = Object.assign({}, this.listQuery)
+      query['page'] = 1
+      query['pagesize'] = 99999
+      query['code'] = 'ALL'
+      const res = await caseapi.plugins.dgkreport_getList(query)
 
-
-      let alldata = [];
-      const filterVal = this.export.field2;
-      for (let k in res) {
-        const item = res[k];
-        let info = {};
-        info['sheet'] = item.info.label + "(" + item.total.num + ")";
-        info['head'] = this.export.header;
+      const alldata = []
+      const filterVal = this.export.field2
+      for (const k in res) {
+        const item = res[k]
+        const info = {}
+        info['sheet'] = item.info.label + '(' + item.total.num + ')'
+        info['head'] = this.export.header
         for (let j = 0; j < item.items.length; j++) {
-          item.items[j]['_index'] = j + 1;
+          item.items[j]['_index'] = j + 1
         }
 
-
-        info['data'] = this.formatJson_new(filterVal, item.items);
-        alldata.push(info);
+        info['data'] = this.formatJson_new(filterVal, item.items)
+        alldata.push(info)
       }
-      const filename = '代管款台账';
+      const filename = '代管款台账'
 
-      const excel = await import('@/vendor/Export2Excel');
+      const excel = await import('@/vendor/Export2Excel')
       excel.export_json_to_excel_multiTabs({
         alldata: alldata,
         filename: filename
       })
       // this.listLoading = false
 
-      this.downloadLoading = false;
-
-
+      this.downloadLoading = false
 
       // this.listLoading = false
 
-      this.downloadLoading = false;
-
+      this.downloadLoading = false
     },
     func_base64_to_blob(data, mime) {
       data = window.atob(data)
@@ -899,140 +931,118 @@ if (!this.canQueryAll) {
       })
     },
 
-
-
-
     formatJson_new(filterVal, jsonData) {
       return jsonData.map((v) =>
         filterVal.map((field) => {
           // 判断是否居右，如果居右，则说明是数字
-          const j = field.field;
-          if (field.align && field.align === "right") {
-            return v[j] - 0;
+          const j = field.field
+          if (field.align && field.align === 'right') {
+            return v[j] - 0
           } else {
-            return v[j];
+            return v[j]
           }
         })
-      );
+      )
     },
     async handleExportTable(index) {
-
-      this.downloadLoading = true;
+      this.downloadLoading = true
       const info = this.detailList[index]
-      const code = info.info.code;
-      console.log("handleExportTable:", info);
+      const code = info.info.code
+      console.log('handleExportTable:', info)
 
-      let query = Object.assign({}, info.query);
-      query['page'] = 1;
-      query['pagesize'] = 99999;
-      const res = await caseapi.plugins.dgkreport_getList(query);
-      let alldata = res[code].items;
+      const query = Object.assign({}, info.query)
+      query['page'] = 1
+      query['pagesize'] = 99999
+      const res = await caseapi.plugins.dgkreport_getList(query)
+      const alldata = res[code].items
 
       for (let i = 0; i < alldata.length; i++) {
-        alldata[i]['_index'] = i + 1;
+        alldata[i]['_index'] = i + 1
       }
 
-      import("@/vendor/Export2Excel").then((excel) => {
-
+      import('@/vendor/Export2Excel').then((excel) => {
         const filterVal = this.export.field2
-        const tHeader = this.export.header;
-        const data = this.formatJson(filterVal, alldata);
+        const tHeader = this.export.header
+        const data = this.formatJson(filterVal, alldata)
         excel.export_json_to_excel({
           header: tHeader,
           data,
           sheetname: info.info.label,
           // filename: "table-list"
-          filename: "代管款台账_" + info.info.label,
-        });
+          filename: '代管款台账_' + info.info.label
+        })
       })
-
-
-
 
       // this.listLoading = false
 
-      this.downloadLoading = false;
-
+      this.downloadLoading = false
     },
     handleQuery(row) {
-
-      this.showStList(row);
+      this.showStList(row)
     },
     showNote(row) {
+      const query = Object.assign({}, row)
+      query['st'] = 'tk'
 
-      let query = Object.assign({}, row);
-      query['st'] = 'tk';
+      const obj = this.$refs['dgknote']
 
-      const obj = this.$refs["dgknote"];
-
-      console.log("showNote", query);
+      console.log('showNote', query)
       if (!obj) {
-        this.$message.error("显示备注错误：对象没找到");
-        return;
+        this.$message.error('显示备注错误：对象没找到')
+        return
       }
 
-      obj.showNote(query);
-
+      obj.showNote(query)
     },
     showNote2(row) {
-
-      this.noteinfo.username = '';
-      this.noteinfo.createtime = '';
-      this.noteinfo.note = "";
-      this.noteinfo.updatetime = '';
-      this.noteinfo.info = null;
-      this.noteinfo.info = Object.assign({}, row);
+      this.noteinfo.username = ''
+      this.noteinfo.createtime = ''
+      this.noteinfo.note = ''
+      this.noteinfo.updatetime = ''
+      this.noteinfo.info = null
+      this.noteinfo.info = Object.assign({}, row)
       caseapi.plugins.getNote(row).then((res) => {
-
         if (res) {
-          this.noteinfo.username = res.username;
-          this.noteinfo.createtime = res.createtime;
-          this.noteinfo.note = res.note;
-          this.noteinfo.updatetime = res.updatetime;
+          this.noteinfo.username = res.username
+          this.noteinfo.createtime = res.createtime
+          this.noteinfo.note = res.note
+          this.noteinfo.updatetime = res.updatetime
         }
 
-
         this.$nextTick(() => {
-          this.noteinfo.showWin = true;
+          this.noteinfo.showWin = true
         })
-
       })
-
     },
 
     async addNote() {
+      console.log('addNote > noteinfo', this.noteinfo)
 
-
-      console.log("addNote > noteinfo", this.noteinfo);
-
-      const billno = this.noteinfo.info.billno || '';
+      const billno = this.noteinfo.info.billno || ''
       const caseinfo = this.noteinfo.info.caseinfo || ''
-      const note = this.noteinfo.note;
-      const bankdate = this.noteinfo.info.bankdate || '';
+      const note = this.noteinfo.note
+      const bankdate = this.noteinfo.info.bankdate || ''
       if (!note || note.length < 3) {
-        this.$alert("备注不能少于3个字")
-        return false;
+        this.$alert('备注不能少于3个字')
+        return false
       }
 
+      const query = { note: note, billno: billno, caseinfo: caseinfo, bankdate: bankdate }
+      const res = await caseapi.plugins.addNote(query)
 
-      let query = { note: note, billno: billno, caseinfo: caseinfo, bankdate: bankdate }
-      const res = await caseapi.plugins.addNote(query);
-
-      this.$alert("保存成功");
-      this.freshAllList();
+      this.$alert('保存成功')
+      this.freshAllList()
       this.$nextTick(() => {
-        this.noteinfo.showWin = false;
+        this.noteinfo.showWin = false
       })
       // this.getDetail();
     },
 
     freshAllList() {
-
       for (let i = 0; i < this.detailList.length; i++) {
-        const code = this.detailList[i].info.code;
-        this.getDetail(code);
+        const code = this.detailList[i].info.code
+        this.getDetail(code)
       }
-
     }
 
   }

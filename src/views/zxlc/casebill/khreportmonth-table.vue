@@ -24,7 +24,6 @@
         @click="handleExport"
       >导出</el-button> -->
 
-     
     </div>
 
     <el-table
@@ -32,13 +31,12 @@
       v-loading="listLoading"
       :data="list"
       border
-      
+
       fit
       highlight-current-row
       style="width: 100%;"
       height="600px"
       :row-class-name="tableRowClassName"
-      
     >
       <!-- <el-table-column type="selection" label="选择" /> -->
       <!-- <el-table-column
@@ -47,43 +45,19 @@
       align="center"
       width="50"
       :index="indexMethod"> -->
-     
 
-    <!-- </el-table-column> -->
-<el-table-column label="日期" prop="month" align="center" width="120" >
+      <!-- </el-table-column> -->
+      <el-table-column label="日期" prop="month" align="center" width="120" />
+      <el-table-column label="案件数量" prop="case" align="center" width="80" />
 
-</el-table-column>
-     <el-table-column label="案件数量" prop="case" align="center" width="80" >
-
-</el-table-column>
-
-<el-table-column label="保全数量" prop="bq" align="center" width="120" >
-
-</el-table-column>
-<el-table-column label="执异数量" prop="zy" align="center" width="120" >
-
-</el-table-column>
-<el-table-column label="非保全执异" prop="nobq" align="center" width="120" >
-
-</el-table-column>
-<el-table-column label="查询次数" prop="query" align="center" width="120" >
-
-</el-table-column>
-<el-table-column label="查询案件数量" prop="querycase" align="center" width="120" >
-
-</el-table-column>
-<el-table-column label="扣划记录数" prop="kh" align="center" width="180" >
-
-</el-table-column>
-
-     
-      
-
-      
+      <el-table-column label="保全数量" prop="bq" align="center" width="120" />
+      <el-table-column label="执异数量" prop="zy" align="center" width="120" />
+      <el-table-column label="非保全执异" prop="nobq" align="center" width="120" />
+      <el-table-column label="查询次数" prop="query" align="center" width="120" />
+      <el-table-column label="查询案件数量" prop="querycase" align="center" width="120" />
+      <el-table-column label="扣划记录数" prop="kh" align="center" width="180" />
 
     </el-table>
-
-    
 
   </div>
 </template>
@@ -96,7 +70,7 @@ import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 export default {
-  name: 'khcasereportmonthTable',
+  name: 'KhcasereportmonthTable',
   components: { Pagination },
   directives: { waves },
 
@@ -111,7 +85,7 @@ export default {
       saveLoading: false,
       listQuery: {
         type: 'day',
-        month:'2021-07'
+        month: '2021-07'
       },
       checkedList: [],
       querytimeList: [],
@@ -128,7 +102,7 @@ export default {
           '非保全执异案件数量',
           '查询次数',
           '扣划记录数'
-         
+
         ],
         field: [
           'month',
@@ -151,8 +125,8 @@ export default {
         ye2: '',
         jkdw: '',
         fullaccount: '',
-        idkey: '',
-       }
+        idkey: ''
+      }
     }
   },
 
@@ -166,18 +140,18 @@ export default {
 
       if (month) {
         this.listQuery.month = month
-      } 
+      }
     },
-    tableRowClassName({row, rowIndex}) {
-        if (row.querycase!=row.nobq) {
-          return 'warning-row';
-        } else {
-          return '';
-        }
-        return '';
-      },
-    indexMethod(index){
-      return (this.listQuery.page-1)*this.listQuery.pagesize+index+1
+    tableRowClassName({ row, rowIndex }) {
+      if (row.querycase != row.nobq) {
+        return 'warning-row'
+      } else {
+        return ''
+      }
+      return ''
+    },
+    indexMethod(index) {
+      return (this.listQuery.page - 1) * this.listQuery.pagesize + index + 1
     },
     getList() {
       this.listLoading = true
@@ -225,7 +199,7 @@ export default {
         ye2: '',
         jkdw: '',
         fullaccount: '',
-        idkey: '',
+        idkey: ''
       }
     },
 

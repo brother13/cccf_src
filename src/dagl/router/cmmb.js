@@ -9,8 +9,7 @@ const Router_cmmb = {
   name: 'SettingTable',
   children: [
 
-
-   {
+    {
       path: 'cmk',
       component: () => import('@/dagl/views/cmmb/cmk'),
       name: '尺码库',
@@ -19,8 +18,8 @@ const Router_cmmb = {
         icon: 'el-icon-setting',
         roles: ['USER']
       }
-    },
-/*    {
+    }
+    /*    {
        path: 'cmbz',
        component: () => import('@/dagl/views/cmmb/cmbz'),
        name: '尺码标准',

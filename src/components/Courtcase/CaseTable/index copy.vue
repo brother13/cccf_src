@@ -349,7 +349,7 @@ export default {
 
       if (this.config.exportConfirm) {
         try {
-          let confirm = await this.$confirm('当前列表共' + total + '笔，共计' + this.formatNumber(sumje) + '元，是否确认导出?', '提示',
+          const confirm = await this.$confirm('当前列表共' + total + '笔，共计' + this.formatNumber(sumje) + '元，是否确认导出?', '提示',
             {
               confirmButtonText: '确定',
               cancelButtonText: '取消',
@@ -365,7 +365,7 @@ export default {
       if (total > maxnum) {
         // 做提示
         try {
-          let confirm = await this.$confirm('当前记录数超过' + maxnum + '笔,导出可能较慢,是否继续导出?', '提示',
+          const confirm = await this.$confirm('当前记录数超过' + maxnum + '笔,导出可能较慢,是否继续导出?', '提示',
             {
               confirmButtonText: '确定',
               cancelButtonText: '取消',
@@ -389,7 +389,7 @@ export default {
       // 以下改用分页导出数据的方法，用以实现超大数据量级的导出
 
       if (total <= pagemax) {
-        let query = Object.assign({}, param)
+        const query = Object.assign({}, param)
         // query.flesh = 0
         this.isExporting = true // 标志 是否正在导出
 
@@ -411,7 +411,7 @@ export default {
         if (this.tableData.total.num > this.exportstatus.pagesize * this.exportstatus.totalpage) {
           this.exportstatus.totalpage++ // 判断分页
         }
-        let alldata = []
+        const alldata = []
         this.isExporting = true // 标志 是否正在导出
         this.showProgress('正在读取数据', this.exportstatus.done, this.exportstatus.total)
         for (let i = 1; i <= this.exportstatus.totalpage; i++) {
@@ -420,7 +420,7 @@ export default {
             return false
           // break
           }
-          let query = Object.assign({}, param)
+          const query = Object.assign({}, param)
           // query.flesh = 0
           query.page = i
           query.pagesize = this.exportstatus.pagesize
@@ -429,7 +429,7 @@ export default {
           // console.log('after call func', func)
           const data = res.items
           for (let idx = 0; idx < data.length; idx++) {
-            let row = data[idx]
+            const row = data[idx]
             row['_index'] = (i - 1) * this.exportstatus.pagesize + idx + 1
             alldata.push(row)
           }

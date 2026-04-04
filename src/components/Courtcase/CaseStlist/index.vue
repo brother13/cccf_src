@@ -603,7 +603,7 @@ export default {
       // console.log('正在跳转至单据类型' + typeid + '，单据号为' + billno)
       let page = ''
       const rn = Math.random()
-      let query = { key: billno, id: id, t: rn }
+      const query = { key: billno, id: id, t: rn }
       switch (typeid) {
         case 101: // 收代管款
           page = '/casesk/dgksk'
@@ -652,12 +652,12 @@ export default {
     },
     handleExport_sk() {
       const alldata = this.table_bill.data
-      let title = '案款收退情况【' + this.caseinfo.billno + '】'
+      const title = '案款收退情况【' + this.caseinfo.billno + '】'
       this.handleDownload(alldata, title)
     },
     handleExport_case_old() {
       const alldata = this.table_case.data
-      let title = '案款收退情况'
+      const title = '案款收退情况'
       this.handleDownload(alldata, title)
     },
     async handleExport_case() {
@@ -674,7 +674,7 @@ export default {
       ) {
         this.exportstatus.totalpage++ // 判断分页
       }
-      let alldata = []
+      const alldata = []
       this.isExporting = true // 标志 是否正在导出
       this.showProgress('正在读取数据', this.exportstatus.done, this.exportstatus.total)
       for (let i = 1; i <= this.exportstatus.totalpage; i++) {
@@ -696,7 +696,7 @@ export default {
         )
         const data = res.data
         for (let idx = 0; idx < data.length; idx++) {
-          let row = data[idx]
+          const row = data[idx]
           row['_index'] = (i - 1) * this.exportstatus.pagesize + idx + 1
           alldata.push(row)
         }
@@ -708,7 +708,7 @@ export default {
           this.exportstatus.total
         )
       }
-      let title = '案款收退情况'
+      const title = '案款收退情况'
 
       if (this.isExporting && alldata.length) {
         this.handleDownload(alldata, title)

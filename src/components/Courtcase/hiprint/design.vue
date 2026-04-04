@@ -173,7 +173,7 @@ export default {
       // 纸张类型
 
       pagerTypesList: [
-       
+
         {
           name: '套打250*200',
           width: 200,
@@ -270,11 +270,11 @@ export default {
   computed: {
     curPaperType() {
       let type = 'other'
-      let types = this.pagerTypesList
+      const types = this.pagerTypesList
 
       for (let i = 0; i < types.length; i++) {
-        let item = types[i]
-        let { width, height } = this.curPaper
+        const item = types[i]
+        const { width, height } = this.curPaper
         // 四舍五入
         // console.log(this.curPaper)
         // console.log(item)
@@ -427,7 +427,7 @@ export default {
       }
     },
     otherPaper() {
-      let value = {}
+      const value = {}
       value.width = this.paperWidth
       value.height = this.paperHeight
       value.name = 'other'
@@ -435,7 +435,7 @@ export default {
       this.setPaper('other', value)
     },
     preView() {
-      let { width } = this.curPaper
+      const { width } = this.curPaper
 
       caseapi.template.getPreviewData(this.temp.typeid).then((data) => {
         // this.$refs.preView.show(hiprintTemplate, printData, width)
@@ -482,7 +482,7 @@ export default {
     },
     changeJson() {
       // 做提醒
-      let json = JSON.parse(this.templateJson)
+      const json = JSON.parse(this.templateJson)
       // $('.hiprintEpContainer').empty()
       // $('#hiprint-printTemplate').empty()
       $('#hiprint-printTemplate').empty()
@@ -499,7 +499,7 @@ export default {
     },
 
     async getTemplateField(typeid) {
-      let data = await caseapi.template.getTemplateField(typeid)
+      const data = await caseapi.template.getTemplateField(typeid)
 
       this.template.name = data.name
       this.template.value = data.code
@@ -580,7 +580,7 @@ export default {
     },
 
     initTemplateField() {
-      let provider = this.template
+      const provider = this.template
 
       const fields = [provider.f]
 
@@ -605,9 +605,9 @@ export default {
         data = '{}'
       }
       // console.log(data)
-      let tpldata = JSON.parse(data)
+      const tpldata = JSON.parse(data)
       // console.log('tpldata', tpldata)
-      let template = tpldata
+      const template = tpldata
 
       // 判断模板是否存在，并初始化页面大小
       if (template) {
@@ -639,8 +639,8 @@ export default {
     },
 
     saveTemplate() {
-      let id = this.temp.id
-      let tpldata = hiprintTemplate.getJson()
+      const id = this.temp.id
+      const tpldata = hiprintTemplate.getJson()
 
       // console.log('saveTemplate', id, tpldata)
       caseapi.template.saveTemplate(id, tpldata).then((res) => {

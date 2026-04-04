@@ -15,7 +15,7 @@ const Router_ywcl = {
   },
   children: [
 
-   {
+    {
       path: 'upload-excel',
       component: () => import('@/dagl/views/ywcl/upload-excel'),
       name: '批量导入',
@@ -34,7 +34,7 @@ const Router_ywcl = {
         icon: 'edit',
         roles: ['USER']
       }
-    },
+    }
   ]
 }
 export default Router_ywcl

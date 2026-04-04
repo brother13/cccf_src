@@ -30,12 +30,12 @@
           {{ $index + listQuery.pagesize * (listQuery.page - 1) + 1 }}
         </template>
       </el-table-column>
-      <el-table-column label="编号" prop="cmmbcode" align="center" width="120"/>
+      <el-table-column label="编号" prop="cmmbcode" align="center" width="120" />
 
-      <el-table-column label="名称" prop="cmmbname" align="center" width="120"/>
-      <el-table-column label="性别" prop="sex" align="center" width="120"/>
+      <el-table-column label="名称" prop="cmmbname" align="center" width="120" />
+      <el-table-column label="性别" prop="sex" align="center" width="120" />
       <el-table-column label="已有数量" prop="usernum" align="center" width="120" />
-      <el-table-column label="状态" class-name="status-col" width="100"/>
+      <el-table-column label="状态" class-name="status-col" width="100" />
       <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
 
@@ -81,11 +81,9 @@
           </el-select>
         </el-form-item>
 
-
         <el-form-item label="排序" prop="rank">
           <el-input v-model="temp.rank" type="number" />
         </el-form-item>
-
 
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -98,7 +96,7 @@
       </div>
     </el-dialog>
 
-<!--    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
+    <!--    <el-dialog :visible.sync="dialogPvVisible" title="Reading statistics">
       <el-table :data="pvData" border fit highlight-current-row style="width: 100%">
         <el-table-column prop="key" label="Channel" />
         <el-table-column prop="pv" label="Pv" />
@@ -197,15 +195,15 @@ export default {
       postdata('/cmmb/tree').then((response) => {
         this.list = response.data.tree
         this.cmmbList = response.data.list
-        var tmp=[]
+        var tmp = []
         this.total = response.data.total
 
-        for (var i in this.cmmbList ){
-          if(this.cmmbList[i]['parentid']==0){
+        for (var i in this.cmmbList) {
+          if (this.cmmbList[i]['parentid'] == 0) {
             tmp.push(this.cmmbList[i])
           }
         }
-        this.cmmbupList=tmp
+        this.cmmbupList = tmp
         setTimeout(() => {
           this.listLoading = false
         }, 0.5 * 100)
@@ -345,7 +343,7 @@ export default {
       })
     },
 
-/*    handleDownload() {
+    /*    handleDownload() {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
         const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
@@ -367,7 +365,7 @@ export default {
           return v[j]
         }
       }))
-    },
+    }
   }
 }
 </script>

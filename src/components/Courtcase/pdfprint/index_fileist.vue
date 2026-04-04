@@ -7,14 +7,11 @@
     :close-on-click-modal="false"
     width="500px"
   >
-   
-       
-        <ul class="fileul">
-          <li v-for="(file,index) in pdflist" :key="index" class="file-item"><el-link :href="file.url" icon="el-icon-document" target="_blank">{{file.filename}}</el-link></li>
-        </ul>
-      
-      
-    
+
+    <ul class="fileul">
+      <li v-for="(file,index) in pdflist" :key="index" class="file-item"><el-link :href="file.url" icon="el-icon-document" target="_blank">{{ file.filename }}</el-link></li>
+    </ul>
+
     <div slot="footer" class="dialog-footer">
       <el-button
         icon="el-icon-close"
@@ -23,7 +20,7 @@
       >
         取消
       </el-button>
-     
+
       <!-- <el-button
         type="primary"
         icon="el-icon-printer"
@@ -76,7 +73,6 @@ export default {
       typeMap: {},
 
       pdflist: [],
-      
 
       // pdf展示信息
       pdfinfo: {
@@ -97,7 +93,7 @@ export default {
   methods: {
     init() {
       this.typeMap = {}
-      for (let i in typeList) {
+      for (const i in typeList) {
         const type = typeList[i]
         const code = type.code
         this.typeMap[code] = type
@@ -108,19 +104,18 @@ export default {
       this.info.filelist = [] // 先清空
     },
 
-    async showFiles(files){
-      this.pdflist = files;
+    async showFiles(files) {
+      this.pdflist = files
       this.showWindow = true
-
     },
-    
-    showFile(url){
+
+    showFile(url) {
       this.$refs['pdfiframe'].src = url
     },
 
     insertHtml(id, html) {
-      let obj = document.getElementById(id)
-      let doc = obj.contentDocument || obj.contentWindow.document
+      const obj = document.getElementById(id)
+      const doc = obj.contentDocument || obj.contentWindow.document
 
       // console.log('insertHTML', doc)
       if (doc) {
@@ -142,8 +137,7 @@ export default {
         // 判断签收
         this.checkin_select()
       }, 1000)
-    },
-    
+    }
 
   }
 }

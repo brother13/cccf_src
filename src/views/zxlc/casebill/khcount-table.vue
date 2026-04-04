@@ -1,7 +1,6 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      
 
       <el-button
         v-waves
@@ -18,7 +17,6 @@
         @click="handleExport"
       >导出</el-button> -->
 
-     
     </div>
 
     <el-table
@@ -33,42 +31,23 @@
       height="600px"
       @selection-change="changeCheck"
       @sort-change="sortChange"
-      
     >
       <!-- <el-table-column type="selection" label="选择" /> -->
       <el-table-column
-      type="index"
-      label="序号"
-      align="center"
-      width="50"
-      :index="indexMethod">
-     
+        type="index"
+        label="序号"
+        align="center"
+        width="50"
+        :index="indexMethod"
+      />
+      <el-table-column label="任务开始时间" prop="querystart" align="center" width="120" />
+      <el-table-column label="任务结束时间" prop="queryend" align="center" width="120" />
 
-    </el-table-column>
-<el-table-column label="任务开始时间" prop="querystart" align="center" width="120" >
-
-</el-table-column>
-     <el-table-column label="任务结束时间" prop="queryend" align="center" width="120" >
-
-</el-table-column>
-
-<el-table-column label="最早查询时间" prop="mintime" align="center" width="180" >
-
-</el-table-column>
-     <el-table-column label="最新查询时间" prop="maxtime" align="center" width="180" >
-
-</el-table-column>
-     <el-table-column label="数量" prop="num" align="center" width="250" >
-  
-      </el-table-column>
-     
-      
-
-      
+      <el-table-column label="最早查询时间" prop="mintime" align="center" width="180" />
+      <el-table-column label="最新查询时间" prop="maxtime" align="center" width="180" />
+      <el-table-column label="数量" prop="num" align="center" width="250" />
 
     </el-table>
-
-    
 
     <pagination
       v-show="total>0"
@@ -112,7 +91,7 @@ export default {
         timetype: '',
         time1: '',
         time2: '',
-        sort:''
+        sort: ''
       },
       checkedList: [],
       querytimeList: [],
@@ -129,7 +108,7 @@ export default {
           '立案日期',
           '任务开始日期',
           '任务结束日期'
-         
+
         ],
         field: [
           'caseinfo',
@@ -152,8 +131,8 @@ export default {
         ye2: '',
         jkdw: '',
         fullaccount: '',
-        idkey: '',
-       }
+        idkey: ''
+      }
     }
   },
 
@@ -163,10 +142,10 @@ export default {
   },
   methods: {
     init() {
-      
+
     },
-    indexMethod(index){
-      return (this.listQuery.page-1)*this.listQuery.pagesize+index+1
+    indexMethod(index) {
+      return (this.listQuery.page - 1) * this.listQuery.pagesize + index + 1
     },
     getList() {
       this.listLoading = true
@@ -215,7 +194,7 @@ export default {
         ye2: '',
         jkdw: '',
         fullaccount: '',
-        idkey: '',
+        idkey: ''
       }
     },
 

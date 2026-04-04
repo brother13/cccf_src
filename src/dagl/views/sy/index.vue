@@ -8,41 +8,41 @@
     <div class="menu-container">
       <div class="menu-item data-import">
         <div class="icon-wrapper">
-          <i class="fas fa-file-import"></i>
+          <i class="fas fa-file-import" />
         </div>
         <div class="menu-text" @click="goToPage('sjdr')">数据导入</div>
       </div>
       <div class="menu-item number-manage">
         <div class="icon-wrapper">
-          <i class="fas fa-sort-numeric-down"></i>
+          <i class="fas fa-sort-numeric-down" />
         </div>
-        <div class="menu-text"  @click="goToPage('ghgl')">归号管理</div>
+        <div class="menu-text" @click="goToPage('ghgl')">归号管理</div>
 
       </div>
       <div class="menu-item size-stats">
         <div class="icon-wrapper">
-          <i class="fas fa-chart-bar"></i>
+          <i class="fas fa-chart-bar" />
         </div>
-        <div class="menu-text"  @click="goToPage('cmtj')">尺码统计</div>
+        <div class="menu-text" @click="goToPage('cmtj')">尺码统计</div>
 
       </div>
       <div class="menu-item size-library">
         <div class="icon-wrapper">
-          <i class="fas fa-ruler"></i>
+          <i class="fas fa-ruler" />
         </div>
         <div class="menu-text" @click="goToPage('cmk')">尺码库</div>
 
       </div>
       <div class="menu-item user-manage">
         <div class="icon-wrapper">
-          <i class="fas fa-users"></i>
+          <i class="fas fa-users" />
         </div>
         <div class="menu-text" @click="goToPage('rygl')">人员管理</div>
 
       </div>
       <div class="menu-item sys-settings">
         <div class="icon-wrapper">
-          <i class="fas fa-cogs"></i>
+          <i class="fas fa-cogs" />
         </div>
         <div class="menu-text" @click="goToPage('xtsz')">系统设置</div>
 
@@ -50,134 +50,129 @@
     </div>
     <footer class="footer">
       <div class="copyright">
-        <i class="far fa-copyright"></i>
+        <i class="far fa-copyright" />
         版权所有 2024 沈阳宁大服装有限责任公司
       </div>
     </footer>
 
   </div>
 
-
-
-
 </template>
 
 <script>
-  // import GithubCorner from '@/components/GithubCorner'
-  // import PanelGroup from './components/PanelGroup'
-  // import LineChart from './components/LineChart'
-  // import RaddarChart from './components/RaddarChart'
-  // import PieChart from './components/PieChart'
-  // import BarChart from './components/BarChart'
-  import CountCard from './components/CountCard'
+// import GithubCorner from '@/components/GithubCorner'
+// import PanelGroup from './components/PanelGroup'
+// import LineChart from './components/LineChart'
+// import RaddarChart from './components/RaddarChart'
+// import PieChart from './components/PieChart'
+// import BarChart from './components/BarChart'
+import CountCard from './components/CountCard'
 
-  // import TransactionTable from './components/TransactionTable'
-  // import TodoList from './components/TodoList'
-  // import BoxCard from './components/BoxCard'
+// import TransactionTable from './components/TransactionTable'
+// import TodoList from './components/TodoList'
+// import BoxCard from './components/BoxCard'
 
-  const lineChartData = {
-    newVisitis: {
-      expectedData: [100, 120, 161, 134, 105, 160, 165],
-      actualData: [120, 82, 91, 154, 162, 140, 145]
-    },
-    messages: {
-      expectedData: [200, 192, 120, 144, 160, 130, 140],
-      actualData: [180, 160, 151, 106, 145, 150, 130]
-    },
-    purchases: {
-      expectedData: [80, 100, 121, 104, 105, 90, 100],
-      actualData: [120, 90, 100, 138, 142, 130, 130]
-    },
-    shoppings: {
-      expectedData: [130, 140, 141, 142, 145, 150, 160],
-      actualData: [120, 82, 91, 154, 162, 140, 130]
-    }
+const lineChartData = {
+  newVisitis: {
+    expectedData: [100, 120, 161, 134, 105, 160, 165],
+    actualData: [120, 82, 91, 154, 162, 140, 145]
+  },
+  messages: {
+    expectedData: [200, 192, 120, 144, 160, 130, 140],
+    actualData: [180, 160, 151, 106, 145, 150, 130]
+  },
+  purchases: {
+    expectedData: [80, 100, 121, 104, 105, 90, 100],
+    actualData: [120, 90, 100, 138, 142, 130, 130]
+  },
+  shoppings: {
+    expectedData: [130, 140, 141, 142, 145, 150, 160],
+    actualData: [120, 82, 91, 154, 162, 140, 130]
   }
+}
 
-  export default {
-    name: 'DashboardAdmin',
-    components: {
-      // GithubCorner,
-      // PanelGroup,
-      // LineChart,
-      // RaddarChart,
-      // PieChart,
-      // BarChart,
-      CountCard
-      // TransactionTable,
-      // TodoList,
-      // BoxCard
-    },
-    data() {
-      return {
-        // lineChartData: lineChartData.newVisitis,
-        count: {
-          bank: {
-            num: 1000,
-            money: 300120
-          },
-          netbank: {
-            num: 40,
-            money: 4100
-          },
-          house: {
-            num: 121,
-            money: 12333,
-            moneyunit: '平方'
-          },
-          stock: {
-            num: 12,
-            money: 200,
-            showmoney: false
-          },
-          company: {
-            num: 100,
-            money: 1000,
-            showmoney: false
-          },
-          car: {
-            num: 222,
-            money: 1213,
-            showmoney: false
-          }
+export default {
+  name: 'DashboardAdmin',
+  components: {
+    // GithubCorner,
+    // PanelGroup,
+    // LineChart,
+    // RaddarChart,
+    // PieChart,
+    // BarChart,
+    CountCard
+    // TransactionTable,
+    // TodoList,
+    // BoxCard
+  },
+  data() {
+    return {
+      // lineChartData: lineChartData.newVisitis,
+      count: {
+        bank: {
+          num: 1000,
+          money: 300120
+        },
+        netbank: {
+          num: 40,
+          money: 4100
+        },
+        house: {
+          num: 121,
+          money: 12333,
+          moneyunit: '平方'
+        },
+        stock: {
+          num: 12,
+          money: 200,
+          showmoney: false
+        },
+        company: {
+          num: 100,
+          money: 1000,
+          showmoney: false
+        },
+        car: {
+          num: 222,
+          money: 1213,
+          showmoney: false
         }
       }
-    },
-    mounted() {
-      this.$nextTick(() => {
-        setInterval(this.getCount, 60000)
-      })
-    },
-    activated() {
-      this.getCount()
-    },
-    created() {
-      this.getCount()
-    },
-    methods: {
-      goToPage(type) {
-        if(type=='sjdr'){
-          this.$router.push({ path: '/ywcl/upload-excel' })
-        }else if(type=='ghgl'){
-          this.$router.push({ path: '/ywcl/xzjl' })
-        }else if(type=='cmtj'){
-          this.$router.push({ path: '' })
-        }else if(type=='cmk'){
-          this.$router.push({ path: '/cmbz/cmk' })
-        }else if(type=='rygl'){
-          this.$router.push({ path: '/setting/user-table' })
-        }else if(type=='xtsz'){
-          this.$router.push({ path: 'logs/userlog' })
-        }
-
-
-      },
-      handleSetLineChartData(type) {
-        this.lineChartData = lineChartData[type]
-      },
-      getCount() {}
     }
+  },
+  mounted() {
+    this.$nextTick(() => {
+      setInterval(this.getCount, 60000)
+    })
+  },
+  activated() {
+    this.getCount()
+  },
+  created() {
+    this.getCount()
+  },
+  methods: {
+    goToPage(type) {
+      if (type == 'sjdr') {
+        this.$router.push({ path: '/ywcl/upload-excel' })
+      } else if (type == 'ghgl') {
+        this.$router.push({ path: '/ywcl/xzjl' })
+      } else if (type == 'cmtj') {
+        this.$router.push({ path: '' })
+      } else if (type == 'cmk') {
+        this.$router.push({ path: '/cmbz/cmk' })
+      } else if (type == 'rygl') {
+        this.$router.push({ path: '/setting/user-table' })
+      } else if (type == 'xtsz') {
+        this.$router.push({ path: 'logs/userlog' })
+      }
+    },
+    handleSetLineChartData(type) {
+      this.lineChartData = lineChartData[type]
+    },
+    getCount() {}
   }
+}
 </script>
 
 <style lang="scss" scoped>

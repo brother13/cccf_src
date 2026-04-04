@@ -118,7 +118,7 @@
         <el-form-item label="排序" prop="rank">
           <el-input v-model="temp.rank" type="number" />
         </el-form-item>
-<!--        <el-form-item label="状态">
+        <!--        <el-form-item label="状态">
           <el-switch
             v-model="isvoid2"
             active-color="#13ce66"

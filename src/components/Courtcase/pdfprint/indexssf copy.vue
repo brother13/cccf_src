@@ -120,7 +120,7 @@ export default {
   methods: {
     init() {
       this.typeMap = {}
-      for (let i in typeList) {
+      for (const i in typeList) {
         const type = typeList[i]
         const code = type.code
         this.typeMap[code] = type
@@ -149,8 +149,8 @@ export default {
     },
 
     insertHtml(id, html) {
-      let obj = document.getElementById(id)
-      let doc = obj.contentDocument || obj.contentWindow.document
+      const obj = document.getElementById(id)
+      const doc = obj.contentDocument || obj.contentWindow.document
 
       // console.log('insertHTML', doc)
       if (doc) {
@@ -168,13 +168,13 @@ export default {
     // 以下是pdf相关处理界面
     getPdfCheckList(type) {
       this.pdflist = []
-      let pdflist = []
+      const pdflist = []
       let pdf_checked = []
       const pdftype = this.typeMap[type]
       const page = pdftype['page'] ?? 1
 
       for (let i = 1; i <= page; i++) {
-        let file = {}
+        const file = {}
         file['type'] = type
         file['value'] = type + '_' + i
         file['page'] = i
@@ -182,7 +182,7 @@ export default {
         pdflist.push(file)
       }
       // 添加三者材料
-      let other = {
+      const other = {
         type: 'other',
         value: 'other',
         page: 1,
@@ -205,7 +205,7 @@ export default {
         const typeobj = toTypeName[type]
         const typepage = typeobj.page
         for (let i = 1; i <= typepage; i++) {
-          let file = {}
+          const file = {}
           file['type'] = typeobj['code']
           file['value'] = typeobj['code'] + '_' + i
           file['page'] = i
@@ -224,8 +224,8 @@ export default {
         const defaultPage = pdftype['default'] ?? []
         if (defaultPage && Array.isArray(defaultPage) && defaultPage.length) {
           // 添加记录
-          for (let i in defaultPage) {
-            let text = type + '_' + defaultPage[i]
+          for (const i in defaultPage) {
+            const text = type + '_' + defaultPage[i]
             pdf_checked.push(text)
           }
           // 添加第三方材料
@@ -233,7 +233,7 @@ export default {
         } else {
           // 如果没有设置，全部添加
           for (let i = 1; i <= page; i++) {
-            let text = type + '_' + i
+            const text = type + '_' + i
             pdf_checked.push(text)
           }
         }
@@ -273,9 +273,9 @@ export default {
 
       console.log('filelist', filelist)
 
-      let allfilename = []
+      const allfilename = []
 
-      for (let i in filelist) {
+      for (const i in filelist) {
         this.pdfinfo.done++
         const file = filelist[i]
         const type = file['type']
@@ -305,7 +305,7 @@ export default {
           const pagecount = pdffileObj.getPageCount()
           // console.log('type', type, 'url', url, 'pagecount', pagecount)
           // 文件存在，添加页数
-          for (let c in checkedList) {
+          for (const c in checkedList) {
             const check = checkedList[c]
             const arr = check.split('_')
             const checktype = arr[0]
@@ -317,13 +317,13 @@ export default {
               // 直接全部添加
               const pages_other = pdffileObj.getPageCount()
               // console.log('pagecount:', pages_other)
-              let pagearr = []
+              const pagearr = []
               for (let n = 0; n < pages_other; n++) {
                 pagearr.push(n)
               }
               const pages = await pdfNewDoc.copyPages(pdffileObj, pagearr)
 
-              for (let p in pages) {
+              for (const p in pages) {
                 const page = pages[p]
                 // 20230830新增，判断页面大小，是否大于A4宽度，若大于，则自动缩小。小的不管
 
@@ -381,7 +381,7 @@ export default {
 
               const pages = await pdfNewDoc.copyPages(pdffileObj, [pagenum])
               for (let p = 0; p < pages.length; p++) {
-                let page = pages[p]
+                const page = pages[p]
                 // const pagewidth = page.getWidth()
                 // console.log('pageWidth', pagewidth)
                 // console.log(page)
@@ -478,12 +478,12 @@ export default {
 
       // 在pdf左上角添加标签信息，每一页都加上页码
 
-      let pages = pdfNewDoc.getPages()
+      const pages = pdfNewDoc.getPages()
       const printtime = caseapi.util.getTodayDate('{yyyy}-{mm}-{dd} {hh}:{min}:{ss}')
       const helveticaFont = await pdfNewDoc.embedFont(StandardFonts.Helvetica)
 
       for (let i = 0; i < pages.length; i++) {
-        let page = pages[i]
+        const page = pages[i]
         const { height } = page.getSize()
 
         const row = allfilename[i]
@@ -518,14 +518,14 @@ export default {
     },
     // 获取所有的pdf文件，并填充至key为url的变量中
     async getAllPdf(filelist) {
-      let allpdf = {}
+      const allpdf = {}
 
       console.log('getAllPdf', filelist)
 
       this.pdfinfo.total = filelist.length
       this.pdfinfo.done = 0
       this.pdfinfo.loading = true
-      for (let i in filelist) {
+      for (const i in filelist) {
         const file = filelist[i]
         const url = file['url']
         if (!allpdf[url]) {
@@ -581,7 +581,7 @@ export default {
     },
     checkin_select() {
       console.log('info', this.info)
-      let allnotice = []
+      const allnotice = []
 
       const maxnotice = 20
       let allnoticeText = ''

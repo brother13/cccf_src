@@ -173,9 +173,9 @@ export default {
     },
 
     insertHtml(id, html) {
-      let obj = document.getElementById(id)
+      const obj = document.getElementById(id)
       // console.log('iframe', id, obj)
-      let doc = obj.contentDocument || obj.contentWindow.document
+      const doc = obj.contentDocument || obj.contentWindow.document
 
       // console.log('insertHTML', doc)
       if (doc) {

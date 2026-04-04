@@ -16,7 +16,7 @@
         placeholder="请选择类型"
         clearable
         style="width: 250px"
-        
+
         class="filter-item"
         @change="handleFilter"
       >
@@ -91,7 +91,6 @@
         </template>
       </el-table-column>
 
-      
       <el-table-column label="状态" class-name="status-col" width="100">
         <template slot-scope="{row}">
           <el-tag :type="row.isvoid | statusFilter">{{ row.isvoid=="0" ? "正常":"停用" }}</el-tag>
@@ -131,7 +130,6 @@
         <el-form-item label="内容" prop="caseinfo">
           <el-input v-model="temp.caseinfo" />
         </el-form-item>
-        
 
         <el-form-item label="类型" prop="texttype">
           <el-select
@@ -191,7 +189,7 @@ import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
-const TypeList = [{ code:'caseinfo',text:'案号匹配'},{code:'textlike',text:'案号包含'}];
+const TypeList = [{ code: 'caseinfo', text: '案号匹配' }, { code: 'textlike', text: '案号包含' }]
 
 export default {
   name: 'UserTable',
@@ -201,13 +199,13 @@ export default {
     statusFilter(status) {
       return status === '0' ? 'success' : 'danger'
     },
-    getTypeLabel(type){
-      for(var i=0;i<TypeList.length;i++){
-        if(TypeList[i].code==type){
-          return TypeList[i].text;
+    getTypeLabel(type) {
+      for (var i = 0; i < TypeList.length; i++) {
+        if (TypeList[i].code == type) {
+          return TypeList[i].text
         }
       }
-      return type;
+      return type
     },
     joinstr(str) {
       if (typeof str === 'string') {
@@ -225,7 +223,7 @@ export default {
       list: null,
       total: 0,
       listLoading: true,
-      TypeList:TypeList,
+      TypeList: TypeList,
       listQuery: {
         page: 1,
         pagesize: 10,
@@ -237,11 +235,11 @@ export default {
       labelList: [],
       allUserList: [],
       temp: {
-        id:'',
-        caseinfo:'',
-        texttype:'',
-        note:'',
-        isvoid:0
+        id: '',
+        caseinfo: '',
+        texttype: '',
+        note: '',
+        isvoid: 0
       },
       roomList: [],
       dialogFormVisible: false,
@@ -255,7 +253,7 @@ export default {
 
       downloadLoading: false,
       rules: {
-        
+
       }
     }
   },
@@ -269,14 +267,14 @@ export default {
         )
       },
       set: function(newvalue) {
-        console.log(newvalue);
-        this.temp.isvoid = newvalue ? 0 : 1;
+        console.log(newvalue)
+        this.temp.isvoid = newvalue ? 0 : 1
       }
     }
   },
   created() {
     this.getList()
-   
+
     // this.getLabelList()
     // this.getRoom()
     // this.getAllUser()
@@ -318,7 +316,7 @@ export default {
     },
     getList() {
       this.listLoading = true
-      postdata("/casebill/blacklist",this.listQuery).then(response => {
+      postdata('/casebill/blacklist', this.listQuery).then(response => {
         this.list = response.data
         this.total = response.total
 
@@ -355,13 +353,12 @@ export default {
     },
     resetTemp() {
       this.temp = {
-        id:'',
-        caseinfo:'',
-        texttype:'',
-        note:'',
-        isvoid:0
+        id: '',
+        caseinfo: '',
+        texttype: '',
+        note: '',
+        isvoid: 0
       }
-      
     },
     handleCreate() {
       this.resetTemp()
@@ -375,12 +372,9 @@ export default {
     createData() {
       this.$refs['dataForm'].validate(valid => {
         if (valid) {
-          
-
           const newtemp = Object.assign({}, this.temp) // 复制一个新组件出来，避免修改数据
-          
 
-          postdata("/casebill/blackadd",newtemp).then(response => {
+          postdata('/casebill/blackadd', newtemp).then(response => {
             const data = response
             if (data.code === 20000) {
               this.dialogFormVisible = false
@@ -412,10 +406,9 @@ export default {
     updateData() {
       this.$refs['dataForm'].validate(valid => {
         const newtemp = Object.assign({}, this.temp) // 复制一个新组件出来，避免修改数据
-        
-        
+
         if (valid) {
-          postdata("/casebill/blackupdate",newtemp).then(response => {
+          postdata('/casebill/blackupdate', newtemp).then(response => {
             // console.log(data);
             const data = response
             if (data.code === 20000) {
@@ -441,7 +434,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        postdata("/casebill/blackdel",{id:row.id}).then(response => {
+        postdata('/casebill/blackdel', { id: row.id }).then(response => {
           const data = response
           if (data.code === 20000) {
             this.$notify({

@@ -56,7 +56,6 @@ const Router_setting = {
       }
     }
 
-
   ]
 }
 export default Router_setting
