@@ -5,12 +5,12 @@ import Layout from '@/layout'
 const Router_tz = {
   path: '/tz',
   component: Layout,
-  title: '财产查封提醒',
+  title: '财产查封台账',
   redirect: '/tz/txcl',
-  name: '财产查封提醒',
+  name: '财产查封台账',
   meta: {
-    title: '财产查封提醒',
-    icon: 'el-icon-s-order',
+    title: '财产查封台账',
+    icon: 'el-icon-lock',
     roles: ['CCCF']
   },
   children: [
@@ -33,7 +33,7 @@ const Router_tz = {
       name: '台账列表',
       meta: {
         title: '台账列表',
-        icon: 'el-icon-s-order',
+        icon: 'el-icon-tickets',
         roles: ['USER']
       }
     },
@@ -43,7 +43,7 @@ const Router_tz = {
       name: '1周以内到期',
       meta: {
         title: '1周以内到期',
-        icon: 'el-icon-bell',
+        icon: 'el-icon-time',
         roles: ['USER']
       }
     },
@@ -53,7 +53,7 @@ const Router_tz = {
       name: '1月以内到期',
       meta: {
         title: '1月以内到期',
-        icon: 'el-icon-bell',
+        icon: 'el-icon-date',
         roles: ['USER']
       }
     },
@@ -63,7 +63,7 @@ const Router_tz = {
       name: '2月以内到期',
       meta: {
         title: '2月以内到期',
-        icon: 'el-icon-bell',
+        icon: 'el-icon-date',
         roles: ['USER']
       }
     },
@@ -73,7 +73,7 @@ const Router_tz = {
       name: '批量导入',
       meta: {
         title: '批量导入',
-        icon: 'el-icon-upload2',
+        icon: 'el-icon-upload',
         roles: ['USER']
       }
     }

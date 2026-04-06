@@ -26,7 +26,10 @@ var report = {
     // 收款明细表
     queryList_sk: '/plugins/sklist',
     queryList_tk: '/plugins/tklist',
-    countCasenum: '/plugins/countCasenum'
+    countCasenum: '/plugins/countCasenum',
+
+    // 直接从admin_shoukuan表查询代管款数据
+    queryList_sk_direct: '/plugins/queryList_sk_direct'
 
   },
 
@@ -76,6 +79,11 @@ var report = {
 
   async countCasenum(query) {
     const res = await postdata(this.ACTION.countCasenum, query)
+    return res.data
+  },
+
+  async queryList_sk_direct(query) {
+    const res = await postdata(this.ACTION.queryList_sk_direct, query)
     return res.data
   }
 }

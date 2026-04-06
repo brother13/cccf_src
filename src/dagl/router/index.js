@@ -21,8 +21,9 @@ const webRouter = [
   Router_dashboard,
   // Router_ywcl,
   Router_tz,
-  Router_xdgl,
   Router_zxktz,
+  Router_xdgl,
+
   // Router_pz,
   // Router_dagl,
   // Router_table,

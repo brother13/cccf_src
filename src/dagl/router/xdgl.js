@@ -5,22 +5,22 @@ import Layout from '@/layout'
 const Router_xdgl = {
   path: '/xdgl',
   component: Layout,
-  title: '续冻反馈提醒',
+  title: 'RPA自动化执行',
   redirect: '/xdgl/xdlb',
-  name: '续冻反馈提醒',
+  name: 'RPA自动化执行',
   meta: {
-    title: '续冻反馈提醒',
-    icon: 'el-icon-s-order',
+    title: 'RPA自动化执行',
+    icon: 'el-icon-cpu',
     roles: ['XDFKTX']
   },
   children: [
     {
       path: 'xdlb',
       component: () => import('@/dagl/views/xdgl/xdlb'),
-      name: '续冻列表',
+      name: '自动化续冻列表',
       meta: {
-        title: '续冻列表',
-        icon: 'el-icon-bell',
+        title: '自动化续冻列表',
+        icon: 'el-icon-document',
         roles: ['XDFKTX']
       }
     },

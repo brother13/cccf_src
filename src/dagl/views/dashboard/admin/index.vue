@@ -10,7 +10,7 @@
 
       <!-- 执行插孔类别 -->
       <div class="remind-group">
-        <div class="group-title">执行查控</div>
+        <div class="group-title">查封到期提醒</div>
         <div class="menu-items-wrapper">
           <div v-if="hasRole('CCCF')" class="menu-item data-import">
             <div class="icon-wrapper">
@@ -26,7 +26,7 @@
             <div class="menu-text" @click="goToPage('yyyn')">财产查封1 月内到期</div>
             <span v-if="yyyndata !== 0" class="badge">{{ yyyndata }}</span>
           </div>
-          <div v-if="hasRole('XDFKTX')" class="menu-item sys-settings">
+          <div v-if="false" class="menu-item sys-settings">
             <div class="icon-wrapper">
               <i class="fas fa-bell" />
             </div>
@@ -38,8 +38,22 @@
 
       <!-- 执行款台账组 -->
       <div class="remind-group">
-        <div class="group-title">执行款台账</div>
+        <div class="group-title">案款相关提醒</div>
         <div class="menu-items-wrapper">
+          <div v-if="hasRole('XZTZ')" class="menu-item number-manage">
+            <div class="icon-wrapper">
+              <i class="fas fa-undo" />
+            </div>
+            <div class="menu-text" @click="goToPage('thqdlist')">发还失败退回清单</div>
+            <span v-if="count.thqd !== 0" class="badge">{{ count.thqd }}</span>
+          </div>
+          <div v-if="hasRole('XZTZ')" class="menu-item data-import">
+            <div class="icon-wrapper">
+              <i class="fas fa-receipt" />
+            </div>
+            <div class="menu-text" @click="goToPage('dkplist')">到账待开收据</div>
+            <span v-if="count.dkp !== 0" class="badge">{{ count.dkp }}</span>
+          </div>
           <div class="menu-item sys-settings">
             <div class="icon-wrapper">
               <i class="fas fa-bell" />
@@ -54,20 +68,7 @@
             <div class="menu-text" @click="goToPage('akyh5day')">延缓5天内到期提醒</div>
             <span v-if="count.akyh5day !== 0" class="badge">{{ count.akyh5day }}</span>
           </div>
-          <div v-if="hasRole('XZTZ')" class="menu-item number-manage">
-            <div class="icon-wrapper">
-              <i class="fas fa-undo" />
-            </div>
-            <div class="menu-text" @click="goToPage('thqdlist')">退回清单</div>
-            <span v-if="count.thqd !== 0" class="badge">{{ count.thqd }}</span>
-          </div>
-          <div v-if="hasRole('XZTZ')" class="menu-item data-import">
-            <div class="icon-wrapper">
-              <i class="fas fa-receipt" />
-            </div>
-            <div class="menu-text" @click="goToPage('dkplist')">待开收据</div>
-            <span v-if="count.dkp !== 0" class="badge">{{ count.dkp }}</span>
-          </div>
+
         </div>
       </div>
 

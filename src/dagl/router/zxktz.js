@@ -5,12 +5,12 @@ import Layout from '@/layout'
 const Router_zxktz = {
   path: '/zxktz',
   component: Layout,
-  title: '执行款台账',
+  title: '执行款相关',
   redirect: '/zxktz/zxkreport',
-  name: '执行款台账',
+  name: '执行款相关',
   meta: {
-    title: '执行款台账',
-    icon: 'el-icon-s-order',
+    title: '执行款相关',
+    icon: 'el-icon-money',
     roles: ['XZTZ']
   },
   children: [
@@ -19,36 +19,36 @@ const Router_zxktz = {
       component: () => import('@/dagl/views/dgkreport/sklist_report'),
       name: 'dgkye-report',
       meta: {
-        title: '执行款台账',
-        icon: 'el-icon-s-order'
+        title: '未发还台账',
+        icon: 'el-icon-s-data'
       }
     },
 
-    {
-      path: 'sklist',
-      component: () => import('@/dagl/views/dgkreport/sklist'),
-      name: 'dgkye-sklist',
-      meta: {
-        title: '收款明细表',
-        icon: 'el-icon-s-order'
-      }
-    },
-    {
-      path: 'tklist',
-      component: () => import('@/dagl/views/dgkreport/tklist'),
-      name: 'dgke-tklist',
-      meta: {
-        title: '退款明细表',
-        icon: 'el-icon-s-order'
-      }
-    },
+    // {
+    //   path: 'sklist',
+    //   component: () => import('@/dagl/views/dgkreport/sklist'),
+    //   name: 'dgkye-sklist',
+    //   meta: {
+    //     title: '收款明细表',
+    //     icon: 'el-icon-s-order'
+    //   }
+    // },
+    // {
+    //   path: 'tklist',
+    //   component: () => import('@/dagl/views/dgkreport/tklist'),
+    //   name: 'dgke-tklist',
+    //   meta: {
+    //     title: '退款明细表',
+    //     icon: 'el-icon-s-order'
+    //   }
+    // },
     {
       path: 'thqdlist',
       component: () => import('@/dagl/views/dgkreport/thqdlist'),
       name: 'dgke-thqdlist',
       meta: {
-        title: '退回清单',
-        icon: 'el-icon-s-order'
+        title: '案款发还退回清单',
+        icon: 'el-icon-refresh-left'
       }
     },
     {
@@ -56,8 +56,8 @@ const Router_zxktz = {
       component: () => import('@/dagl/views/dgkreport/dkplist'),
       name: 'dgke-dkplist',
       meta: {
-        title: '待开收据',
-        icon: 'el-icon-s-order'
+        title: '案款到账待开收据',
+        icon: 'el-icon-printer'
       }
     }
 

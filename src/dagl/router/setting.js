@@ -20,7 +20,7 @@ const Router_setting = {
       name: 'mmxgTable',
       meta: {
         title: '密码修改',
-        icon: 'people1',
+        icon: 'el-icon-key',
         roles: ['USER']
       }
     },
@@ -31,7 +31,7 @@ const Router_setting = {
       name: 'UserTable',
       meta: {
         title: '人员管理',
-        icon: 'people1',
+        icon: 'el-icon-user',
         roles: ['PEOPLE']
       }
     },
@@ -41,7 +41,7 @@ const Router_setting = {
       name: 'DeptTable',
       meta: {
         title: '部门管理',
-        icon: 'tree',
+        icon: 'el-icon-office-building',
         roles: ['DEPT']
       }
     }
