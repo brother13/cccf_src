@@ -370,6 +370,81 @@ export default {
       return this.getBenchmarkRateForDate(date)
     },
 
+    // 获取指定区间内的利率调整日期列表
+    getRateChangeDates(startDate, endDate) {
+      const dates = []
+      const start = new Date(startDate)
+      const end = new Date(endDate)
+
+      // 分界点 2020-08-20
+      const boundaryDate = new Date('2020-08-20')
+      if (start < boundaryDate && end >= boundaryDate) {
+        dates.push('2020-08-20')
+      }
+
+      // LPR调整日期
+      if (end >= boundaryDate) {
+        const lprStart = start < boundaryDate ? boundaryDate : start
+        for (const item of lprData) {
+          const itemDate = new Date(item.date)
+          if (itemDate > lprStart && itemDate <= end) {
+            dates.push(item.date)
+          }
+        }
+      }
+
+      // 基准利率调整日期（2020-08-20前）
+      if (start < boundaryDate) {
+        const bmEnd = end < boundaryDate ? end : new Date('2020-08-19')
+        for (const item of benchmarkData) {
+          const itemDate = new Date(item.date)
+          if (itemDate > start && itemDate <= bmEnd) {
+            dates.push(item.date)
+          }
+        }
+      }
+
+      return dates.sort((a, b) => new Date(a) - new Date(b))
+    },
+
+    // 根据利率调整日和还款日分割时间段
+    splitPeriods(startDate, endDate) {
+      // 获取所有分割点
+      const allPoints = [startDate, endDate]
+
+      // 添加还款日期
+      for (const repayment of this.repayments) {
+        if (repayment.date && repayment.date > startDate && repayment.date <= endDate) {
+          allPoints.push(repayment.date)
+        }
+      }
+
+      // 添加利率调整日期
+      const rateChangeDates = this.getRateChangeDates(startDate, endDate)
+      allPoints.push(...rateChangeDates)
+
+      // 去重并排序
+      const uniquePoints = [...new Set(allPoints)].sort((a, b) => new Date(a) - new Date(b))
+
+      // 生成时间段
+      const periods = []
+      for (let i = 0; i < uniquePoints.length - 1; i++) {
+        const segmentStart = uniquePoints[i]
+        const segmentEnd = uniquePoints[i + 1]
+
+        // 检查这个结束日期是否是还款日期
+        const isRepaymentDate = this.repayments.some(r => r.date === segmentEnd)
+
+        periods.push({
+          startDate: segmentStart,
+          endDate: segmentEnd,
+          isRepaymentNode: isRepaymentDate
+        })
+      }
+
+      return periods
+    },
+
     // 添加还款记录
     addRepayment() {
       this.repayments.push({
@@ -390,12 +465,125 @@ export default {
       this.result = null
     },
 
-    // 计算（占位方法，后续实现）
+    // 计算还款计划
     calculate() {
       this.$refs.form.validate((valid) => {
         if (!valid) return
-        // TODO: 实现计算逻辑
-        console.log('计算中...', this.form, this.repayments)
+
+        const principal = (this.form.principal || 0) - (this.form.paidAmount || 0)
+        if (principal <= 0) {
+          this.$message.warning('实际计息本金必须大于0')
+          return
+        }
+
+        const startDate = this.form.interestStartDate
+        const endDate = this.form.endDate
+        const delayStartDate = this.form.delayInterestStartDate
+
+        // 分割时间段
+        const periods = this.splitPeriods(startDate, endDate)
+
+        // 计算每个时间段
+        const segments = []
+        let currentPrincipal = principal
+        let accumulatedNormalInterest = 0
+        let accumulatedDelayInterest = 0
+        let totalNormalInterest = 0
+
+        for (const period of periods) {
+          const rateInfo = this.getRateForDate(period.startDate)
+          const days = this.getDaysBetween(period.startDate, period.endDate)
+
+          // 计算一般利息
+          const normalInterest = currentPrincipal * (rateInfo.rate / 100) * days / 365
+          accumulatedNormalInterest += normalInterest
+          totalNormalInterest += normalInterest
+
+          // 计算迟延履行利息
+          let delayInterest = 0
+          if (this.form.calcDelayInterest && delayStartDate) {
+            const periodStart = new Date(period.startDate)
+            const periodEnd = new Date(period.endDate)
+            const delayStart = new Date(delayStartDate)
+
+            if (periodStart >= delayStart) {
+              // 整段都在延迟履行期间
+              delayInterest = currentPrincipal * 0.000175 * days
+            } else if (periodEnd > delayStart) {
+              // 部分在延迟履行期间
+              const delayDays = this.getDaysBetween(delayStartDate, period.endDate)
+              delayInterest = currentPrincipal * 0.000175 * delayDays
+            }
+            accumulatedDelayInterest += delayInterest
+          }
+
+          // 添加时间段记录
+          segments.push({
+            startDate: period.startDate,
+            endDate: period.endDate,
+            days: days,
+            rate: rateInfo.rate,
+            rateType: rateInfo.type,
+            normalInterest: normalInterest,
+            delayInterest: this.form.calcDelayInterest ? accumulatedDelayInterest : 0,
+            isRepaymentNode: false
+          })
+
+          // 如果是还款节点，处理还款
+          if (period.isRepaymentNode) {
+            const repayment = this.repayments.find(r => r.date === period.endDate)
+            if (repayment && repayment.amount > 0) {
+              const remainingPrincipalBefore = currentPrincipal
+              const repaymentAmount = repayment.amount
+
+              let interestPaid = 0
+              let principalPaid = 0
+
+              if (this.form.repaymentType === 'interest_first') {
+                // 先息后本：先还一般利息，剩余还本金
+                interestPaid = Math.min(accumulatedNormalInterest, repaymentAmount)
+                const remainingForPrincipal = repaymentAmount - interestPaid
+                principalPaid = Math.min(currentPrincipal, remainingForPrincipal)
+                currentPrincipal -= principalPaid
+                accumulatedNormalInterest -= interestPaid
+              } else {
+                // 先本后息：全部还本金
+                principalPaid = Math.min(currentPrincipal, repaymentAmount)
+                currentPrincipal -= principalPaid
+                // 利息不抵扣，继续累计
+              }
+
+              // 添加还款节点记录
+              segments.push({
+                isRepaymentNode: true,
+                repaymentInfo: {
+                  date: repayment.date,
+                  amount: repaymentAmount,
+                  remainingPrincipalBefore: remainingPrincipalBefore,
+                  accumulatedInterest: this.form.repaymentType === 'interest_first'
+                    ? (accumulatedNormalInterest + interestPaid) : accumulatedNormalInterest,
+                  interestPaid: interestPaid,
+                  principalPaid: principalPaid,
+                  remainingPrincipal: currentPrincipal,
+                  accumulatedDelayInterest: accumulatedDelayInterest
+                }
+              })
+            }
+          }
+        }
+
+        // 构建结果
+        this.result = {
+          summary: {
+            principal: this.form.principal || 0,
+            paidAmount: this.form.paidAmount || 0,
+            actualPrincipal: principal,
+            totalNormalInterest: totalNormalInterest,
+            totalDelayInterest: accumulatedDelayInterest,
+            totalAmount: currentPrincipal + accumulatedNormalInterest + accumulatedDelayInterest
+          },
+          segments: segments
+        }
       })
     },
 
