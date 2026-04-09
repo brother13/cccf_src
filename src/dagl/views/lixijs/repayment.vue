@@ -663,36 +663,18 @@ export default {
         // 创建工作簿
         const wb = XLSX.utils.book_new()
 
-        // ===== 汇总表 =====
+        // ===== 汇总信息表 =====
         const summaryData = [
-          ['还款计划计算报告（执行案件专用）'],
-          [],
-          ['一、基本信息'],
-          ['债务金额', this.formatMoney(this.result.summary.principal) + ' 元'],
+          ['债务本金', this.formatMoney(this.result.summary.principal) + ' 元'],
           ['正常履行金额', this.formatMoney(this.result.summary.paidAmount) + ' 元'],
           ['实际计息本金', this.formatMoney(this.result.summary.actualPrincipal) + ' 元'],
-          ['利率类型', this.form.rateSourceType === 'auto' ? '基准利率与LPR自动分段' : '自定义利率'],
-          ['还款类型', this.form.repaymentType === 'interest_first' ? '先息后本' : '先本后息'],
-          ['利息起算日期', this.form.interestStartDate],
-          ['延迟履行利息起算', this.form.delayInterestStartDate || '-'],
-          ['结束日期', this.form.endDate],
-          [],
-          ['二、计算结果汇总'],
           ['一般利息合计', this.formatMoney(this.result.summary.totalNormalInterest) + ' 元'],
           ...(this.form.calcDelayInterest ? [['迟延履行利息合计', this.formatMoney(this.result.summary.totalDelayInterest) + ' 元']] : []),
           ['应付总额', this.formatMoney(this.result.summary.totalAmount) + ' 元']
         ]
 
-        // 添加中途还款记录
-        if (this.repayments.length > 0) {
-          summaryData.push([], ['三、中途还款记录'])
-          this.repayments.forEach((r, i) => {
-            summaryData.push([`还款${i + 1}`, r.date, this.formatMoney(r.amount) + ' 元'])
-          })
-        }
-
         const summaryWs = XLSX.utils.aoa_to_sheet(summaryData)
-        XLSX.utils.book_append_sheet(wb, summaryWs, '计算汇总')
+        XLSX.utils.book_append_sheet(wb, summaryWs, '汇总信息')
 
         // ===== 分段明细表 =====
         const detailHeaders = ['开始日期', '结束日期', '天数', '利率', '利率类型', '一般利息']
