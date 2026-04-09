@@ -283,197 +283,126 @@ const benchmarkData = [
 export default {
   name: 'RepaymentPlan',
   data() {
+    const today = new Date()
+    const formatDateStr = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+
     return {
       form: {
         principal: undefined,
-        rate: undefined,
-        repaymentType: 'equal_interest',
-        term: 12,
-        termUnit: 'month',
-        firstRepaymentDate: ''
+        rateSourceType: 'auto',
+        customRate: undefined,
+        repaymentType: 'interest_first',
+        paidAmount: 0,
+        interestStartDate: '',
+        delayInterestStartDate: '',
+        endDate: formatDateStr(today),
+        calcDelayInterest: true,
+        lprLevel: '1y'
       },
-      schedule: [],
-      totalAmount: 0,
-      totalInterest: 0,
-      averagePayment: 0
+      repayments: [],
+      result: null
     }
   },
   methods: {
-    calculate() {
-      this.$refs.form.validate((valid) => {
-        if (!valid) return
-
-        const { principal, rate, repaymentType, term, termUnit, firstRepaymentDate } = this.form
-
-        // 统一转换为月
-        const months = termUnit === 'year' ? term * 12 : term
-        const monthlyRate = rate / 100 / 12
-
-        this.schedule = []
-        let remainingPrincipal = principal
-        let totalInterest = 0
-        let totalPayment = 0
-
-        // 计算首次还款日期
-        let currentDate = firstRepaymentDate ? new Date(firstRepaymentDate) : new Date()
-
-        switch (repaymentType) {
-          case 'equal_interest':
-            // 等额本息
-            const monthlyPayment = principal * (monthlyRate * Math.pow(1 + monthlyRate, months)) /
-              (Math.pow(1 + monthlyRate, months) - 1)
-
-            for (let i = 1; i <= months; i++) {
-              const interestPayment = remainingPrincipal * monthlyRate
-              const principalPayment = monthlyPayment - interestPayment
-              remainingPrincipal -= principalPayment
-
-              if (remainingPrincipal < 0.01) remainingPrincipal = 0
-
-              this.schedule.push({
-                period: i,
-                date: this.formatDate(currentDate),
-                payment: monthlyPayment,
-                principal: principalPayment,
-                interest: interestPayment,
-                remaining: remainingPrincipal
-              })
-
-              totalPayment += monthlyPayment
-              totalInterest += interestPayment
-
-              // 下一个月
-              currentDate = this.addMonth(currentDate)
-            }
-            this.averagePayment = monthlyPayment
-            break
-
-          case 'equal_principal':
-            // 等额本金
-            const monthlyPrincipal = principal / months
-
-            for (let i = 1; i <= months; i++) {
-              const interestPayment = remainingPrincipal * monthlyRate
-              const monthlyPayment = monthlyPrincipal + interestPayment
-              remainingPrincipal -= monthlyPrincipal
-
-              if (remainingPrincipal < 0.01) remainingPrincipal = 0
-
-              this.schedule.push({
-                period: i,
-                date: this.formatDate(currentDate),
-                payment: monthlyPayment,
-                principal: monthlyPrincipal,
-                interest: interestPayment,
-                remaining: remainingPrincipal
-              })
-
-              totalPayment += monthlyPayment
-              totalInterest += interestPayment
-
-              currentDate = this.addMonth(currentDate)
-            }
-            this.averagePayment = this.schedule.length > 0 ? this.schedule[0].payment : 0
-            break
-
-          case 'interest_only':
-            // 先息后本
-            const monthlyInterest = principal * monthlyRate
-
-            for (let i = 1; i < months; i++) {
-              this.schedule.push({
-                period: i,
-                date: this.formatDate(currentDate),
-                payment: monthlyInterest,
-                principal: 0,
-                interest: monthlyInterest,
-                remaining: principal
-              })
-
-              totalPayment += monthlyInterest
-              totalInterest += monthlyInterest
-
-              currentDate = this.addMonth(currentDate)
-            }
-
-            // 最后一期还本
-            const lastPayment = principal + monthlyInterest
-            this.schedule.push({
-              period: months,
-              date: this.formatDate(currentDate),
-              payment: lastPayment,
-              principal: principal,
-              interest: monthlyInterest,
-              remaining: 0
-            })
-
-            totalPayment += lastPayment
-            totalInterest += monthlyInterest
-            this.averagePayment = monthlyInterest
-            break
-
-          case 'bullet':
-            // 一次性还本付息
-            const totalInterestAmount = principal * monthlyRate * months
-            const bulletPayment = principal + totalInterestAmount
-
-            currentDate = this.addMonth(currentDate, months)
-
-            this.schedule.push({
-              period: 1,
-              date: this.formatDate(currentDate),
-              payment: bulletPayment,
-              principal: principal,
-              interest: totalInterestAmount,
-              remaining: 0
-            })
-
-            totalPayment = bulletPayment
-            totalInterest = totalInterestAmount
-            this.averagePayment = bulletPayment
-            break
-        }
-
-        this.totalAmount = totalPayment
-        this.totalInterest = totalInterest
-      })
-    },
-
+    // 格式化日期
     formatDate(date) {
+      if (!date) return ''
       const d = new Date(date)
       return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
     },
 
-    addMonth(date, months = 1) {
-      const d = new Date(date)
-      d.setMonth(d.getMonth() + months)
-      return d
-    },
-
+    // 格式化金额
     formatMoney(amount) {
+      if (amount === undefined || amount === null) return '-'
       return amount.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     },
 
-    resetForm() {
-      this.$refs.form.resetFields()
-      this.form.repaymentType = 'equal_interest'
-      this.form.term = 12
-      this.form.termUnit = 'month'
-      this.schedule = []
+    // 获取两日期之间的天数（包含起始日，不包含结束日）
+    getDaysBetween(start, end) {
+      const s = new Date(start)
+      const e = new Date(end)
+      return Math.ceil((e - s) / (1000 * 60 * 60 * 24))
     },
 
-    exportSchedule() {
-      // 简单的CSV导出
-      let csv = '期数,还款日期,本期还款,本金,利息,剩余本金\n'
-      this.schedule.forEach(row => {
-        csv += `${row.period},${row.date},${row.payment},${row.principal},${row.interest},${row.remaining}\n`
-      })
+    // 判断是否使用LPR时期（2020-08-20及之后）
+    isLprPeriod(date) {
+      return new Date(date) >= new Date('2020-08-20')
+    },
 
-      const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' })
-      const link = document.createElement('a')
-      link.href = URL.createObjectURL(blob)
-      link.download = `还款计划表_${new Date().getTime()}.csv`
-      link.click()
+    // 获取指定日期的LPR
+    getLprRateForDate(date) {
+      const compareDate = new Date(date)
+      const level = this.form.lprLevel
+
+      for (let i = 0; i < lprData.length; i++) {
+        const item = lprData[i]
+        const itemDate = new Date(item.date)
+        if (itemDate <= compareDate) {
+          return { rate: item['rate_' + level], type: 'lpr' }
+        }
+      }
+      return { rate: lprData[lprData.length - 1]['rate_' + level], type: 'lpr' }
+    },
+
+    // 获取指定日期的基准利率
+    getBenchmarkRateForDate(date) {
+      const compareDate = new Date(date)
+      const level = '1y' // 默认使用一年期
+
+      for (let i = 0; i < benchmarkData.length; i++) {
+        const item = benchmarkData[i]
+        const itemDate = new Date(item.date)
+        if (itemDate <= compareDate) {
+          return { rate: item[level], type: 'benchmark' }
+        }
+      }
+      return { rate: benchmarkData[benchmarkData.length - 1][level], type: 'benchmark' }
+    },
+
+    // 获取指定日期的适用利率
+    getRateForDate(date) {
+      if (this.form.rateSourceType === 'custom') {
+        return { rate: this.form.customRate, type: 'custom' }
+      }
+      if (this.isLprPeriod(date)) {
+        return this.getLprRateForDate(date)
+      }
+      return this.getBenchmarkRateForDate(date)
+    },
+
+    // 添加还款记录
+    addRepayment() {
+      this.repayments.push({
+        date: '',
+        amount: 0
+      })
+    },
+
+    // 删除还款记录
+    removeRepayment(index) {
+      this.repayments.splice(index, 1)
+    },
+
+    // 重置表单
+    resetForm() {
+      this.$refs.form.resetFields()
+      this.repayments = []
+      this.result = null
+    },
+
+    // 计算（占位方法，后续实现）
+    calculate() {
+      this.$refs.form.validate((valid) => {
+        if (!valid) return
+        // TODO: 实现计算逻辑
+        console.log('计算中...', this.form, this.repayments)
+      })
+    },
+
+    // 导出结果（占位方法，后续实现）
+    exportResult() {
+      // TODO: 实现导出逻辑
+      console.log('导出结果...')
     }
   }
 }
