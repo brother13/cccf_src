@@ -34,8 +34,8 @@
             </el-form-item>
           </el-col>
           <el-col v-if="form.rateSourceType === 'custom'" :span="12">
-            <el-form-item label="自定义利率（%）" prop="customRate" :rules="[{ required: form.rateSourceType === 'custom', message: '请输入利率' }]">
-              <el-input-number v-model="form.customRate" :precision="4" :min="0" style="width: 100%" placeholder="请输入年利率" />
+            <el-form-item label="自定义利率（日利率 %）" prop="customRate" :rules="[{ required: form.rateSourceType === 'custom', message: '请输入日利率' }]">
+              <el-input-number v-model="form.customRate" :precision="6" :min="0" style="width: 100%" placeholder="请输入日利率，如0.05表示万分之五" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -362,7 +362,8 @@ export default {
     // 获取指定日期的适用利率
     getRateForDate(date) {
       if (this.form.rateSourceType === 'custom') {
-        return { rate: this.form.customRate, type: 'custom' }
+        // 自定义利率为日利率
+        return { rate: this.form.customRate, type: 'custom', isDailyRate: true }
       }
       if (this.isLprPeriod(date)) {
         return this.getLprRateForDate(date)
@@ -494,8 +495,10 @@ export default {
           const rateInfo = this.getRateForDate(period.startDate)
           const days = this.getDaysBetween(period.startDate, period.endDate)
 
-          // 计算一般利息
-          const normalInterest = currentPrincipal * (rateInfo.rate / 100) * days / 365
+          // 计算一般利息（日利率直接计算，年利率需要除以365）
+          const normalInterest = rateInfo.isDailyRate
+            ? currentPrincipal * (rateInfo.rate / 100) * days
+            : currentPrincipal * (rateInfo.rate / 100) * days / 365
           accumulatedNormalInterest += normalInterest
           totalNormalInterest += normalInterest
 
