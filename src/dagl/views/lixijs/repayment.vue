@@ -587,10 +587,79 @@ export default {
       })
     },
 
-    // 导出结果（占位方法，后续实现）
+    // 导出结果
     exportResult() {
-      // TODO: 实现导出逻辑
-      console.log('导出结果...')
+      if (!this.result) return
+
+      let report = '还款计划计算报告（执行案件专用）\n'
+      report += '='.repeat(60) + '\n\n'
+
+      // 基本信息
+      report += '【基本信息】\n'
+      report += `债务金额：${this.formatMoney(this.result.summary.principal)} 元\n`
+      report += `正常履行金额：${this.formatMoney(this.result.summary.paidAmount)} 元\n`
+      report += `实际计息本金：${this.formatMoney(this.result.summary.actualPrincipal)} 元\n`
+      report += `利率类型：${this.form.rateSourceType === 'auto' ? '基准利率与LPR自动分段' : '自定义利率'}\n`
+      report += `还款类型：${this.form.repaymentType === 'interest_first' ? '先息后本' : '先本后息'}\n`
+      report += `利息起算日期：${this.form.interestStartDate}\n`
+      if (this.form.calcDelayInterest) {
+        report += `延迟履行利息起算：${this.form.delayInterestStartDate}\n`
+      }
+      report += `结束日期：${this.form.endDate}\n\n`
+
+      // 中途还款记录
+      if (this.repayments.length > 0) {
+        report += '【中途还款记录】\n'
+        this.repayments.forEach((r, i) => {
+          report += `${i + 1}. ${r.date} 还款 ${this.formatMoney(r.amount)} 元\n`
+        })
+        report += '\n'
+      }
+
+      // 汇总结果
+      report += '【计算结果汇总】\n'
+      report += `一般利息合计：${this.formatMoney(this.result.summary.totalNormalInterest)} 元\n`
+      if (this.form.calcDelayInterest) {
+        report += `迟延履行利息合计：${this.formatMoney(this.result.summary.totalDelayInterest)} 元\n`
+      }
+      report += `应付总额：${this.formatMoney(this.result.summary.totalAmount)} 元\n\n`
+
+      // 分段明细
+      report += '【分段计算明细】\n'
+      report += '-'.repeat(60) + '\n'
+
+      for (const segment of this.result.segments) {
+        if (segment.isRepaymentNode) {
+          const info = segment.repaymentInfo
+          report += `\n[中途还款] ${info.date} 还款 ${this.formatMoney(info.amount)} 元\n`
+          report += `  还款前剩余本金：${this.formatMoney(info.remainingPrincipalBefore)} 元\n`
+          report += `  截至还款日一般利息：${this.formatMoney(info.accumulatedInterest)} 元\n`
+          report += `  实际还一般利息：${this.formatMoney(info.interestPaid)} 元\n`
+          report += `  实际还本金：${this.formatMoney(info.principalPaid)} 元\n`
+          report += `  还款后剩余本金：${this.formatMoney(info.remainingPrincipal)} 元\n`
+          if (this.form.calcDelayInterest) {
+            report += `  累计迟延履行金（未抵扣）：${this.formatMoney(info.accumulatedDelayInterest)} 元\n`
+          }
+          report += '\n'
+        } else {
+          report += `${segment.startDate} 至 ${segment.endDate}（${segment.days}天）\n`
+          report += `  利率：${segment.rate.toFixed(2)}%（${segment.rateType === 'lpr' ? 'LPR' : '基准利率'}）\n`
+          report += `  一般利息：${this.formatMoney(segment.normalInterest)} 元\n`
+          if (this.form.calcDelayInterest && segment.delayInterest > 0) {
+            report += `  累计迟延履行金：${this.formatMoney(segment.delayInterest)} 元\n`
+          }
+        }
+      }
+
+      report += '\n' + '='.repeat(60) + '\n'
+      report += `计算时间：${new Date().toLocaleString('zh-CN')}\n`
+
+      // 下载文件
+      const blob = new Blob([report], { type: 'text/plain;charset=utf-8' })
+      const link = document.createElement('a')
+      link.href = URL.createObjectURL(blob)
+      link.download = `还款计划计算报告_${new Date().getTime()}.txt`
+      link.click()
     }
   }
 }
