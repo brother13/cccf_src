@@ -177,7 +177,7 @@
             </tr>
           </thead>
           <tbody>
-            <template v-for="(segment, index) in result.segments">
+            <template v-for="(segment, index) in mergedSegments">
               <tr v-if="!segment.isRepaymentNode" :key="'seg-' + index" class="data-row">
                 <td class="col-date">{{ segment.startDate }}</td>
                 <td class="col-date">{{ segment.endDate }}</td>
@@ -320,6 +320,51 @@ export default {
       },
       repayments: [],
       result: null
+    }
+  },
+  computed: {
+    // 合并相同利率的连续时间段（还款节点之间）
+    mergedSegments() {
+      if (!this.result || !this.result.segments) return []
+
+      const merged = []
+      let current = null
+
+      for (const segment of this.result.segments) {
+        // 如果是还款节点，直接添加并重置当前合并段
+        if (segment.isRepaymentNode) {
+          if (current) {
+            merged.push(current)
+            current = null
+          }
+          merged.push(segment)
+          continue
+        }
+
+        // 普通时间段，尝试合并
+        if (!current) {
+          // 开始新的合并段
+          current = { ...segment }
+        } else if (Math.abs(segment.rate - current.rate) < 0.0001 && segment.rateType === current.rateType) {
+          // 利率相同，合并
+          current.endDate = segment.endDate
+          current.days += segment.days
+          current.normalInterest += segment.normalInterest
+          // 保留最新的累计迟延利息
+          current.delayInterest = segment.delayInterest
+        } else {
+          // 利率不同，保存当前段，开始新段
+          merged.push(current)
+          current = { ...segment }
+        }
+      }
+
+      // 添加最后一段
+      if (current) {
+        merged.push(current)
+      }
+
+      return merged
     }
   },
   methods: {
