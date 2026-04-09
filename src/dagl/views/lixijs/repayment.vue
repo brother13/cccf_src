@@ -689,4 +689,81 @@ export default {
 .clearfix:after {
   clear: both
 }
+
+// 分段表格样式
+.segment-table-wrapper {
+  overflow-x: auto;
+}
+
+.segment-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  thead {
+    background-color: #4472c4;
+    color: #fff;
+
+    th {
+      padding: 12px 8px;
+      text-align: center;
+      font-weight: normal;
+      border: 1px solid #5b9bd5;
+    }
+  }
+
+  tbody {
+    tr.data-row {
+      background-color: #d9e2f3;
+
+      &:nth-child(even) {
+        background-color: #e7ebf5;
+      }
+
+      td {
+        padding: 10px 8px;
+        border: 1px solid #b4c7e7;
+        text-align: center;
+      }
+    }
+
+    tr.repayment-row {
+      background-color: #fff3cd;
+
+      td.repayment-info {
+        padding: 12px 15px;
+        border: 1px solid #ffeaa7;
+
+        .repayment-title {
+          font-weight: bold;
+          color: #856404;
+          margin-bottom: 8px;
+        }
+
+        .repayment-detail {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 15px;
+          font-size: 13px;
+          color: #666;
+
+          span {
+            white-space: nowrap;
+          }
+        }
+      }
+    }
+  }
+}
+
+.col-date { width: 12%; }
+.col-days { width: 8%; }
+.col-rate { width: 15%; }
+.col-interest { width: 15%; }
+.col-delay { width: 15%; }
+
+.amount-highlight {
+  color: #f56c6c;
+  font-weight: bold;
+}
 </style>
