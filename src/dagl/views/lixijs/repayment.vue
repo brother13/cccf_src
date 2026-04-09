@@ -2,131 +2,188 @@
   <div class="app-container">
     <el-card class="box-card">
       <div slot="header" class="clearfix">
-        <span>还款计划计算</span>
-        <el-button
-          style="float: right; padding: 3px 0"
-          type="text"
-          @click="resetForm"
-        >
+        <span>还款计划计算（执行案件专用）</span>
+        <el-button style="float: right; padding: 3px 0" type="text" @click="resetForm">
           重置
         </el-button>
       </div>
 
-      <el-form ref="form" :model="form" label-width="140px">
+      <el-form ref="form" :model="form" label-width="160px">
+        <!-- 基本信息 -->
+        <el-divider>基本信息</el-divider>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="本金（元）" prop="principal" :rules="[{ required: true, message: '请输入本金' }]">
-              <el-input-number
-                v-model="form.principal"
-                :precision="2"
-                :min="0"
-                style="width: 100%"
-                placeholder="请输入本金金额"
-              />
+            <el-form-item label="债务金额（元）" prop="principal" :rules="[{ required: true, message: '请输入债务金额' }]">
+              <el-input-number v-model="form.principal" :precision="2" :min="0" style="width: 100%" placeholder="请输入债务金额" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="年利率（%）" prop="rate" :rules="[{ required: true, message: '请输入年利率' }]">
-              <el-input-number
-                v-model="form.rate"
-                :precision="4"
-                :min="0"
-                style="width: 100%"
-                placeholder="请输入年利率"
-              />
+            <el-form-item label="正常履行金额（元）">
+              <el-input-number v-model="form.paidAmount" :precision="2" :min="0" style="width: 100%" placeholder="已履行金额（从债务金额中减去）" />
             </el-form-item>
           </el-col>
         </el-row>
 
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="还款方式">
-              <el-select v-model="form.repaymentType" style="width: 100%">
-                <el-option label="等额本息" value="equal_interest" />
-                <el-option label="等额本金" value="equal_principal" />
-                <el-option label="先息后本" value="interest_only" />
-                <el-option label="一次性还本付息" value="bullet" />
-              </el-select>
+            <el-form-item label="利率类型">
+              <el-radio-group v-model="form.rateSourceType">
+                <el-radio label="auto">基准利率与LPR自动分段</el-radio>
+                <el-radio label="custom">自定义利率</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col v-if="form.rateSourceType === 'custom'" :span="12">
+            <el-form-item label="自定义利率（%）" prop="customRate" :rules="[{ required: form.rateSourceType === 'custom', message: '请输入利率' }]">
+              <el-input-number v-model="form.customRate" :precision="4" :min="0" style="width: 100%" placeholder="请输入年利率" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row v-if="form.rateSourceType === 'auto'" :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="LPR档次">
+              <el-radio-group v-model="form.lprLevel">
+                <el-radio label="1y">1年期LPR</el-radio>
+                <el-radio label="5y">5年期以上LPR</el-radio>
+              </el-radio-group>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="借款期限">
-              <el-input-number
-                v-model="form.term"
-                :min="1"
-                :max="360"
-                style="width: 60%"
-              />
-              <el-select v-model="form.termUnit" style="width: 38%; margin-left: 2%">
-                <el-option label="个月" value="month" />
-                <el-option label="年" value="year" />
-              </el-select>
+            <el-form-item label="还款类型">
+              <el-radio-group v-model="form.repaymentType">
+                <el-radio label="interest_first">先息后本</el-radio>
+                <el-radio label="principal_first">先本后息</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <!-- 日期设置 -->
+        <el-divider>日期设置</el-divider>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="利息起算日期" prop="interestStartDate" :rules="[{ required: true, message: '请选择日期' }]">
+              <el-date-picker v-model="form.interestStartDate" type="date" placeholder="选择日期" style="width: 100%" value-format="yyyy-MM-dd" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="延迟履行利息起算" prop="delayInterestStartDate">
+              <el-date-picker v-model="form.delayInterestStartDate" type="date" placeholder="判决履行期满日" style="width: 100%" value-format="yyyy-MM-dd" />
             </el-form-item>
           </el-col>
         </el-row>
 
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="首次还款日期">
-              <el-date-picker
-                v-model="form.firstRepaymentDate"
-                type="date"
-                placeholder="选择首次还款日期"
-                style="width: 100%"
-                value-format="yyyy-MM-dd"
-              />
+            <el-form-item label="结束日期" prop="endDate" :rules="[{ required: true, message: '请选择日期' }]">
+              <el-date-picker v-model="form.endDate" type="date" placeholder="默认当天" style="width: 100%" value-format="yyyy-MM-dd" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="计算类型">
+              <el-checkbox v-model="form.calcDelayInterest">计算加倍利息（迟延履行利息）</el-checkbox>
             </el-form-item>
           </el-col>
         </el-row>
+
+        <!-- 中途还款记录 -->
+        <el-divider>中途还款记录</el-divider>
+        <el-row>
+          <el-col :span="24">
+            <el-button type="primary" size="small" style="margin-bottom: 15px;" @click="addRepayment">
+              <i class="el-icon-plus" /> 添加还款
+            </el-button>
+          </el-col>
+        </el-row>
+
+        <el-table v-if="repayments.length > 0" :data="repayments" border style="margin-bottom: 20px;">
+          <el-table-column label="还款日期" width="200">
+            <template slot-scope="scope">
+              <el-date-picker v-model="scope.row.date" type="date" placeholder="选择日期" style="width: 100%" value-format="yyyy-MM-dd" size="small" />
+            </template>
+          </el-table-column>
+          <el-table-column label="还款金额（元）" width="200">
+            <template slot-scope="scope">
+              <el-input-number v-model="scope.row.amount" :precision="2" :min="0" style="width: 100%" size="small" />
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="100">
+            <template slot-scope="scope">
+              <el-button type="danger" size="small" @click="removeRepayment(scope.$index)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
 
         <div class="calc-actions">
           <el-button type="primary" size="large" @click="calculate">
-            <i class="el-icon-s-marketing" /> 生成还款计划
+            <i class="el-icon-s-marketing" /> 开始计算
           </el-button>
         </div>
       </el-form>
     </el-card>
 
-    <!-- 还款计划结果 -->
-    <el-card v-if="schedule.length > 0" class="box-card result-card">
+    <!-- 计算结果 -->
+    <el-card v-if="result" class="box-card result-card">
       <div slot="header" class="clearfix">
-        <span>还款计划表</span>
-        <el-button style="float: right; padding: 3px 0" type="text" @click="exportSchedule">
-          <i class="el-icon-download" /> 导出Excel
+        <span>计算结果</span>
+        <el-button style="float: right; padding: 3px 0" type="text" @click="exportResult">
+          <i class="el-icon-download" /> 导出报告
         </el-button>
       </div>
 
-      <el-descriptions :column="4" border style="margin-bottom: 20px;">
-        <el-descriptions-item label="还款总额">{{ formatMoney(totalAmount) }} 元</el-descriptions-item>
-        <el-descriptions-item label="支付利息">{{ formatMoney(totalInterest) }} 元</el-descriptions-item>
-        <el-descriptions-item label="每期还款">{{ formatMoney(averagePayment) }} 元</el-descriptions-item>
-        <el-descriptions-item label="期数">{{ schedule.length }} 期</el-descriptions-item>
+      <!-- 汇总信息 -->
+      <el-descriptions :column="3" border style="margin-bottom: 20px;">
+        <el-descriptions-item label="债务本金">{{ formatMoney(result.summary.principal) }} 元</el-descriptions-item>
+        <el-descriptions-item label="正常履行金额">{{ formatMoney(result.summary.paidAmount) }} 元</el-descriptions-item>
+        <el-descriptions-item label="实际计息本金">{{ formatMoney(result.summary.actualPrincipal) }} 元</el-descriptions-item>
+        <el-descriptions-item label="一般利息合计">{{ formatMoney(result.summary.totalNormalInterest) }} 元</el-descriptions-item>
+        <el-descriptions-item v-if="form.calcDelayInterest" label="迟延履行利息合计">{{ formatMoney(result.summary.totalDelayInterest) }} 元</el-descriptions-item>
+        <el-descriptions-item label="应付总额" :span="form.calcDelayInterest ? 1 : 2">
+          <span class="amount-highlight red">{{ formatMoney(result.summary.totalAmount) }} 元</span>
+        </el-descriptions-item>
       </el-descriptions>
 
-      <el-table :data="schedule" border stripe max-height="500">
-        <el-table-column type="index" label="期数" width="60" align="center" />
-        <el-table-column prop="date" label="还款日期" width="120" align="center" />
-        <el-table-column prop="payment" label="本期还款" width="150" align="right">
-          <template slot-scope="scope">
-            {{ formatMoney(scope.row.payment) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="principal" label="本金" width="150" align="right">
-          <template slot-scope="scope">
-            {{ formatMoney(scope.row.principal) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="interest" label="利息" width="150" align="right">
-          <template slot-scope="scope">
-            {{ formatMoney(scope.row.interest) }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="remaining" label="剩余本金" width="150" align="right">
-          <template slot-scope="scope">
-            {{ formatMoney(scope.row.remaining) }}
-          </template>
-        </el-table-column>
-      </el-table>
+      <!-- 分段明细表格 -->
+      <div class="segment-table-wrapper">
+        <table class="segment-table">
+          <thead>
+            <tr>
+              <th class="col-date">开始日期</th>
+              <th class="col-date">结束日期</th>
+              <th class="col-days">天数</th>
+              <th class="col-rate">利率</th>
+              <th class="col-interest">一般利息</th>
+              <th v-if="form.calcDelayInterest" class="col-delay">累计迟延利息</th>
+            </tr>
+          </thead>
+          <tbody>
+            <template v-for="(segment, index) in result.segments">
+              <tr v-if="!segment.isRepaymentNode" :key="'seg-' + index" class="data-row">
+                <td class="col-date">{{ segment.startDate }}</td>
+                <td class="col-date">{{ segment.endDate }}</td>
+                <td class="col-days">{{ segment.days }}</td>
+                <td class="col-rate">{{ segment.rate.toFixed(2) }}% ({{ segment.rateType === 'lpr' ? 'LPR' : '基准' }})</td>
+                <td class="col-interest">{{ formatMoney(segment.normalInterest) }}</td>
+                <td v-if="form.calcDelayInterest" class="col-delay">{{ segment.delayInterest > 0 ? formatMoney(segment.delayInterest) : '-' }}</td>
+              </tr>
+              <tr v-else :key="'repay-' + index" class="repayment-row">
+                <td :colspan="form.calcDelayInterest ? 6 : 5" class="repayment-info">
+                  <div class="repayment-title">中途还款：{{ segment.repaymentInfo.date }} 还款 {{ formatMoney(segment.repaymentInfo.amount) }} 元</div>
+                  <div class="repayment-detail">
+                    <span>还款前剩余本金：{{ formatMoney(segment.repaymentInfo.remainingPrincipalBefore) }} 元</span>
+                    <span>截至还款日一般利息：{{ formatMoney(segment.repaymentInfo.accumulatedInterest) }} 元</span>
+                    <span>实际还一般利息：{{ formatMoney(segment.repaymentInfo.interestPaid) }} 元</span>
+                    <span>实际还本金：{{ formatMoney(segment.repaymentInfo.principalPaid) }} 元</span>
+                    <span>还款后剩余本金：{{ formatMoney(segment.repaymentInfo.remainingPrincipal) }} 元</span>
+                    <span v-if="form.calcDelayInterest">累计迟延履行金（未抵扣）：{{ formatMoney(segment.repaymentInfo.accumulatedDelayInterest) }} 元</span>
+                  </div>
+                </td>
+              </tr>
+            </template>
+          </tbody>
+        </table>
+      </div>
     </el-card>
   </div>
 </template>
