@@ -135,16 +135,32 @@
       <!-- 汇总信息 -->
       <div class="result-summary">
         <div class="result-title">计算结果汇总</div>
-        <el-descriptions :column="1" border>
-          <el-descriptions-item label="债务本金">{{ formatMoney(result.summary.principal) }} 元</el-descriptions-item>
-          <el-descriptions-item label="正常履行金额">{{ formatMoney(result.summary.paidAmount) }} 元</el-descriptions-item>
-          <el-descriptions-item label="实际计息本金">{{ formatMoney(result.summary.actualPrincipal) }} 元</el-descriptions-item>
-          <el-descriptions-item label="一般利息合计">{{ formatMoney(result.summary.totalNormalInterest) }} 元</el-descriptions-item>
-          <el-descriptions-item v-if="form.calcDelayInterest" label="迟延履行利息合计">{{ formatMoney(result.summary.totalDelayInterest) }} 元</el-descriptions-item>
-          <el-descriptions-item label="应付总额" class="total-amount">
-            <span class="amount-highlight red">{{ formatMoney(result.summary.totalAmount) }} 元</span>
-          </el-descriptions-item>
-        </el-descriptions>
+        <div class="result-list">
+          <div class="result-item">
+            <span class="result-label">债务本金：</span>
+            <span class="result-value">{{ formatMoney(result.summary.principal) }} 元</span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">正常履行金额：</span>
+            <span class="result-value">{{ formatMoney(result.summary.paidAmount) }} 元</span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">实际计息本金：</span>
+            <span class="result-value">{{ formatMoney(result.summary.actualPrincipal) }} 元</span>
+          </div>
+          <div class="result-item">
+            <span class="result-label">一般利息合计：</span>
+            <span class="result-value">{{ formatMoney(result.summary.totalNormalInterest) }} 元</span>
+          </div>
+          <div v-if="form.calcDelayInterest" class="result-item">
+            <span class="result-label">迟延履行利息合计：</span>
+            <span class="result-value">{{ formatMoney(result.summary.totalDelayInterest) }} 元</span>
+          </div>
+          <div class="result-item total-item">
+            <span class="result-label">应付总额：</span>
+            <span class="result-value amount-highlight red">{{ formatMoney(result.summary.totalAmount) }} 元</span>
+          </div>
+        </div>
       </div>
 
       <!-- 分段明细表格 -->
@@ -775,6 +791,9 @@ export default {
 
 .result-summary {
   margin-bottom: 20px;
+  border: 1px solid #ebeef5;
+  border-radius: 4px;
+  overflow: hidden;
 
   .result-title {
     font-size: 16px;
@@ -782,18 +801,46 @@ export default {
     color: #303133;
     padding: 12px 16px;
     background-color: #f5f7fa;
-    border: 1px solid #ebeef5;
+    border-bottom: 1px solid #ebeef5;
+  }
+
+  .result-list {
+    padding: 12px 16px;
+    background-color: #fff;
+  }
+
+  .result-item {
+    padding: 10px 0;
+    border-bottom: 1px dashed #ebeef5;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .result-label {
+    color: #606266;
+    min-width: 140px;
+  }
+
+  .result-value {
+    color: #303133;
+    font-weight: 500;
+  }
+
+  .total-item {
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px solid #ebeef5;
     border-bottom: none;
-    border-radius: 4px 4px 0 0;
-  }
+    font-size: 16px;
 
-  ::v-deep .el-descriptions {
-    border-radius: 0 0 4px 4px;
-  }
-
-  ::v-deep .total-amount {
-    .el-descriptions-item__content {
-      font-size: 16px;
+    .result-label {
+      font-weight: bold;
+      color: #303133;
     }
   }
 }
