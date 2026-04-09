@@ -654,79 +654,101 @@ export default {
       })
     },
 
-    // 导出结果
+    // 导出结果（Excel格式）
     exportResult() {
       if (!this.result) return
 
-      let report = '还款计划计算报告（执行案件专用）\n'
-      report += '='.repeat(60) + '\n\n'
+      // 动态导入 xlsx 库
+      import('xlsx').then(XLSX => {
+        // 创建工作簿
+        const wb = XLSX.utils.book_new()
 
-      // 基本信息
-      report += '【基本信息】\n'
-      report += `债务金额：${this.formatMoney(this.result.summary.principal)} 元\n`
-      report += `正常履行金额：${this.formatMoney(this.result.summary.paidAmount)} 元\n`
-      report += `实际计息本金：${this.formatMoney(this.result.summary.actualPrincipal)} 元\n`
-      report += `利率类型：${this.form.rateSourceType === 'auto' ? '基准利率与LPR自动分段' : '自定义利率'}\n`
-      report += `还款类型：${this.form.repaymentType === 'interest_first' ? '先息后本' : '先本后息'}\n`
-      report += `利息起算日期：${this.form.interestStartDate}\n`
-      if (this.form.calcDelayInterest) {
-        report += `延迟履行利息起算：${this.form.delayInterestStartDate}\n`
-      }
-      report += `结束日期：${this.form.endDate}\n\n`
+        // ===== 汇总表 =====
+        const summaryData = [
+          ['还款计划计算报告（执行案件专用）'],
+          [],
+          ['一、基本信息'],
+          ['债务金额', this.formatMoney(this.result.summary.principal) + ' 元'],
+          ['正常履行金额', this.formatMoney(this.result.summary.paidAmount) + ' 元'],
+          ['实际计息本金', this.formatMoney(this.result.summary.actualPrincipal) + ' 元'],
+          ['利率类型', this.form.rateSourceType === 'auto' ? '基准利率与LPR自动分段' : '自定义利率'],
+          ['还款类型', this.form.repaymentType === 'interest_first' ? '先息后本' : '先本后息'],
+          ['利息起算日期', this.form.interestStartDate],
+          ['延迟履行利息起算', this.form.delayInterestStartDate || '-'],
+          ['结束日期', this.form.endDate],
+          [],
+          ['二、计算结果汇总'],
+          ['一般利息合计', this.formatMoney(this.result.summary.totalNormalInterest) + ' 元'],
+          ...(this.form.calcDelayInterest ? [['迟延履行利息合计', this.formatMoney(this.result.summary.totalDelayInterest) + ' 元']] : []),
+          ['应付总额', this.formatMoney(this.result.summary.totalAmount) + ' 元']
+        ]
 
-      // 中途还款记录
-      if (this.repayments.length > 0) {
-        report += '【中途还款记录】\n'
-        this.repayments.forEach((r, i) => {
-          report += `${i + 1}. ${r.date} 还款 ${this.formatMoney(r.amount)} 元\n`
-        })
-        report += '\n'
-      }
+        // 添加中途还款记录
+        if (this.repayments.length > 0) {
+          summaryData.push([], ['三、中途还款记录'])
+          this.repayments.forEach((r, i) => {
+            summaryData.push([`还款${i + 1}`, r.date, this.formatMoney(r.amount) + ' 元'])
+          })
+        }
 
-      // 汇总结果
-      report += '【计算结果汇总】\n'
-      report += `一般利息合计：${this.formatMoney(this.result.summary.totalNormalInterest)} 元\n`
-      if (this.form.calcDelayInterest) {
-        report += `迟延履行利息合计：${this.formatMoney(this.result.summary.totalDelayInterest)} 元\n`
-      }
-      report += `应付总额：${this.formatMoney(this.result.summary.totalAmount)} 元\n\n`
+        const summaryWs = XLSX.utils.aoa_to_sheet(summaryData)
+        XLSX.utils.book_append_sheet(wb, summaryWs, '计算汇总')
 
-      // 分段明细
-      report += '【分段计算明细】\n'
-      report += '-'.repeat(60) + '\n'
+        // ===== 分段明细表 =====
+        const detailHeaders = ['开始日期', '结束日期', '天数', '利率', '利率类型', '一般利息']
+        if (this.form.calcDelayInterest) {
+          detailHeaders.push('累计迟延履行利息')
+        }
 
-      for (const segment of this.result.segments) {
-        if (segment.isRepaymentNode) {
-          const info = segment.repaymentInfo
-          report += `\n[中途还款] ${info.date} 还款 ${this.formatMoney(info.amount)} 元\n`
-          report += `  还款前剩余本金：${this.formatMoney(info.remainingPrincipalBefore)} 元\n`
-          report += `  截至还款日一般利息：${this.formatMoney(info.accumulatedInterest)} 元\n`
-          report += `  实际还一般利息：${this.formatMoney(info.interestPaid)} 元\n`
-          report += `  实际还本金：${this.formatMoney(info.principalPaid)} 元\n`
-          report += `  还款后剩余本金：${this.formatMoney(info.remainingPrincipal)} 元\n`
-          if (this.form.calcDelayInterest) {
-            report += `  累计迟延履行金（未抵扣）：${this.formatMoney(info.accumulatedDelayInterest)} 元\n`
-          }
-          report += '\n'
-        } else {
-          report += `${segment.startDate} 至 ${segment.endDate}（${segment.days}天）\n`
-          report += `  利率：${segment.rate.toFixed(2)}%（${segment.rateType === 'lpr' ? 'LPR' : '基准利率'}）\n`
-          report += `  一般利息：${this.formatMoney(segment.normalInterest)} 元\n`
-          if (this.form.calcDelayInterest && segment.delayInterest > 0) {
-            report += `  累计迟延履行金：${this.formatMoney(segment.delayInterest)} 元\n`
+        const detailData = [detailHeaders]
+
+        for (const segment of this.mergedSegments) {
+          if (segment.isRepaymentNode) {
+            // 还款节点单独一行显示
+            const info = segment.repaymentInfo
+            detailData.push([
+              `[中途还款] ${info.date}`,
+              '',
+              '',
+              `还款：${this.formatMoney(info.amount)} 元`,
+              '',
+              `剩余本金：${this.formatMoney(info.remainingPrincipal)} 元`
+            ])
+          } else {
+            // 普通时间段
+            const row = [
+              segment.startDate,
+              segment.endDate,
+              segment.days,
+              segment.rate.toFixed(2) + '%',
+              segment.rateType === 'lpr' ? 'LPR' : (segment.rateType === 'benchmark' ? '基准利率' : '自定义'),
+              this.formatMoney(segment.normalInterest)
+            ]
+            if (this.form.calcDelayInterest) {
+              row.push(segment.delayInterest > 0 ? this.formatMoney(segment.delayInterest) : '-')
+            }
+            detailData.push(row)
           }
         }
-      }
 
-      report += '\n' + '='.repeat(60) + '\n'
-      report += `计算时间：${new Date().toLocaleString('zh-CN')}\n`
+        const detailWs = XLSX.utils.aoa_to_sheet(detailData)
+        XLSX.utils.book_append_sheet(wb, detailWs, '分段明细')
 
-      // 下载文件
-      const blob = new Blob([report], { type: 'text/plain;charset=utf-8' })
-      const link = document.createElement('a')
-      link.href = URL.createObjectURL(blob)
-      link.download = `还款计划计算报告_${new Date().getTime()}.txt`
-      link.click()
+        // 设置列宽
+        detailWs['!cols'] = [
+          { wch: 14 },
+          { wch: 14 },
+          { wch: 8 },
+          { wch: 12 },
+          { wch: 10 },
+          { wch: 15 },
+          ...(this.form.calcDelayInterest ? [{ wch: 18 }] : [])
+        ]
+
+        // 下载文件
+        const fileName = `还款计划计算报告_${new Date().getTime()}.xlsx`
+        XLSX.writeFile(wb, fileName)
+      })
     }
   }
 }
