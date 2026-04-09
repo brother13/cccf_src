@@ -133,16 +133,19 @@
       </div>
 
       <!-- 汇总信息 -->
-      <el-descriptions :column="3" border style="margin-bottom: 20px;">
-        <el-descriptions-item label="债务本金">{{ formatMoney(result.summary.principal) }} 元</el-descriptions-item>
-        <el-descriptions-item label="正常履行金额">{{ formatMoney(result.summary.paidAmount) }} 元</el-descriptions-item>
-        <el-descriptions-item label="实际计息本金">{{ formatMoney(result.summary.actualPrincipal) }} 元</el-descriptions-item>
-        <el-descriptions-item label="一般利息合计">{{ formatMoney(result.summary.totalNormalInterest) }} 元</el-descriptions-item>
-        <el-descriptions-item v-if="form.calcDelayInterest" label="迟延履行利息合计">{{ formatMoney(result.summary.totalDelayInterest) }} 元</el-descriptions-item>
-        <el-descriptions-item label="应付总额" :span="form.calcDelayInterest ? 1 : 2">
-          <span class="amount-highlight red">{{ formatMoney(result.summary.totalAmount) }} 元</span>
-        </el-descriptions-item>
-      </el-descriptions>
+      <div class="result-summary">
+        <div class="result-title">计算结果汇总</div>
+        <el-descriptions :column="2" border>
+          <el-descriptions-item label="债务本金">{{ formatMoney(result.summary.principal) }} 元</el-descriptions-item>
+          <el-descriptions-item label="正常履行金额">{{ formatMoney(result.summary.paidAmount) }} 元</el-descriptions-item>
+          <el-descriptions-item label="实际计息本金">{{ formatMoney(result.summary.actualPrincipal) }} 元</el-descriptions-item>
+          <el-descriptions-item label="一般利息合计">{{ formatMoney(result.summary.totalNormalInterest) }} 元</el-descriptions-item>
+          <el-descriptions-item v-if="form.calcDelayInterest" label="迟延履行利息合计">{{ formatMoney(result.summary.totalDelayInterest) }} 元</el-descriptions-item>
+          <el-descriptions-item label="应付总额" :span="form.calcDelayInterest ? 1 : 2" class="total-amount">
+            <span class="amount-highlight red">{{ formatMoney(result.summary.totalAmount) }} 元</span>
+          </el-descriptions-item>
+        </el-descriptions>
+      </div>
 
       <!-- 分段明细表格 -->
       <div class="segment-table-wrapper">
@@ -768,5 +771,30 @@ export default {
 .amount-highlight {
   color: #f56c6c;
   font-weight: bold;
+}
+
+.result-summary {
+  margin-bottom: 20px;
+
+  .result-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #303133;
+    padding: 12px 16px;
+    background-color: #f5f7fa;
+    border: 1px solid #ebeef5;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+  }
+
+  ::v-deep .el-descriptions {
+    border-radius: 0 0 4px 4px;
+  }
+
+  ::v-deep .total-amount {
+    .el-descriptions-item__content {
+      font-size: 16px;
+    }
+  }
 }
 </style>
