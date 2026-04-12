@@ -15,6 +15,7 @@ import Router_tz from './tz'
 import Router_xdgl from './xdgl'
 import Router_zxktz from './zxktz'
 import Router_pz from './pz'
+import Router_lixijs from './lixijs'
 
 // import Router_dagl from './dagl'
 const webRouter = [
@@ -22,7 +23,9 @@ const webRouter = [
   // Router_ywcl,
   Router_tz,
   Router_zxktz,
+  Router_lixijs,
   Router_xdgl,
+
 
   // Router_pz,
   // Router_dagl,

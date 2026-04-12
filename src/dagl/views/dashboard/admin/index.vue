@@ -36,6 +36,19 @@
         </div>
       </div>
 
+      <!-- 工具组 -->
+      <!-- <div class="remind-group">
+        <div class="group-title">实用工具</div>
+        <div class="menu-items-wrapper">
+          <div class="menu-item data-import">
+            <div class="icon-wrapper">
+              <i class="fas fa-calculator" />
+            </div>
+            <div class="menu-text" @click="goToPage('lixijs')">利息计算器</div>
+          </div>
+        </div>
+      </div> -->
+
       <!-- 执行款台账组 -->
       <div class="remind-group">
         <div class="group-title">案款相关提醒</div>
@@ -225,6 +238,10 @@ export default {
       } else if (type == 'dkplist') {
         this.$router.push({
           path: '/zxktz/dkplist'
+        })
+      } else if (type == 'lixijs') {
+        this.$router.push({
+          path: '/lixijs/calculator'
         })
       }
     },

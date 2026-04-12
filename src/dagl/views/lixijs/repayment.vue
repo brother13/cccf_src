@@ -18,8 +18,11 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="正常履行金额（元）">
-              <el-input-number v-model="form.paidAmount" :precision="2" :min="0" style="width: 100%" placeholder="已履行金额（从债务金额中减去）" />
+            <el-form-item label="还款类型">
+              <el-radio-group v-model="form.repaymentType">
+                <el-radio label="interest_first">先息后本</el-radio>
+                <el-radio label="principal_first">先本后息</el-radio>
+              </el-radio-group>
             </el-form-item>
           </el-col>
         </el-row>
@@ -46,14 +49,6 @@
               <el-radio-group v-model="form.lprLevel">
                 <el-radio label="1y">1年期LPR</el-radio>
                 <el-radio label="5y">5年期以上LPR</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="还款类型">
-              <el-radio-group v-model="form.repaymentType">
-                <el-radio label="interest_first">先息后本</el-radio>
-                <el-radio label="principal_first">先本后息</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -94,6 +89,11 @@
             <el-button type="primary" size="small" style="margin-bottom: 15px;" @click="addRepayment">
               <i class="el-icon-plus" /> 添加还款
             </el-button>
+            <el-button type="success" size="small" style="margin-bottom: 15px; margin-left: 10px;" @click="$refs.fileInput.click()">
+              <i class="el-icon-upload" /> 批量导入
+            </el-button>
+            <input ref="fileInput" type="file" accept=".xlsx,.xls" style="display: none" @change="handleFileChange">
+            <span style="margin-left: 10px; color: #909399; font-size: 12px;">导入文件为 Excel，列名为【还款日期】、【还款金额】</span>
           </el-col>
         </el-row>
 
@@ -124,7 +124,7 @@
     </el-card>
 
     <!-- 计算结果 -->
-    <el-card v-if="result" class="box-card result-card">
+    <el-card v-if="result" ref="resultCard" class="box-card result-card">
       <div slot="header" class="clearfix">
         <span>计算结果</span>
         <el-button style="float: right; padding: 3px 0" type="text" @click="exportResult">
@@ -139,14 +139,6 @@
           <div class="result-item">
             <span class="result-label">债务本金：</span>
             <span class="result-value">{{ formatMoney(result.summary.principal) }} 元</span>
-          </div>
-          <div class="result-item">
-            <span class="result-label">正常履行金额：</span>
-            <span class="result-value">{{ formatMoney(result.summary.paidAmount) }} 元</span>
-          </div>
-          <div class="result-item">
-            <span class="result-label">实际计息本金：</span>
-            <span class="result-value">{{ formatMoney(result.summary.actualPrincipal) }} 元</span>
           </div>
           <div class="result-item">
             <span class="result-label">一般利息合计：</span>
@@ -311,7 +303,6 @@ export default {
         rateSourceType: 'auto',
         customRate: undefined,
         repaymentType: 'interest_first',
-        paidAmount: 0,
         interestStartDate: '',
         delayInterestStartDate: '',
         endDate: formatDateStr(today),
@@ -523,6 +514,188 @@ export default {
       this.repayments.splice(index, 1)
     },
 
+    // 处理文件导入
+    handleFileChange(event) {
+      const file = event.target.files[0]
+      if (!file) return
+
+      // 动态导入 xlsx 库
+      import('xlsx').then(XLSX => {
+        const reader = new FileReader()
+        reader.onload = (e) => {
+          try {
+            const data = new Uint8Array(e.target.result)
+            const workbook = XLSX.read(data, { type: 'array' })
+
+            // 读取第一个工作表
+            const firstSheet = workbook.Sheets[workbook.SheetNames[0]]
+            // 使用 raw: false 让 xlsx 自动格式化日期为字符串
+            const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1, raw: false })
+
+            // 解析还款记录
+            this.parseImportedData(jsonData)
+
+            // 清空文件输入，允许再次导入同一文件
+            this.$refs.fileInput.value = ''
+          } catch (error) {
+            this.$message.error('文件解析失败：' + error.message)
+            this.$refs.fileInput.value = ''
+          }
+        }
+        reader.readAsArrayBuffer(file)
+      })
+    },
+
+    // 解析导入的数据
+    parseImportedData(data) {
+      if (!data || data.length < 2) {
+        this.$message.warning('文件中没有有效的还款记录')
+        return
+      }
+
+      // 查找表头行（支持多种列名格式）
+      let dateColIndex = -1
+      let amountColIndex = -1
+      let headerRowIndex = -1
+
+      for (let i = 0; i < Math.min(5, data.length); i++) {
+        const row = data[i]
+        if (!Array.isArray(row)) continue
+
+        for (let j = 0; j < row.length; j++) {
+          const cell = String(row[j] || '').trim()
+          // 支持多种可能的列名
+          if (cell.includes('日期') || cell.toLowerCase().includes('date')) {
+            dateColIndex = j
+            headerRowIndex = i
+          }
+          if (cell.includes('金额') || cell.toLowerCase().includes('amount') || cell.includes('还款')) {
+            amountColIndex = j
+            headerRowIndex = i
+          }
+        }
+
+        if (dateColIndex !== -1 && amountColIndex !== -1) break
+      }
+
+      // 如果没找到表头，默认使用前两列
+      if (dateColIndex === -1) dateColIndex = 0
+      if (amountColIndex === -1) amountColIndex = 1
+      if (headerRowIndex === -1) headerRowIndex = 0
+
+      // 解析数据行
+      const importedRepayments = []
+      for (let i = headerRowIndex + 1; i < data.length; i++) {
+        const row = data[i]
+        if (!Array.isArray(row) || row.length === 0) continue
+
+        let date = row[dateColIndex]
+        let amount = row[amountColIndex]
+
+        // 跳过空行
+        if (!date && !amount) continue
+
+        // 解析日期（支持多种格式）
+        const parsedDate = this.parseImportedDate(date)
+
+        // 解析金额（支持字符串中的数字）
+        const parsedAmount = this.parseImportedAmount(amount)
+
+        if (parsedDate && parsedAmount > 0) {
+          importedRepayments.push({
+            date: parsedDate,
+            amount: parsedAmount
+          })
+        }
+      }
+
+      if (importedRepayments.length === 0) {
+        this.$message.warning('未找到有效的还款记录，请检查文件格式')
+        return
+      }
+
+      // 按日期排序
+      importedRepayments.sort((a, b) => new Date(a.date) - new Date(b.date))
+
+      // 添加到现有还款记录
+      this.repayments.push(...importedRepayments)
+
+      this.$message.success(`成功导入 ${importedRepayments.length} 条还款记录`)
+    },
+
+    // 解析导入的日期（支持多种格式）
+    parseImportedDate(dateValue) {
+      if (!dateValue) return null
+
+      // 如果是日期对象（Excel序列号会被解析为Date）
+      if (dateValue instanceof Date) {
+        // 使用本地时间，避免时区偏移
+        const year = dateValue.getFullYear()
+        const month = String(dateValue.getMonth() + 1).padStart(2, '0')
+        const day = String(dateValue.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      }
+
+      // 数字（Excel日期序列号）
+      if (typeof dateValue === 'number') {
+        // Excel日期序列号转换（1900年日期系统）
+        // Excel 的日期从 1900-01-00 开始（实际上有bug，1900年被当作闰年）
+        const excelEpoch = new Date(Date.UTC(1899, 11, 30))
+        const date = new Date(excelEpoch.getTime() + dateValue * 24 * 60 * 60 * 1000)
+        const year = date.getUTCFullYear()
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+        const day = String(date.getUTCDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      }
+
+      // 字符串
+      const dateStr = String(dateValue).trim()
+
+      // 匹配 yyyy-MM-dd 或 yyyy/MM/dd 格式（支持多位或单数月和日）
+      const match = dateStr.match(/(\d{4})[-\/\.](\d{1,2})[-\/\.](\d{1,2})/)
+      if (match) {
+        const year = match[1]
+        const month = match[2].padStart(2, '0')
+        const day = match[3].padStart(2, '0')
+        return `${year}-${month}-${day}`
+      }
+
+      // 匹配 MM/dd/yyyy 格式（美式日期）
+      const usMatch = dateStr.match(/(\d{1,2})[-\/](\d{1,2})[-\/](\d{4})/)
+      if (usMatch) {
+        const month = usMatch[1].padStart(2, '0')
+        const day = usMatch[2].padStart(2, '0')
+        const year = usMatch[3]
+        return `${year}-${month}-${day}`
+      }
+
+      // 尝试直接解析
+      const d = new Date(dateStr)
+      if (!isNaN(d.getTime())) {
+        const year = d.getFullYear()
+        const month = String(d.getMonth() + 1).padStart(2, '0')
+        const day = String(d.getDate()).padStart(2, '0')
+        return `${year}-${month}-${day}`
+      }
+
+      return null
+    },
+
+    // 解析导入的金额
+    parseImportedAmount(amountValue) {
+      if (!amountValue) return 0
+
+      if (typeof amountValue === 'number') {
+        return parseFloat(amountValue.toFixed(2))
+      }
+
+      // 移除货币符号、逗号和空格，只保留数字和小数点
+      const cleanStr = String(amountValue).replace(/[￥,$,，\s]/g, '')
+      const amount = parseFloat(cleanStr)
+
+      return isNaN(amount) ? 0 : parseFloat(amount.toFixed(2))
+    },
+
     // 重置表单
     resetForm() {
       this.$refs.form.resetFields()
@@ -535,7 +708,7 @@ export default {
       this.$refs.form.validate((valid) => {
         if (!valid) return
 
-        const principal = (this.form.principal || 0) - (this.form.paidAmount || 0)
+        const principal = this.form.principal || 0
         if (principal <= 0) {
           this.$message.warning('实际计息本金必须大于0')
           return
@@ -643,14 +816,20 @@ export default {
         this.result = {
           summary: {
             principal: this.form.principal || 0,
-            paidAmount: this.form.paidAmount || 0,
-            actualPrincipal: principal,
             totalNormalInterest: totalNormalInterest,
             totalDelayInterest: accumulatedDelayInterest,
             totalAmount: currentPrincipal + accumulatedNormalInterest + accumulatedDelayInterest
           },
           segments: segments
         }
+
+        // 计算完成后自动滚动到结果区域
+        setTimeout(() => {
+          const resultCard = this.$refs.resultCard
+          if (resultCard && resultCard.$el) {
+            resultCard.$el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          }
+        }, 100)
       })
     },
 
@@ -666,8 +845,6 @@ export default {
         // ===== 汇总信息表 =====
         const summaryData = [
           ['债务本金', this.formatMoney(this.result.summary.principal) + ' 元'],
-          ['正常履行金额', this.formatMoney(this.result.summary.paidAmount) + ' 元'],
-          ['实际计息本金', this.formatMoney(this.result.summary.actualPrincipal) + ' 元'],
           ['一般利息合计', this.formatMoney(this.result.summary.totalNormalInterest) + ' 元'],
           ...(this.form.calcDelayInterest ? [['迟延履行利息合计', this.formatMoney(this.result.summary.totalDelayInterest) + ' 元']] : []),
           ['应付总额', this.formatMoney(this.result.summary.totalAmount) + ' 元']

@@ -103,9 +103,15 @@
 
       <el-table-column label="届满日期" prop="enddate" align="center" />
       <el-table-column label="财产类型" prop="type" align="center" />
-      <el-table-column label="财产情况" prop="ccqk" align="center" width="200" :show-overflow-tooltip="true">
+      <el-table-column label="财产情况" prop="ccqk" align="center" width="200">
         <template slot-scope="{ row }">
-          <span v-if="row.ccqk && row.ccqk.length > 25">{{ row.ccqk.substring(0, 25) }}...</span>
+          <span v-if="row.ccqk && row.ccqk.length > 50">
+            <span v-if="!expandedRows[row.cflistid]">{{ row.ccqk.substring(0, 50) }}...</span>
+            <span v-else>{{ row.ccqk }}</span>
+            <el-button type="text" size="mini" @click="toggleExpand(row.cflistid)">
+              {{ expandedRows[row.cflistid] ? '收起' : '更多' }}
+            </el-button>
+          </span>
           <span v-else>{{ row.ccqk }}</span>
         </template>
       </el-table-column>
@@ -459,6 +465,7 @@ export default {
       fileList: [],
       filelistshow: false,
       tableKey: 0,
+      expandedRows: {}, // 记录展开状态的财产情况
       uploadurl: '/cccf/index.php/cccf/index/upload',
 
       list: null,
@@ -612,6 +619,10 @@ export default {
     ])
   },
   methods: {
+    // 切换财产情况展开/收起
+    toggleExpand(cflistid) {
+      this.$set(this.expandedRows, cflistid, !this.expandedRows[cflistid])
+    },
     handleKhljje() {
       if (parseFloat(this.temp.sjkhje) >= 0 && parseFloat(this.temp.khljjebck) >= 0) {
         this.temp.khljje = (parseFloat(this.temp.khljjebck) + parseFloat(this.temp.sjkhje)).toFixed(2)
