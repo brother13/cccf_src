@@ -152,7 +152,7 @@ export default {
         if (rangeAmount <= 0) continue
 
         let fee = 0
-        let rateText = tier.rateText
+        const rateText = tier.rateText
         let formula = ''
 
         if (tier.fixed > 0) {

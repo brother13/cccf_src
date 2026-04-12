@@ -319,9 +319,9 @@
 
 <script>
 // 数据直接使用前端缓存，如需从后端获取可取消注释
- import { saveCalculation } from '@/dagl/api/lixijs'
- import { getLprRateByDateRange } from '@/dagl/api/lpr'
- import { getBenchmarkRateByDate, getLatestBenchmarkRate } from '@/dagl/api/benchmark'
+import { saveCalculation } from '@/dagl/api/lixijs'
+import { getLprRateByDateRange } from '@/dagl/api/lpr'
+import { getBenchmarkRateByDate, getLatestBenchmarkRate } from '@/dagl/api/benchmark'
 
 // LPR数据缓存
 const lprData = [

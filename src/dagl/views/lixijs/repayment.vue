@@ -589,8 +589,8 @@ export default {
         const row = data[i]
         if (!Array.isArray(row) || row.length === 0) continue
 
-        let date = row[dateColIndex]
-        let amount = row[amountColIndex]
+        const date = row[dateColIndex]
+        const amount = row[amountColIndex]
 
         // 跳过空行
         if (!date && !amount) continue
