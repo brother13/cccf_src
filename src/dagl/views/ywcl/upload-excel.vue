@@ -13,6 +13,9 @@
         <el-button :loading="loading" icon="el-icon-upload2" style="margin-left:16px;" size="mini" type="primary" @click="uploaddata">
           导入
         </el-button>
+        <el-button icon="el-icon-download" style="margin-left:16px;" size="mini" type="success" @click="downloadTemplate">
+          模版下载
+        </el-button>
       </div>
     </div>
 
@@ -156,9 +159,16 @@ export default {
           const firstSheetName = workbook.SheetNames[0]
           const worksheet = workbook.Sheets[firstSheetName]
           const header = this.getHeaderRow(worksheet)
-          const results = XLSX.utils.sheet_to_json(worksheet, {
+          let results = XLSX.utils.sheet_to_json(worksheet, {
             range: 1
           }) // 标题不取第一行
+          // 只保留"案号"或"财产情况"非空的有效行
+          results = results.filter(row => {
+            const ah = row['案号']
+            const ccqk = row['财产情况'] || row['类型及控制财产情况']
+            return (ah !== undefined && ah !== null && ah !== '') ||
+                   (ccqk !== undefined && ccqk !== null && ccqk !== '')
+          })
 
           for (let i = 0; i < header.length; i++) {
             // 遍历数组，对日期进行调整
@@ -236,6 +246,12 @@ export default {
       const d = date.getDate()
       const dd = d >= 10 ? d : '0' + d
       return yy + format + mm + format + dd // 返回格式化后的日期
+    },
+    downloadTemplate() {
+      const a = document.createElement('a')
+      a.href = process.env.BASE_URL + 'assets/word/查封财产登记表模版.xlsx'
+      a.download = '查封财产登记表模版.xlsx'
+      a.click()
     },
     testrow(header, str, str1 = '无效列') {
       if (header.indexOf(str) > -1 || header.indexOf(str1) > -1) {

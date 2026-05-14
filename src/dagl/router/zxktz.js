@@ -23,6 +23,15 @@ const Router_zxktz = {
         icon: 'el-icon-s-data'
       }
     },
+    {
+      path: 'sk_tk_summary',
+      component: () => import('@/dagl/views/dgkreport/sk_tk_summary'),
+      name: 'dgke-sk-tk-summary',
+      meta: {
+        title: '执行款台账汇总表',
+        icon: 'el-icon-s-data'
+      }
+    },
 
     // {
     //   path: 'sklist',

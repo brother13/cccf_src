@@ -325,6 +325,7 @@ import { getBenchmarkRateByDate, getLatestBenchmarkRate } from '@/dagl/api/bench
 
 // LPR数据缓存
 const lprData = [
+  { date: '2026-04-20', rate_1y: 3.00, rate_5y: 3.50 },
   { date: '2026-03-20', rate_1y: 3.00, rate_5y: 3.50 },
   { date: '2026-02-24', rate_1y: 3.00, rate_5y: 3.50 },
   { date: '2026-01-20', rate_1y: 3.00, rate_5y: 3.50 },
@@ -484,6 +485,20 @@ export default {
     }
   },
   methods: {
+    // 根据利率类型转换为年利率
+    getAnnualRate() {
+      const rate = this.form.rate || 0
+      const rateType = this.form.rateType
+      const daysPerYear = this.form.daysPerYear
+
+      if (rateType === 'month') {
+        return rate * 12
+      } else if (rateType === 'day') {
+        return rate * daysPerYear
+      }
+      return rate
+    },
+
     // 利率来源变化
     onRateSourceChange(val) {
       if (val === 'custom') {
@@ -754,7 +769,7 @@ export default {
         } else {
           // 自定义利率
           const days = this.getDaysBetween(this.form.startDate, this.form.endDate)
-          const rate = this.form.rate || 0
+          const rate = this.getAnnualRate()
           normalInterest = this.form.principal * (rate / 100) * days / this.form.daysPerYear
           this.rateSegments = []
         }

@@ -37,8 +37,15 @@
             </el-form-item>
           </el-col>
           <el-col v-if="form.rateSourceType === 'custom'" :span="12">
-            <el-form-item label="自定义利率（日利率 %）" prop="customRate" :rules="[{ required: form.rateSourceType === 'custom', message: '请输入日利率' }]">
-              <el-input-number v-model="form.customRate" :precision="6" :min="0" style="width: 100%" placeholder="请输入日利率，如0.05表示万分之五" />
+            <el-form-item label="自定义利率（%）" prop="customRate" :rules="[{ required: form.rateSourceType === 'custom', message: '请输入利率' }]">
+              <el-input-number v-model="form.customRate" :precision="6" :min="0" style="width: 100%" placeholder="请输入利率" />
+            </el-form-item>
+            <el-form-item label="利率周期">
+              <el-radio-group v-model="form.customRatePeriod">
+                <el-radio label="day">日</el-radio>
+                <el-radio label="month">月</el-radio>
+                <el-radio label="year">年</el-radio>
+              </el-radio-group>
             </el-form-item>
           </el-col>
         </el-row>
@@ -50,6 +57,58 @@
                 <el-radio label="1y">1年期LPR</el-radio>
                 <el-radio label="5y">5年期以上LPR</el-radio>
               </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row v-if="form.rateSourceType === 'auto'" :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="LPR调整方式">
+              <el-radio-group v-model="form.lprAdjustType">
+                <el-radio label="bp">基点（1 BP=0.01%）</el-radio>
+                <el-radio label="ratio">加计 | 浮动 | 倍数</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row v-if="form.rateSourceType === 'auto' && form.lprAdjustType === 'bp'" :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="调整方向">
+              <el-radio-group v-model="form.lprBpDirection">
+                <el-radio label="none">无</el-radio>
+                <el-radio label="add">+(加)</el-radio>
+                <el-radio label="subtract">-(减)</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col v-if="form.lprBpDirection !== 'none'" :span="12">
+            <el-form-item label="基点数（BP）">
+              <el-input-number v-model="form.lprBpValue" :precision="0" :min="0" style="width: 100%" placeholder="如 50 表示50个基点" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-row v-if="form.rateSourceType === 'auto' && form.lprAdjustType === 'ratio'" :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="调整类型">
+              <el-radio-group v-model="form.lprRatioSubtype">
+                <el-radio label="none">无</el-radio>
+                <el-radio label="加计">加计</el-radio>
+                <el-radio label="上浮">上浮</el-radio>
+                <el-radio label="下浮">下浮</el-radio>
+                <el-radio label="倍数">倍数</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-col>
+          <el-col v-if="form.lprRatioSubtype === '倍数'" :span="12">
+            <el-form-item label="倍数">
+              <el-input-number v-model="form.lprRatioValue" :precision="2" :min="0" style="width: 100%" placeholder="如 1.5 表示LPR的1.5倍" />
+            </el-form-item>
+          </el-col>
+          <el-col v-else-if="form.lprRatioSubtype !== 'none'" :span="12">
+            <el-form-item label="上浮比例（%）">
+              <el-input-number v-model="form.lprRatioValue" :precision="2" :min="0" style="width: 100%" placeholder="如 50 表示上浮50%" />
             </el-form-item>
           </el-col>
         </el-row>
@@ -202,6 +261,7 @@
 <script>
 // LPR数据缓存（从新到旧排序）
 const lprData = [
+  { date: '2026-04-20', rate_1y: 3.00, rate_5y: 3.50 },
   { date: '2026-03-20', rate_1y: 3.00, rate_5y: 3.50 },
   { date: '2026-02-24', rate_1y: 3.00, rate_5y: 3.50 },
   { date: '2026-01-20', rate_1y: 3.00, rate_5y: 3.50 },
@@ -302,12 +362,18 @@ export default {
         principal: undefined,
         rateSourceType: 'auto',
         customRate: undefined,
+        customRatePeriod: 'day',
         repaymentType: 'interest_first',
         interestStartDate: '',
         delayInterestStartDate: '',
         endDate: formatDateStr(today),
         calcDelayInterest: true,
-        lprLevel: '1y'
+        lprLevel: '1y',
+        lprAdjustType: 'bp',
+        lprBpDirection: 'none',
+        lprBpValue: 0,
+        lprRatioSubtype: 'none',
+        lprRatioValue: 0
       },
       repayments: [],
       result: null
@@ -389,14 +455,38 @@ export default {
       const compareDate = new Date(date)
       const level = this.form.lprLevel
 
+      let baseRate = lprData[lprData.length - 1]['rate_' + level]
       for (let i = 0; i < lprData.length; i++) {
         const item = lprData[i]
         const itemDate = new Date(item.date)
         if (itemDate <= compareDate) {
-          return { rate: item['rate_' + level], type: 'lpr' }
+          baseRate = item['rate_' + level]
+          break
         }
       }
-      return { rate: lprData[lprData.length - 1]['rate_' + level], type: 'lpr' }
+
+      let adjustedRate = baseRate
+      if (this.form.lprAdjustType === 'bp') {
+        const bpVal = this.form.lprBpValue || 0
+        if (this.form.lprBpDirection === 'add') {
+          adjustedRate = baseRate + bpVal * 0.01
+        } else if (this.form.lprBpDirection === 'subtract') {
+          adjustedRate = baseRate - bpVal * 0.01
+        }
+      } else {
+        if (this.form.lprRatioSubtype === '倍数') {
+          const ratio = this.form.lprRatioValue || 1
+          adjustedRate = baseRate * ratio
+        } else if (this.form.lprRatioSubtype === '加计' || this.form.lprRatioSubtype === '上浮') {
+          const pct = this.form.lprRatioValue || 0
+          adjustedRate = baseRate * (1 + pct / 100)
+        } else if (this.form.lprRatioSubtype === '下浮') {
+          const pct = this.form.lprRatioValue || 0
+          adjustedRate = baseRate * (1 - pct / 100)
+        }
+      }
+
+      return { rate: adjustedRate, type: 'lpr' }
     },
 
     // 获取指定日期的基准利率
@@ -417,8 +507,13 @@ export default {
     // 获取指定日期的适用利率
     getRateForDate(date) {
       if (this.form.rateSourceType === 'custom') {
-        // 自定义利率为日利率
-        return { rate: this.form.customRate, type: 'custom', isDailyRate: true }
+        let rate = this.form.customRate || 0
+        if (this.form.customRatePeriod === 'month') {
+          rate = rate / 30
+        } else if (this.form.customRatePeriod === 'year') {
+          rate = rate / 365
+        }
+        return { rate: rate, type: 'custom', isDailyRate: true }
       }
       if (this.isLprPeriod(date)) {
         return this.getLprRateForDate(date)
@@ -465,18 +560,26 @@ export default {
 
     // 根据利率调整日和还款日分割时间段
     splitPeriods(startDate, endDate) {
-      // 获取所有分割点
-      const allPoints = [startDate, endDate]
+      // 确定实际计算起始日（取利息起算日和延迟利息起算日中较早的一个）
+      let effectiveStartDate = startDate
+      if (this.form.calcDelayInterest && this.form.delayInterestStartDate) {
+        if (this.form.delayInterestStartDate < startDate) {
+          effectiveStartDate = this.form.delayInterestStartDate
+        }
+      }
 
-      // 添加还款日期
+      // 获取所有分割点
+      const allPoints = [effectiveStartDate, endDate]
+
+      // 添加还款日期（从实际起算日开始）
       for (const repayment of this.repayments) {
-        if (repayment.date && repayment.date > startDate && repayment.date <= endDate) {
+        if (repayment.date && repayment.date > effectiveStartDate && repayment.date <= endDate) {
           allPoints.push(repayment.date)
         }
       }
 
-      // 添加利率调整日期
-      const rateChangeDates = this.getRateChangeDates(startDate, endDate)
+      // 添加利率调整日期（从实际起算日开始）
+      const rateChangeDates = this.getRateChangeDates(effectiveStartDate, endDate)
       allPoints.push(...rateChangeDates)
 
       // 去重并排序
@@ -699,6 +802,12 @@ export default {
     // 重置表单
     resetForm() {
       this.$refs.form.resetFields()
+      this.form.customRatePeriod = 'day'
+      this.form.lprAdjustType = 'bp'
+      this.form.lprBpDirection = 'none'
+      this.form.lprBpValue = 0
+      this.form.lprRatioSubtype = 'none'
+      this.form.lprRatioValue = 0
       this.repayments = []
       this.result = null
     },
@@ -733,11 +842,15 @@ export default {
           const days = this.getDaysBetween(period.startDate, period.endDate)
 
           // 计算一般利息（日利率直接计算，年利率需要除以365）
-          const normalInterest = rateInfo.isDailyRate
-            ? currentPrincipal * (rateInfo.rate / 100) * days
-            : currentPrincipal * (rateInfo.rate / 100) * days / 365
-          accumulatedNormalInterest += normalInterest
-          totalNormalInterest += normalInterest
+          // 只有时间段在利息起算日之后或等于利息起算日时才计算一般利息
+          let normalInterest = 0
+          if (period.startDate >= startDate) {
+            normalInterest = rateInfo.isDailyRate
+              ? currentPrincipal * (rateInfo.rate / 100) * days
+              : currentPrincipal * (rateInfo.rate / 100) * days / 365
+            accumulatedNormalInterest += normalInterest
+            totalNormalInterest += normalInterest
+          }
 
           // 计算迟延履行利息
           let delayInterest = 0
@@ -748,11 +861,13 @@ export default {
 
             if (periodStart >= delayStart) {
               // 整段都在延迟履行期间
-              delayInterest = currentPrincipal * 0.000175 * days
-            } else if (periodEnd > delayStart) {
-              // 部分在延迟履行期间
+              const effectiveDays = Math.max(days, 1)
+              delayInterest = currentPrincipal * 0.000175 * effectiveDays
+            } else if (periodEnd >= delayStart) {
+              // 部分在延迟履行期间（包含结束日等于起算日的情况）
               const delayDays = this.getDaysBetween(delayStartDate, period.endDate)
-              delayInterest = currentPrincipal * 0.000175 * delayDays
+              const effectiveDelayDays = Math.max(delayDays, 1)
+              delayInterest = currentPrincipal * 0.000175 * effectiveDelayDays
             }
             accumulatedDelayInterest += delayInterest
           }

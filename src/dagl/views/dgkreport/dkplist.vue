@@ -219,7 +219,8 @@ export default {
 
     formatNumber(num) {
       if (!num) return '-'
-      return parseFloat(num).toLocaleString('zh-CN', {
+      const cleanNum = String(num).replace(/,/g, '')
+      return parseFloat(cleanNum).toLocaleString('zh-CN', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
       })
@@ -261,10 +262,12 @@ export default {
         const filterVal = this.exportFields.map(f => f.field)
         const data = this.formatJson(filterVal, allData)
 
+        const d = new Date()
+        const dateStr = d.getFullYear() + String(d.getMonth() + 1).padStart(2, '0') + String(d.getDate()).padStart(2, '0')
         excel.export_json_to_excel({
           header: tHeader,
           data,
-          filename: '待开收据_' + new Date().Format('yyyyMMdd'),
+          filename: '待开收据_' + dateStr,
           autoWidth: true,
           bookType: 'xlsx'
         })
@@ -283,7 +286,7 @@ export default {
         filterVal.map(j => {
           const value = v[j]
           if (j === 'je' && value) {
-            return parseFloat(value)
+            return parseFloat(String(value).replace(/,/g, ''))
           }
           return value || ''
         })

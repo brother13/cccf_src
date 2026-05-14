@@ -29,7 +29,10 @@ var report = {
     countCasenum: '/plugins/countCasenum',
 
     // 直接从admin_shoukuan表查询代管款数据
-    queryList_sk_direct: '/plugins/queryList_sk_direct'
+    queryList_sk_direct: '/plugins/queryList_sk_direct',
+
+    // 执行款台账汇总表
+    queryList_sk_tk_summary: '/plugins/queryList_sk_tk_summary'
 
   },
 
@@ -84,6 +87,11 @@ var report = {
 
   async queryList_sk_direct(query) {
     const res = await postdata(this.ACTION.queryList_sk_direct, query)
+    return res.data
+  },
+
+  async queryList_sk_tk_summary(query) {
+    const res = await postdata(this.ACTION.queryList_sk_tk_summary, query)
     return res.data
   }
 }

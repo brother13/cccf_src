@@ -951,6 +951,8 @@ export default {
     },
     handleUpdate(row) {
       this.temp = Object.assign({}, row) // copy obj
+      // 补全扣划累计备份字段，用于编辑时实时计算扣划累计
+      this.temp.khljjebck = (parseFloat(this.temp.khljje || 0) - parseFloat(this.temp.sjkhje || 0)).toFixed(2)
       this.filelistshow = false
       this.dialogFormVisible = true
       this.dialogStatus = 'update'
