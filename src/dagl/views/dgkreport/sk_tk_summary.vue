@@ -90,7 +90,7 @@
           icon="el-icon-refresh"
           :loading="isRecalcing"
           @click="handleRecalc"
-        >重新计算</el-button>
+        >计算</el-button>
 
         <el-button
           v-waves
@@ -190,7 +190,7 @@ const fieldList = [
   { field: 'ye', label: '余额', export: true, show: true, align: 'right', width: 120 },
   { field: 'dzdate', label: '到账日期', export: true, show: true, width: 120 },
   { field: 'czdate', label: '出账日期', export: true, show: true, width: 120 },
-  { field: 'workdays', label: '停留时间(工作日)', export: true, show: true, width: 140 },
+  { field: 'workdays', label: '停留时间(天)', export: true, show: true, width: 120 },
   { field: 'cbr', label: '承办人', export: true, show: true, width: 100 },
   { field: 'sjy', label: '书记员', export: true, show: true, width: 100 },
   { field: 'cbbm', label: '承办部门', export: true, show: true, width: 150 },
@@ -198,7 +198,8 @@ const fieldList = [
   { field: 'bg', label: '被执行人', export: true, show: true, width: 150 },
   { field: 'ay', label: '案由', export: true, show: true, width: 200 },
   { field: 'skr', label: '收款人', export: true, show: true, width: 120 },
-  { field: 'skr_bank', label: '收款人开户行', export: true, show: true, width: 200 }
+  { field: 'skr_bank', label: '收款人开户行', export: true, show: true, width: 200 },
+  { field: 'yh_zt', label: '延缓提存', export: true, show: true, width: 120 }
 ]
 
 const PAGECONFIG = {
@@ -233,7 +234,8 @@ export default {
         balance_filter: '',
         sort: '',
         balance_endtime: new Date().toISOString().slice(0, 10),
-        force_recalc: false
+        force_recalc: false,
+        refresh_summary: false
       },
 
       count: {
@@ -316,13 +318,16 @@ export default {
       }
       this.listQuery.page = 1
       this.listQuery.force_recalc = true
+      this.listQuery.refresh_summary = true
       this.isRecalcing = true
       this.getList().then(() => {
         this.isRecalcing = false
         this.listQuery.force_recalc = false
+        this.listQuery.refresh_summary = false
       }).catch(() => {
         this.isRecalcing = false
         this.listQuery.force_recalc = false
+        this.listQuery.refresh_summary = false
       })
     },
 
@@ -418,13 +423,17 @@ export default {
     showProgress(title, num, total) {
       try {
         this.$refs.progress.showInfo(title, num, total)
-      } catch (e) {}
+      } catch (e) {
+        console.error(e)
+      }
     },
 
     hideProgress() {
       try {
         this.$refs.progress.close()
-      } catch (e) {}
+      } catch (e) {
+        console.error(e)
+      }
     },
 
     stopExport() {

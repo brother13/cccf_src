@@ -224,7 +224,7 @@
               <th class="col-days">天数</th>
               <th class="col-rate">利率</th>
               <th class="col-interest">一般利息</th>
-              <th v-if="form.calcDelayInterest" class="col-delay">累计迟延利息</th>
+              <th v-if="form.calcDelayInterest" class="col-delay">累计迟延利息（含利率）</th>
             </tr>
           </thead>
           <tbody>
@@ -235,7 +235,15 @@
                 <td class="col-days">{{ segment.days }}</td>
                 <td class="col-rate">{{ segment.rate.toFixed(2) }}% ({{ segment.rateType === 'lpr' ? 'LPR' : '基准' }})</td>
                 <td class="col-interest">{{ formatMoney(segment.normalInterest) }}</td>
-                <td v-if="form.calcDelayInterest" class="col-delay">{{ segment.delayInterest > 0 ? formatMoney(segment.delayInterest) : '-' }}</td>
+                <td v-if="form.calcDelayInterest" class="col-delay">
+                  <template v-if="segment.delayInterest > 0">
+                    <div>{{ formatMoney(segment.delayInterest) }}</div>
+                    <div class="delay-rate-text">{{ segment.delayRateText || '-' }}</div>
+                  </template>
+                  <template v-else>
+                    -
+                  </template>
+                </td>
               </tr>
               <tr v-else :key="'repay-' + index" class="repayment-row">
                 <td :colspan="form.calcDelayInterest ? 6 : 5" class="repayment-info">
@@ -348,7 +356,35 @@ const benchmarkData = [
   { date: '2011-04-06', '6m': 5.85, '6m_1y': 6.31, '1y_3y': 6.40, '3y_5y': 6.65, '5y_plus': 6.80 },
   { date: '2011-02-09', '6m': 5.60, '6m_1y': 6.06, '1y_3y': 6.10, '3y_5y': 6.45, '5y_plus': 6.60 },
   { date: '2010-12-26', '6m': 5.35, '6m_1y': 5.81, '1y_3y': 5.85, '3y_5y': 6.22, '5y_plus': 6.40 },
-  { date: '2010-10-20', '6m': 5.10, '6m_1y': 5.56, '1y_3y': 5.60, '3y_5y': 5.96, '5y_plus': 6.14 }
+  { date: '2010-10-20', '6m': 5.10, '6m_1y': 5.56, '1y_3y': 5.60, '3y_5y': 5.96, '5y_plus': 6.14 },
+  // 图片补充历史数据（2014-11-22之前）
+  { date: '2008-12-23', '6m': 4.86, '6m_1y': 5.31, '1y_3y': 5.40, '3y_5y': 5.76, '5y_plus': 5.94 },
+  { date: '2008-11-27', '6m': 5.04, '6m_1y': 5.58, '1y_3y': 5.67, '3y_5y': 5.94, '5y_plus': 6.12 },
+  { date: '2008-10-30', '6m': 6.03, '6m_1y': 6.66, '1y_3y': 6.75, '3y_5y': 7.02, '5y_plus': 7.20 },
+  { date: '2008-10-09', '6m': 6.12, '6m_1y': 6.93, '1y_3y': 7.02, '3y_5y': 7.29, '5y_plus': 7.47 },
+  { date: '2008-09-16', '6m': 6.21, '6m_1y': 7.20, '1y_3y': 7.29, '3y_5y': 7.56, '5y_plus': 7.74 },
+  { date: '2007-12-21', '6m': 6.57, '6m_1y': 7.47, '1y_3y': 7.56, '3y_5y': 7.74, '5y_plus': 7.83 },
+  { date: '2007-09-15', '6m': 6.48, '6m_1y': 7.29, '1y_3y': 7.47, '3y_5y': 7.65, '5y_plus': 7.83 },
+  { date: '2007-08-22', '6m': 6.21, '6m_1y': 7.02, '1y_3y': 7.20, '3y_5y': 7.38, '5y_plus': 7.56 },
+  { date: '2007-07-21', '6m': 6.03, '6m_1y': 6.84, '1y_3y': 7.02, '3y_5y': 7.20, '5y_plus': 7.38 },
+  { date: '2007-05-19', '6m': 5.85, '6m_1y': 6.57, '1y_3y': 6.75, '3y_5y': 6.93, '5y_plus': 7.20 },
+  { date: '2007-03-18', '6m': 5.67, '6m_1y': 6.39, '1y_3y': 6.57, '3y_5y': 6.75, '5y_plus': 7.11 },
+  { date: '2006-08-19', '6m': 5.58, '6m_1y': 6.12, '1y_3y': 6.30, '3y_5y': 6.48, '5y_plus': 6.84 },
+  { date: '2006-04-28', '6m': 5.40, '6m_1y': 5.85, '1y_3y': 6.03, '3y_5y': 6.12, '5y_plus': 6.39 },
+  { date: '2004-10-29', '6m': 5.22, '6m_1y': 5.58, '1y_3y': 5.76, '3y_5y': 5.85, '5y_plus': 6.12 },
+  { date: '2002-02-21', '6m': 5.04, '6m_1y': 5.31, '1y_3y': 5.49, '3y_5y': 5.58, '5y_plus': 5.76 },
+  { date: '1999-06-10', '6m': 5.58, '6m_1y': 5.85, '1y_3y': 5.94, '3y_5y': 6.03, '5y_plus': 6.21 },
+  { date: '1998-12-07', '6m': 6.12, '6m_1y': 6.39, '1y_3y': 6.66, '3y_5y': 7.20, '5y_plus': 7.56 },
+  { date: '1998-07-01', '6m': 6.57, '6m_1y': 6.93, '1y_3y': 7.11, '3y_5y': 7.65, '5y_plus': 8.01 },
+  { date: '1998-03-25', '6m': 7.02, '6m_1y': 7.92, '1y_3y': 9.00, '3y_5y': 9.72, '5y_plus': 10.35 },
+  { date: '1997-10-23', '6m': 7.65, '6m_1y': 8.64, '1y_3y': 9.36, '3y_5y': 9.90, '5y_plus': 10.53 },
+  { date: '1996-08-23', '6m': 9.18, '6m_1y': 10.08, '1y_3y': 10.98, '3y_5y': 11.70, '5y_plus': 12.42 },
+  { date: '1996-05-01', '6m': 9.72, '6m_1y': 10.98, '1y_3y': 13.14, '3y_5y': 14.94, '5y_plus': 15.12 },
+  { date: '1995-07-01', '6m': 10.08, '6m_1y': 12.06, '1y_3y': 13.50, '3y_5y': 15.12, '5y_plus': 15.30 },
+  { date: '1995-01-01', '6m': 9.00, '6m_1y': 10.98, '1y_3y': 12.96, '3y_5y': 14.58, '5y_plus': 14.76 },
+  { date: '1993-07-11', '6m': 9.00, '6m_1y': 10.98, '1y_3y': 12.24, '3y_5y': 13.86, '5y_plus': 14.04 },
+  { date: '1993-05-15', '6m': 8.82, '6m_1y': 9.36, '1y_3y': 10.80, '3y_5y': 12.06, '5y_plus': 12.24 },
+  { date: '1991-04-21', '6m': 8.10, '6m_1y': 8.64, '1y_3y': 9.00, '3y_5y': 9.54, '5y_plus': 9.72 }
 ]
 
 export default {
@@ -409,6 +445,11 @@ export default {
           current.normalInterest += segment.normalInterest
           // 保留最新的累计迟延利息
           current.delayInterest = segment.delayInterest
+          const rateTexts = [
+            ...(current.delayRateText ? current.delayRateText.split('；') : []),
+            ...(segment.delayRateText ? segment.delayRateText.split('；') : [])
+          ].filter(Boolean)
+          current.delayRateText = [...new Set(rateTexts)].join('；')
         } else {
           // 利率不同，保存当前段，开始新段
           merged.push(current)
@@ -492,16 +533,65 @@ export default {
     // 获取指定日期的基准利率
     getBenchmarkRateForDate(date) {
       const compareDate = new Date(date)
-      const level = '1y' // 默认使用一年期
+      const pickBenchmarkRate = (row) => {
+        // 新利率体系优先取1y；旧利率体系回退到接近一年期档次
+        if (row['1y'] !== undefined && row['1y'] !== null) return row['1y']
+        if (row['6m_1y'] !== undefined && row['6m_1y'] !== null) return row['6m_1y']
+        if (row['1y_3y'] !== undefined && row['1y_3y'] !== null) return row['1y_3y']
+        if (row['1y_5y'] !== undefined && row['1y_5y'] !== null) return row['1y_5y']
+        if (row['6m'] !== undefined && row['6m'] !== null) return row['6m']
+        return 0
+      }
 
       for (let i = 0; i < benchmarkData.length; i++) {
         const item = benchmarkData[i]
         const itemDate = new Date(item.date)
         if (itemDate <= compareDate) {
-          return { rate: item[level], type: 'benchmark' }
+          return { rate: pickBenchmarkRate(item), type: 'benchmark' }
         }
       }
-      return { rate: benchmarkData[benchmarkData.length - 1][level], type: 'benchmark' }
+      return { rate: pickBenchmarkRate(benchmarkData[benchmarkData.length - 1]), type: 'benchmark' }
+    },
+
+    // 按法规分段计算迟延履行利息：
+    // 2014-08-01之前：同期贷款基准利率 × 2
+    // 2014-08-01及之后：日万分之1.75
+    calculateDelayInterestByRule(principal, periodStartDate, periodEndDate) {
+      const ruleDate = '2014-08-01'
+      const ruleDateObj = new Date(ruleDate)
+
+      const periodStart = new Date(periodStartDate)
+      const periodEnd = new Date(periodEndDate)
+      if (periodEnd < periodStart) return { interest: 0, rateText: '' }
+
+      let delayInterest = 0
+      const rateNotes = []
+
+      // 旧规区间：periodStartDate ~ min(periodEndDate, 2014-08-01)，结束日按区间右开
+      if (periodStart < ruleDateObj) {
+        const oldEndDate = periodEnd <= ruleDateObj ? periodEndDate : ruleDate
+        const oldDays = Math.max(this.getDaysBetween(periodStartDate, oldEndDate), 0)
+        if (oldDays > 0) {
+          const oldRate = this.getBenchmarkRateForDate(periodStartDate).rate || 0
+          delayInterest += principal * (oldRate / 100) * 2 * oldDays / 365
+          rateNotes.push(`旧规：${oldRate.toFixed(2)}%×2`)
+        }
+      }
+
+      // 新规区间：max(periodStartDate, 2014-08-01) ~ periodEndDate，结束日按区间右开
+      if (periodEnd >= ruleDateObj) {
+        const newStartDate = periodStart >= ruleDateObj ? periodStartDate : ruleDate
+        const newDays = Math.max(this.getDaysBetween(newStartDate, periodEndDate), 0)
+        if (newDays > 0) {
+          delayInterest += principal * 0.000175 * newDays
+          rateNotes.push('新规：日万分之1.75')
+        }
+      }
+
+      return {
+        interest: delayInterest,
+        rateText: rateNotes.join('；')
+      }
     },
 
     // 获取指定日期的适用利率
@@ -509,7 +599,8 @@ export default {
       if (this.form.rateSourceType === 'custom') {
         let rate = this.form.customRate || 0
         if (this.form.customRatePeriod === 'month') {
-          rate = rate / 30
+          // 统一口径：月利率先年化（×12）再折算日利率（÷365）
+          rate = rate * 12 / 365
         } else if (this.form.customRatePeriod === 'year') {
           rate = rate / 365
         }
@@ -852,8 +943,9 @@ export default {
             totalNormalInterest += normalInterest
           }
 
-          // 计算迟延履行利息
+          // 计算迟延履行利息（按2014-08-01前后分段规则）
           let delayInterest = 0
+          let delayRateText = ''
           if (this.form.calcDelayInterest && delayStartDate) {
             const periodStart = new Date(period.startDate)
             const periodEnd = new Date(period.endDate)
@@ -861,13 +953,14 @@ export default {
 
             if (periodStart >= delayStart) {
               // 整段都在延迟履行期间
-              const effectiveDays = Math.max(days, 1)
-              delayInterest = currentPrincipal * 0.000175 * effectiveDays
+              const delayCalc = this.calculateDelayInterestByRule(currentPrincipal, period.startDate, period.endDate)
+              delayInterest = delayCalc.interest
+              delayRateText = delayCalc.rateText
             } else if (periodEnd >= delayStart) {
-              // 部分在延迟履行期间（包含结束日等于起算日的情况）
-              const delayDays = this.getDaysBetween(delayStartDate, period.endDate)
-              const effectiveDelayDays = Math.max(delayDays, 1)
-              delayInterest = currentPrincipal * 0.000175 * effectiveDelayDays
+              // 部分在延迟履行期间（从迟延起算日开始计）
+              const delayCalc = this.calculateDelayInterestByRule(currentPrincipal, delayStartDate, period.endDate)
+              delayInterest = delayCalc.interest
+              delayRateText = delayCalc.rateText
             }
             accumulatedDelayInterest += delayInterest
           }
@@ -881,6 +974,7 @@ export default {
             rateType: rateInfo.type,
             normalInterest: normalInterest,
             delayInterest: this.form.calcDelayInterest ? accumulatedDelayInterest : 0,
+            delayRateText: this.form.calcDelayInterest ? delayRateText : '',
             isRepaymentNode: false
           })
 
@@ -971,7 +1065,7 @@ export default {
         // ===== 分段明细表 =====
         const detailHeaders = ['开始日期', '结束日期', '天数', '利率', '利率类型', '一般利息']
         if (this.form.calcDelayInterest) {
-          detailHeaders.push('累计迟延履行利息')
+          detailHeaders.push('累计迟延履行利息（含利率）')
         }
 
         const detailData = [detailHeaders]
@@ -999,7 +1093,7 @@ export default {
               this.formatMoney(segment.normalInterest)
             ]
             if (this.form.calcDelayInterest) {
-              row.push(segment.delayInterest > 0 ? this.formatMoney(segment.delayInterest) : '-')
+              row.push(segment.delayInterest > 0 ? `${this.formatMoney(segment.delayInterest)} (${segment.delayRateText || '-'})` : '-')
             }
             detailData.push(row)
           }
@@ -1123,7 +1217,14 @@ export default {
 .col-days { width: 8%; }
 .col-rate { width: 15%; }
 .col-interest { width: 15%; }
-.col-delay { width: 15%; }
+.col-delay { width: 20%; }
+
+.delay-rate-text {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #606266;
+  line-height: 1.4;
+}
 
 .amount-highlight {
   color: #f56c6c;

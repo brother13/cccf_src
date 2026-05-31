@@ -24,3 +24,9 @@ export function getLatestBenchmarkRate() {
   const action = '/benchmark/getLatestRate'
   return postdata(action, {})
 }
+
+// 批量同步基准利率（按发布日存在则更新，不存在则新增）
+export function syncBenchmarkRates(rows) {
+  const action = '/benchmark/syncRates'
+  return postdata(action, { rows })
+}
