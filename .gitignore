@@ -11,3 +11,4 @@ build/
 *.zip
 *.xlsx
 *.txt
+jsconfig.json
