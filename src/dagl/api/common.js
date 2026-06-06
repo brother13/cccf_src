@@ -62,6 +62,11 @@ export function cflist_total(data) {
   return postdata(action, data)
 }
 
+export function updateNotice() {
+  const action = '/sys/updateNotice'
+  return postdata(action, {})
+}
+
 export function cflistupdate(data) {
   const action = '/data/cflistupdate'
   return postdata(action, data)
