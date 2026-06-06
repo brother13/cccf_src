@@ -23,6 +23,7 @@
         @change="handleFilter"
       />
       <el-select
+        v-if="canFilterByDept"
         v-model="listQuery.deptcode"
         placeholder="请选择部门"
         clearable
@@ -59,24 +60,26 @@
         <el-option label="轮候" value="轮候" />
       </el-select>
       <el-button
-        class="filter-item"
-        style="margin-left: 10px"
-        type="primary"
-        icon="el-icon-edit"
-        @click="handleCreate"
-      >新增</el-button>
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
+        v-waves
+        class="filter-item ledger-action-button ledger-action-button--query"
+        icon="el-icon-search"
+        @click="handleFilter"
+      >查询结果</el-button>
 
       <el-button
         v-waves
         :loading="downloadLoading"
-        class="filter-item"
-        type="primary"
+        class="filter-item ledger-action-button ledger-action-button--export"
         icon="el-icon-download"
         @click="handleDownload"
       >
-        导出
+        导出报表
       </el-button>
+      <el-button
+        class="filter-item ledger-action-button ledger-action-button--create"
+        icon="el-icon-plus"
+        @click="handleCreate"
+      >新增台账</el-button>
     </div>
 
     <div v-loading="listLoading" class="ledger-card-list">
@@ -139,6 +142,10 @@
                     </span>
                     <span v-else>{{ row.ccqk || '暂无财产情况' }}</span>
                   </div>
+                  <div v-if="row.note" class="property-row__note">
+                    <i class="el-icon-chat-line-square" />
+                    <span>备注：{{ row.note }}</span>
+                  </div>
                   <div class="property-row__meta">
                     <span><i class="el-icon-date" /> {{ formatDateRange(row) }}</span>
                     <span v-if="row.account"><i class="el-icon-bank-card" /> {{ row.account }}</span>
@@ -189,195 +196,248 @@
     />
 
     <el-dialog
-      custom-class="saveAsDialog"
+      custom-class="saveAsDialog ledger-entry-dialog"
       :title="textMap[dialogStatus]"
       :visible.sync="dialogFormVisible"
       :close-on-click-modal="false"
+      width="900px"
+      top="5vh"
     >
+      <div slot="title" class="ledger-dialog-title">
+        <div class="ledger-dialog-title__icon">
+          <i class="el-icon-document-add" />
+        </div>
+        <div>
+          <div class="ledger-dialog-title__text">{{ textMap[dialogStatus] }}</div>
+          <div class="ledger-dialog-title__subtext">按案情、当事人、财产与说明分区登记台账信息</div>
+        </div>
+      </div>
       <el-form
         ref="dataForm"
         :rules="rules"
         :model="temp"
-        label-position="left"
-        label-width="80px"
-        style=" margin-left: 50px; margin-right: 50px"
+        label-position="top"
+        class="ledger-entry-form"
       >
-        <el-form-item label="办案人" prop="cbr">
-          <el-input v-model="temp.cbr" />
-        </el-form-item>
-        <el-form-item label="案号录入">
-          <el-input v-model="temp.ahjc" @input="handleahjcChange()" />
-        </el-form-item>
-        <el-form-item label="案号" prop="ah">
-          <el-input v-model="temp.ah" />
-        </el-form-item>
-        <el-form-item label="执保案号">
-          <el-input v-model="temp.zbah" />
-        </el-form-item>
-        <el-form-item label="申请人" prop="sqzxr">
-          <el-input v-model="temp.sqzxr" />
-        </el-form-item>
-        <el-form-item label="被申请人" prop="bzxr">
-          <el-input v-model="temp.bzxr" />
-        </el-form-item>
-        <el-row :gutter="20"><el-col :span="12">
+        <section class="ledger-form-section">
+          <div class="ledger-form-section__title">
+            <span />
+            <strong>基础案情信息</strong>
+          </div>
+          <el-row :gutter="20">
+            <el-col :sm="12" :xs="24">
+              <el-form-item label="办案人" prop="cbr">
+                <el-input v-model="temp.cbr" placeholder="请输入办案人姓名" />
+              </el-form-item>
+            </el-col>
+            <el-col :sm="12" :xs="24">
+              <el-form-item label="执保案号">
+                <el-input v-model="temp.zbah" placeholder="请输入相关执保案号" />
+              </el-form-item>
+            </el-col>
+            <el-col :sm="12" :xs="24">
+              <el-form-item label="案号录入">
+                <el-input v-model="temp.ahjc" placeholder="输入年份和序号自动生成案号" @input="handleahjcChange()">
+                  <i slot="prefix" class="el-input__icon el-icon-edit-outline" />
+                </el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :sm="12" :xs="24">
+              <el-form-item label="案号" prop="ah">
+                <el-input v-model="temp.ah" class="ledger-case-number-input" placeholder="请输入或自动生成案号" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </section>
 
-                               <el-form-item label="开始日期" prop="startdate">
-                                 <el-date-picker
-                                   v-model="temp.startdate"
-                                   label="开始日期"
-                                   prop="startdate"
-                                   type="date"
-                                   placeholder="开始日期"
-                                   value-format="yyyy-MM-dd"
-                                   @change="handleDateChange()"
-                                 />
-                               </el-form-item>
-                             </el-col><el-col :span="12">
-                               <el-form-item label="届满日期" :prop="temp.cfsfpro">
-                                 <el-date-picker
-                                   v-model="temp.enddate"
-                                   label="届满日期"
-                                   :prop="temp.cfsfpro"
-                                   type="date"
-                                   placeholder="届满日期"
-                                   value-format="yyyy-MM-dd"
-                                 />
-                               </el-form-item>
-                             </el-col><el-col :span="12">
-            <el-form-item label="冻结账号">
-              <el-input v-model="temp.account" />
-            </el-form-item>
-          </el-col><el-col :span="12">
-            <el-form-item label="冻结金额">
-              <el-input v-model="temp.sjdjje" placeholder="请输入金额" type="number" />
-            </el-form-item>
-          </el-col>
+        <section class="ledger-form-section">
+          <div class="ledger-form-section__title">
+            <span />
+            <strong>相关当事人</strong>
+          </div>
+          <el-row :gutter="20">
+            <el-col :sm="12" :xs="24">
+              <el-form-item label="申请人" prop="sqzxr">
+                <el-input v-model="temp.sqzxr" placeholder="请输入申请人全称" />
+              </el-form-item>
+            </el-col>
+            <el-col :sm="12" :xs="24">
+              <el-form-item label="被执行人" prop="bzxr">
+                <el-input v-model="temp.bzxr" placeholder="请输入被执行人全称" />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </section>
 
-          <el-col :span="12">
-            <el-form-item label="扣划金额">
-              <el-input v-model="temp.sjkhje" placeholder="请输入金额" type="number" @input="handleKhljje()" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="扣划累计">
-              <el-input v-model="temp.khljje" placeholder="请输入金额" type="number" disabled />
-            </el-form-item>
-          </el-col>
+        <section class="ledger-form-section">
+          <div class="ledger-form-section__title">
+            <span />
+            <strong>时间与财产配置</strong>
+          </div>
+          <el-row :gutter="20">
+            <el-col :sm="12" :xs="24">
+              <el-form-item label="财产类型" prop="type">
+                <el-select v-model="temp.type" style="width: 100%" placeholder="请选择财产类型" clearable @change="handleDateChange()">
+                  <el-option v-for="item in Cftype" :key="item.id" :label="item.typename" :value="item.typename">{{
+                    item.typename }}</el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :sm="12" :xs="24">
+              <el-form-item label="首封状态" prop="cfsf">
+                <el-select v-model="temp.cfsf" style="width: 100%" placeholder="请选择" clearable @change="handleCfsfChange()">
+                  <el-option v-for="item in cfsf" :key="item.id" :label="item.cfsf" :value="item.cfsf">{{ item.cfsf }}</el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
 
-          <el-col :span="12">
-            <el-form-item label="财产类型" prop="type">
-              <el-select
-                v-model="temp.type"
-                style="width: 100%"
-                class="filter-item"
-                placeholder="请选择"
-                clearable
-                @change="handleDateChange()"
-              >
-                <el-option v-for="item in Cftype" :key="item.id" :label="item.typename" :value="item.typename">{{
-                  item.typename }}</el-option>
-              </el-select>
-            </el-form-item>
-          </el-col><el-col :span="12">
-            <el-form-item label="首封状态" prop="cfsf">
-              <el-select
-                v-model="temp.cfsf"
-                style="width: 100%"
-                class="filter-item"
-                placeholder="请选择"
-                clearable
-                @change="handleCfsfChange()"
-              >
-                <el-option v-for="item in cfsf" :key="item.id" :label="item.cfsf" :value="item.cfsf">{{ item.cfsf
-                }}</el-option>
-              </el-select>
-            </el-form-item>
-          </el-col><el-col :span="12">
-            <el-form-item label="原承办人">
-              <el-input v-model="temp.ycbr" />
-            </el-form-item>
-          </el-col><el-col :span="12">
-            <el-form-item label="控制类型">
-              <el-select v-model="temp.leixing" style="width: 100%" class="filter-item" placeholder="请选择" clearable>
-                <el-option v-for="item in Leixing" :key="item.id" :label="item.name" :value="item.name">{{ item.name
-                }}</el-option>
-              </el-select>
-            </el-form-item>
-          </el-col><el-col :span="12">
-            <el-form-item label="自动续封">
-              <el-switch v-model="temp.autocf" active-color="#13ce66" :active-value="1" :inactive-value="0" />
-              <el-tag>{{ temp.autocf == 1 ? '开启' : '关闭' }}</el-tag>
-            </el-form-item>
-          </el-col><el-col :span="12">
-            <el-form-item label="状态">
-              <el-switch
-                v-model="temp.isvoid"
-                active-color="#13ce66"
-                inactive-color="#ff4949"
-                :inactive-value="1"
-                :active-value="0"
-              />
-              <el-tag>{{ temp.isvoid == 0 ? '正常' : '停用' }}</el-tag>
-            </el-form-item>
-          </el-col></el-row>
-        <el-form-item label="财产情况" prop="status">
-          <el-input
-            v-model="temp.ccqk"
-            :autosize="{ minRows: 2, maxRows: 6 }"
-            type="textarea"
-            placeholder="您可以填定用户财产情况"
-          />
-        </el-form-item>
-        <!--        <el-form-item label="查封状态" prop="status">
-          <el-input v-model="temp.status" />
-        </el-form-item> -->
-        <el-form-item label="备注">
-          <el-input
-            v-model="temp.note"
-            :autosize="{ minRows: 2, maxRows: 6 }"
-            type="textarea"
-            placeholder="您可以填定用户备注"
-          />
-        </el-form-item>
-        <el-form-item v-if="filelistshow" label="回执上传">
-          <el-upload
-            :action="uploadurl"
-            list-type="picture-card"
-            :on-remove="handleRemove"
-            accept="image/*,.pdf,.doc,.docx"
-            :on-success="handleFileSuccess"
-            :on-error="handleFileError"
-            :data="temp"
-            :before-upload="handleFileUpload"
-            :file-list="fileList"
-          >
-            <i slot="default" class="el-icon-plus" />
-            <div slot="file" slot-scope="{file}">
-              <embed v-if="isPdfFile(file)" :src="file.url" width="100%">
-              <img v-else class="el-upload-list__item-thumbnail" :src="file.url" :alt="file.filename">
-              <span class="el-upload-list__item-actions">
-                <span
-                  v-if="isPreFile(file)"
-                  class="el-upload-list__item-preview"
-                  @click="handlePictureCardPreview(file)"
-                >
-                  <i class="el-icon-zoom-in" />
-                </span>
-                <span v-if="!disabled " class="el-upload-list__item-delete" @click="handleDownloadimg(file)">
-                  <i class="el-icon-download" />
-                </span>
-                <span v-if="!disabled" class="el-upload-list__item-delete" @click="handleRemove(file)">
-                  <i class="el-icon-delete" />
-                </span>
-              </span>
+          <div v-show="isBankProperty" class="ledger-bank-fields">
+            <div class="ledger-bank-fields__tip">
+              <i class="el-icon-info" />
+              银行账户资产明细
             </div>
-          </el-upload>
-        </el-form-item>
+            <el-row :gutter="20">
+              <el-col :sm="12" :xs="24">
+                <el-form-item label="冻结账号">
+                  <el-input v-model="temp.account" placeholder="请输入完整账号" />
+                </el-form-item>
+              </el-col>
+              <el-col :sm="12" :xs="24">
+                <el-form-item label="冻结金额">
+                  <el-input v-model="temp.sjdjje" placeholder="0.00" type="number">
+                    <template slot="prepend">¥</template>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :sm="12" :xs="24">
+                <el-form-item label="扣划金额">
+                  <el-input v-model="temp.sjkhje" placeholder="0.00" type="number" @input="handleKhljje()">
+                    <template slot="prepend">¥</template>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+              <el-col :sm="12" :xs="24">
+                <el-form-item label="扣划累计">
+                  <el-input v-model="temp.khljje" placeholder="0.00" type="number" disabled>
+                    <template slot="prepend">¥</template>
+                  </el-input>
+                </el-form-item>
+              </el-col>
+            </el-row>
+          </div>
+
+          <el-row :gutter="20">
+            <el-col :sm="12" :xs="24">
+              <el-form-item label="开始日期" prop="startdate">
+                <el-date-picker
+                  v-model="temp.startdate"
+                  type="date"
+                  placeholder="开始日期"
+                  value-format="yyyy-MM-dd"
+                  style="width: 100%"
+                  @change="handleDateChange()"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :sm="12" :xs="24">
+              <el-form-item label="届满日期" :prop="temp.cfsfpro">
+                <el-date-picker
+                  v-model="temp.enddate"
+                  type="date"
+                  placeholder="届满日期"
+                  value-format="yyyy-MM-dd"
+                  style="width: 100%"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <el-row :gutter="20">
+            <el-col :sm="12" :xs="24">
+              <el-form-item label="原承办人">
+                <el-input v-model="temp.ycbr" placeholder="请输入原承办人" />
+              </el-form-item>
+            </el-col>
+            <el-col :sm="12" :xs="24">
+              <el-form-item label="控制类型">
+                <el-select v-model="temp.leixing" style="width: 100%" placeholder="请选择" clearable>
+                  <el-option v-for="item in Leixing" :key="item.id" :label="item.name" :value="item.name">{{ item.name }}</el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+
+          <div class="ledger-switch-grid">
+            <div class="ledger-switch-card">
+              <div>
+                <strong>自动续封</strong>
+                <p>开启后保留自动续封标记</p>
+              </div>
+              <div>
+                <el-switch v-model="temp.autocf" active-color="#2563eb" :active-value="1" :inactive-value="0" />
+                <el-tag size="mini" :type="temp.autocf == 1 ? 'success' : 'info'">{{ temp.autocf == 1 ? '开启' : '关闭' }}</el-tag>
+              </div>
+            </div>
+            <div class="ledger-switch-card">
+              <div>
+                <strong>当前状态</strong>
+                <p>关闭后该台账记录显示为停用</p>
+              </div>
+              <div>
+                <el-switch v-model="temp.isvoid" active-color="#10b981" inactive-color="#ff4949" :inactive-value="1" :active-value="0" />
+                <el-tag size="mini" :type="temp.isvoid == 0 ? 'success' : 'danger'">{{ temp.isvoid == 0 ? '正常' : '停用' }}</el-tag>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="ledger-form-section">
+          <div class="ledger-form-section__title">
+            <span />
+            <strong>补充说明</strong>
+          </div>
+          <el-form-item label="财产情况" prop="status">
+            <el-input v-model="temp.ccqk" :autosize="{ minRows: 3, maxRows: 6 }" type="textarea" placeholder="请填写财产现状、执行线索等具体信息" />
+          </el-form-item>
+          <el-form-item label="备注">
+            <el-input v-model="temp.note" :autosize="{ minRows: 2, maxRows: 5 }" type="textarea" placeholder="请输入备注" />
+          </el-form-item>
+          <el-form-item v-if="filelistshow" label="回执上传" class="ledger-upload-field">
+            <el-upload
+              :action="uploadurl"
+              list-type="picture-card"
+              :on-remove="handleRemove"
+              accept="image/*,.pdf,.doc,.docx"
+              :on-success="handleFileSuccess"
+              :on-error="handleFileError"
+              :data="temp"
+              :before-upload="handleFileUpload"
+              :file-list="fileList"
+            >
+              <i slot="default" class="el-icon-plus" />
+              <div slot="file" slot-scope="{file}">
+                <embed v-if="isPdfFile(file)" :src="file.url" width="100%">
+                <img v-else class="el-upload-list__item-thumbnail" :src="file.url" :alt="file.filename">
+                <span class="el-upload-list__item-actions">
+                  <span v-if="isPreFile(file)" class="el-upload-list__item-preview" @click="handlePictureCardPreview(file)">
+                    <i class="el-icon-zoom-in" />
+                  </span>
+                  <span v-if="!disabled " class="el-upload-list__item-delete" @click="handleDownloadimg(file)">
+                    <i class="el-icon-download" />
+                  </span>
+                  <span v-if="!disabled" class="el-upload-list__item-delete" @click="handleRemove(file)">
+                    <i class="el-icon-delete" />
+                  </span>
+                </span>
+              </div>
+            </el-upload>
+          </el-form-item>
+        </section>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
-        <el-button v-if="canEdit(temp)" type="primary" @click="dialogStatus === 'create' ? createData() : updateData()">保存</el-button>
+        <el-button class="ledger-dialog-cancel" @click="dialogFormVisible = false">取消</el-button>
+        <el-button v-if="canEdit(temp)" class="ledger-dialog-save" type="primary" @click="dialogStatus === 'create' ? createData() : updateData()">{{ dialogStatus === 'create' ? '确认登记' : '保存修改' }}</el-button>
       </div>
     </el-dialog>
     <el-dialog :visible.sync="imgdialogVisible">
@@ -539,8 +599,8 @@ export default {
       dialogFormVisible: false,
       dialogStatus: '',
       textMap: {
-        update: '查看提醒',
-        create: '新增提醒'
+        update: '查看台账信息',
+        create: '新增台账登记'
       },
       dialogPvVisible: false,
       pvData: [],
@@ -559,7 +619,7 @@ export default {
         }],
         bzxr: [{
           required: true,
-          message: '被申请人不能为空',
+          message: '被执行人不能为空',
           trigger: 'change'
         }],
         enddate: [{
@@ -588,6 +648,18 @@ export default {
       set: function(newvalue) {
         this.temp.isvoid = newvalue ? '0' : '1'
       }
+    },
+    canFilterByDept() {
+      const roles = this.$store.getters.roles || []
+      return this.name === 'Admin' || roles.includes('admin')
+    },
+    isBankProperty() {
+      const type = this.temp.type || ''
+      const hiddenTypes = ['房产', '股权', '车辆', '其他']
+      if (hiddenTypes.some((item) => type.indexOf(item) !== -1)) {
+        return false
+      }
+      return type.indexOf('银行') !== -1 || type.indexOf('存款') !== -1 || type.indexOf('账户') !== -1 || type.indexOf('支付宝') !== -1
     },
     ...mapGetters([
       'sidebar',
@@ -853,7 +925,9 @@ export default {
       cftype().then((response) => {
         this.Cftype = response.data
       })
-      this.getDept()
+      if (this.canFilterByDept) {
+        this.getDept()
+      }
       this.getGroupList()
 
       const doctype = 'txcl'
@@ -929,6 +1003,9 @@ export default {
     getList() {
       this.listLoading = true
       this.listQuery.myusername = this.$store.getters.name
+      if (!this.canFilterByDept) {
+        this.listQuery.deptcode = []
+      }
       cflistGrouped(this.listQuery).then((response) => {
         this.list = response.data.items || []
         this.alllist = response.data.allitems || []
@@ -1391,6 +1468,279 @@ export default {
   min-width: 540px;
 }
 
+.ledger-entry-dialog {
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 22px 60px rgba(15, 23, 42, 0.22);
+}
+
+.ledger-entry-dialog .el-dialog__header {
+  padding: 0;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.ledger-entry-dialog .el-dialog__headerbtn {
+  top: 24px;
+  right: 24px;
+}
+
+.ledger-entry-dialog .el-dialog__body {
+  max-height: calc(90vh - 152px);
+  padding: 0;
+  overflow-y: auto;
+  background: #fff;
+}
+
+.ledger-entry-dialog .el-dialog__footer {
+  padding: 18px 28px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.ledger-dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 22px 30px;
+}
+
+.ledger-dialog-title__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  color: #2563eb;
+  background: #eff6ff;
+  font-size: 22px;
+}
+
+.ledger-dialog-title__text {
+  color: #1f2937;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.ledger-dialog-title__subtext {
+  margin-top: 3px;
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.ledger-entry-form {
+  padding: 28px 30px 8px;
+}
+
+.ledger-entry-form .el-form-item {
+  margin-bottom: 18px;
+}
+
+.ledger-entry-form .el-form-item__label {
+  padding-bottom: 5px;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.ledger-entry-form .el-input__inner,
+.ledger-entry-form .el-textarea__inner {
+  border-color: #dbe3ee;
+  border-radius: 8px;
+  color: #1f2937;
+  background: #fff;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.ledger-entry-form .el-input__inner:focus,
+.ledger-entry-form .el-textarea__inner:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.12);
+}
+
+.ledger-entry-form .el-input-group__prepend {
+  border-color: #dbe3ee;
+  border-radius: 8px 0 0 8px;
+  color: #64748b;
+  background: #f8fafc;
+}
+
+.ledger-case-number-input .el-input__inner {
+  font-family: Consolas, Monaco, "Courier New", monospace;
+}
+
+.ledger-form-section {
+  margin-bottom: 26px;
+}
+
+.ledger-form-section__title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.ledger-form-section__title span {
+  width: 4px;
+  height: 20px;
+  border-radius: 99px;
+  background: #2563eb;
+}
+
+.ledger-form-section__title strong {
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.ledger-bank-fields {
+  margin: 2px 0 22px;
+  padding: 18px 18px 0;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+  background: #eff6ff;
+}
+
+.ledger-bank-fields__tip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+  color: #2563eb;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ledger-switch-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  margin-top: 6px;
+  padding-top: 22px;
+  border-top: 1px solid #eef2f7;
+}
+
+.ledger-switch-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 18px;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.ledger-switch-card strong {
+  display: block;
+  color: #374151;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.ledger-switch-card p {
+  margin: 4px 0 0;
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.ledger-switch-card .el-tag {
+  margin-left: 8px;
+}
+
+.ledger-upload-field .el-upload--picture-card,
+.ledger-upload-field .el-upload-list__item {
+  width: 92px;
+  height: 92px;
+  line-height: 92px;
+  border-radius: 10px;
+}
+
+.ledger-dialog-cancel {
+  min-width: 92px;
+  border-color: #dbe3ee;
+  border-radius: 8px;
+  color: #64748b;
+  background: #fff;
+}
+
+.ledger-dialog-save {
+  min-width: 116px;
+  border-color: #2563eb;
+  border-radius: 8px;
+  background: #2563eb;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+}
+
+.ledger-dialog-save:hover,
+.ledger-dialog-save:focus {
+  border-color: #1d4ed8;
+  background: #1d4ed8;
+}
+
+.ledger-action-button {
+  min-width: 132px;
+  height: 44px;
+  margin-left: 12px;
+  padding: 0 24px;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0;
+  transition: all 0.2s ease;
+}
+
+.ledger-action-button i {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.ledger-action-button--query,
+.ledger-action-button--query:focus {
+  color: #1d5fff;
+  border-color: #d5e6ff;
+  background: #edf6ff;
+}
+
+.ledger-action-button--query:hover {
+  color: #1553e8;
+  border-color: #bcd8ff;
+  background: #e4f1ff;
+}
+
+.ledger-action-button--export,
+.ledger-action-button--export:focus {
+  color: #1f2d3d;
+  border-color: #dce4f0;
+  background: #fff;
+}
+
+.ledger-action-button--export:hover {
+  color: #1d5fff;
+  border-color: #c8d6e8;
+  background: #f8fbff;
+}
+
+.ledger-action-button--create,
+.ledger-action-button--create:focus {
+  color: #fff;
+  border-color: #2563eb;
+  background: #2563eb;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.26);
+}
+
+.ledger-action-button--create:hover {
+  color: #fff;
+  border-color: #1d4ed8;
+  background: #1d4ed8;
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.32);
+}
+
 .ledger-card-list {
   min-height: 220px;
 }
@@ -1596,6 +1946,27 @@ export default {
   word-break: break-all;
 }
 
+.property-row__note {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  margin-top: 8px;
+  padding: 7px 10px;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.6;
+  background: #f8fafc;
+  border: 1px solid #edf2f7;
+  border-radius: 6px;
+  word-break: break-all;
+}
+
+.property-row__note i {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  color: #909399;
+}
+
 .property-row__meta {
   display: flex;
   flex-wrap: wrap;
@@ -1624,6 +1995,21 @@ export default {
 }
 
 @media (max-width: 900px) {
+  .ledger-entry-dialog {
+    width: calc(100% - 24px) !important;
+    margin-top: 12px !important;
+  }
+
+  .ledger-entry-form,
+  .ledger-dialog-title {
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+
+  .ledger-switch-grid {
+    grid-template-columns: 1fr;
+  }
+
   .case-card__meta {
     gap: 6px 14px;
   }
