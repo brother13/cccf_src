@@ -6,8 +6,20 @@
       <!-- <h1 class="platform-title" v-if="hasRole('PZ')">财务凭证接口</h1> -->
     </div>
 
-    <div class="menu-container">
+    <div v-if="showUpdateNotice" class="notice-group">
+      <button class="notice-close" type="button" aria-label="关闭公告" @click="closeUpdateNotice">
+        <i class="el-icon-close" />
+      </button>
+      <div class="notice-header">
+        <div class="notice-title">{{ updateNotice.title }}</div>
+        <div v-if="updateNotice.date" class="notice-date">{{ updateNotice.date }}</div>
+      </div>
+      <ul class="notice-list">
+        <li v-for="(item, index) in updateNotice.items" :key="index">{{ item }}</li>
+      </ul>
+    </div>
 
+    <div class="menu-container">
       <!-- 执行插孔类别 -->
       <div class="remind-group">
         <div class="group-title">查封到期提醒</div>
@@ -97,10 +109,8 @@
 
 <script>
 import {
-  postdata,
-  cflist,
   cflist_total,
-  xdlblist,
+  updateNotice,
   zxklist,
   xdlist
 } from '@/dagl/api/common'
@@ -118,6 +128,7 @@ import { dkpList } from '@/dagl/api/dkp'
 // import TodoList from './components/TodoList'
 // import BoxCard from './components/BoxCard'
 import caseapi from '@/courtcase/api'
+import { isUpdateNoticeVisible, normalizeUpdateNotice } from '@/dagl/utils/updateNotice'
 
 export default {
   name: 'DashboardAdmin',
@@ -146,19 +157,25 @@ export default {
         akyh5day: 0,
         thqd: 0,
         dkp: 0
-      }
+      },
+      updateNotice: normalizeUpdateNotice({}),
+      noticeClosed: false
     }
   },
   computed: {
     // 假设 roles 是当前用户的角色数组
     roles() {
       return this.$store.state.user.roles // 假设 roles 存储在 Vuex 的 state 中
+    },
+    showUpdateNotice() {
+      return isUpdateNoticeVisible(this.updateNotice, this.noticeClosed)
     }
   },
 
   created() {
     this.gettotal()
     this.init()
+    this.getUpdateNotice()
     // console.log(this.$store.state.user)
   },
   activated() {
@@ -172,6 +189,16 @@ export default {
 
     init() {
       this.getcount()
+    },
+    closeUpdateNotice() {
+      this.noticeClosed = true
+    },
+    getUpdateNotice() {
+      updateNotice().then((res) => {
+        this.updateNotice = normalizeUpdateNotice(res.data)
+      }).catch(() => {
+        this.updateNotice = normalizeUpdateNotice({})
+      })
     },
     getcount() {
       caseapi.plugins.countCasenum().then((res) => {
@@ -198,48 +225,48 @@ export default {
       })
     },
     goToPage(type) {
-      if (type == 'yzyn') {
+      if (type === 'yzyn') {
         this.$router.push({
           path: '/tz/yzyn'
         })
-      } else if (type == 'yyyn') {
+      } else if (type === 'yyyn') {
         this.$router.push({
           path: '/tz/yyyn'
         })
-      } else if (type == 'yyyn2') {
+      } else if (type === 'yyyn2') {
         this.$router.push({
           path: '/tz/yyyn2'
         })
-      } else if (type == 'tzsj') {
+      } else if (type === 'tzsj') {
         this.$router.push({
           path: '/tz/txcl'
         })
-      } else if (type == 'tjtz') {
+      } else if (type === 'tjtz') {
         this.$router.push({
           path: '/ywcl/upload-excel'
         })
-      } else if (type == 'xdlb') {
+      } else if (type === 'xdlb') {
         this.$router.push({
           path: '/xdgl/xdlb'
         })
-      } else if (type == 'zxktz') {
+      } else if (type === 'zxktz') {
         this.$router.push({
           path: '/zxktz/zxkreport'
         })
-      } else if (type == 'new10day' || type == 'akyh5day') {
+      } else if (type === 'new10day' || type === 'akyh5day') {
         this.$router.push({
           path: '/zxktz/zxkreport',
           query: { type: type }
         })
-      } else if (type == 'thqdlist') {
+      } else if (type === 'thqdlist') {
         this.$router.push({
           path: '/zxktz/thqdlist'
         })
-      } else if (type == 'dkplist') {
+      } else if (type === 'dkplist') {
         this.$router.push({
           path: '/zxktz/dkplist'
         })
-      } else if (type == 'lixijs') {
+      } else if (type === 'lixijs') {
         this.$router.push({
           path: '/lixijs/calculator'
         })
@@ -301,6 +328,10 @@ body {
   padding: 15px;
 }
 
+.body {
+  position: relative;
+}
+
 .header {
   text-align: center;
   margin-bottom: 20px;
@@ -333,6 +364,67 @@ body {
   background: rgba(255, 255, 255, 0.15);
   border-radius: 12px;
   padding: 10px;
+}
+
+.notice-group {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+  width: 260px;
+  max-height: 180px;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 8px;
+  padding: 10px 30px 10px 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.notice-close {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  color: #909399;
+  cursor: pointer;
+  line-height: 20px;
+}
+
+.notice-close:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #303133;
+}
+
+.notice-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.notice-title {
+  color: #303133;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.notice-date {
+  color: #606266;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.notice-list {
+  padding-left: 18px;
+  color: #303133;
+  line-height: 1.55;
+  font-size: 13px;
 }
 
 .group-title {
@@ -509,6 +601,13 @@ body {
 
 // 响应式适配
 @media screen and (max-width: 768px) {
+  .notice-group {
+    top: 8px;
+    left: 8px;
+    width: calc(100vw - 16px);
+    max-height: 120px;
+  }
+
   .logo {
     width: 60px;
     height: 60px;
