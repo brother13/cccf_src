@@ -267,6 +267,8 @@
 </template>
 
 <script>
+const LPR_START_DATE = '2019-08-20'
+
 // LPR数据缓存（从新到旧排序）
 const lprData = [
   { date: '2026-04-20', rate_1y: 3.00, rate_5y: 3.50 },
@@ -337,10 +339,22 @@ const lprData = [
   { date: '2020-11-20', rate_1y: 3.85, rate_5y: 4.65 },
   { date: '2020-10-20', rate_1y: 3.85, rate_5y: 4.65 },
   { date: '2020-09-21', rate_1y: 3.85, rate_5y: 4.65 },
-  { date: '2020-08-20', rate_1y: 3.85, rate_5y: 4.65 }
+  { date: '2020-08-20', rate_1y: 3.85, rate_5y: 4.65 },
+  { date: '2020-07-20', rate_1y: 3.85, rate_5y: 4.65 },
+  { date: '2020-06-22', rate_1y: 3.85, rate_5y: 4.65 },
+  { date: '2020-05-20', rate_1y: 3.85, rate_5y: 4.65 },
+  { date: '2020-04-20', rate_1y: 3.85, rate_5y: 4.65 },
+  { date: '2020-03-20', rate_1y: 4.05, rate_5y: 4.75 },
+  { date: '2020-02-20', rate_1y: 4.05, rate_5y: 4.75 },
+  { date: '2020-01-20', rate_1y: 4.15, rate_5y: 4.80 },
+  { date: '2019-12-20', rate_1y: 4.15, rate_5y: 4.80 },
+  { date: '2019-11-20', rate_1y: 4.15, rate_5y: 4.80 },
+  { date: '2019-10-21', rate_1y: 4.20, rate_5y: 4.85 },
+  { date: '2019-09-20', rate_1y: 4.20, rate_5y: 4.85 },
+  { date: '2019-08-20', rate_1y: 4.25, rate_5y: 4.85 }
 ]
 
-// 贷款基准利率数据（2020-08-20前使用）
+// 贷款基准利率数据（2019-08-20前使用）
 const benchmarkData = [
   // 2014年11月22日之后（新利率体系）
   { date: '2015-10-24', '1y': 4.35, '1y_5y': 4.75, '5y_plus': 4.90 },
@@ -486,26 +500,13 @@ export default {
       return Math.ceil((e - s) / (1000 * 60 * 60 * 24))
     },
 
-    // 判断是否使用LPR时期（2020-08-20及之后）
+    // 判断是否使用LPR时期（2019-08-20及之后）
     isLprPeriod(date) {
-      return new Date(date) >= new Date('2020-08-20')
+      return new Date(date) >= new Date(LPR_START_DATE)
     },
 
-    // 获取指定日期的LPR
-    getLprRateForDate(date) {
-      const compareDate = new Date(date)
-      const level = this.form.lprLevel
-
-      let baseRate = lprData[lprData.length - 1]['rate_' + level]
-      for (let i = 0; i < lprData.length; i++) {
-        const item = lprData[i]
-        const itemDate = new Date(item.date)
-        if (itemDate <= compareDate) {
-          baseRate = item['rate_' + level]
-          break
-        }
-      }
-
+    // 应用自动分段模式下的利率调整方式
+    applyAutoRateAdjustment(baseRate) {
       let adjustedRate = baseRate
       if (this.form.lprAdjustType === 'bp') {
         const bpVal = this.form.lprBpValue || 0
@@ -527,11 +528,29 @@ export default {
         }
       }
 
-      return { rate: adjustedRate, type: 'lpr' }
+      return adjustedRate
+    },
+
+    // 获取指定日期的LPR
+    getLprRateForDate(date) {
+      const compareDate = new Date(date)
+      const level = this.form.lprLevel
+
+      let baseRate = lprData[lprData.length - 1]['rate_' + level]
+      for (let i = 0; i < lprData.length; i++) {
+        const item = lprData[i]
+        const itemDate = new Date(item.date)
+        if (itemDate <= compareDate) {
+          baseRate = item['rate_' + level]
+          break
+        }
+      }
+
+      return { rate: this.applyAutoRateAdjustment(baseRate), type: 'lpr' }
     },
 
     // 获取指定日期的基准利率
-    getBenchmarkRateForDate(date) {
+    getBenchmarkRateForDate(date, applyAdjustment = false) {
       const compareDate = new Date(date)
       const pickBenchmarkRate = (row) => {
         // 新利率体系优先取1y；旧利率体系回退到接近一年期档次
@@ -547,10 +566,12 @@ export default {
         const item = benchmarkData[i]
         const itemDate = new Date(item.date)
         if (itemDate <= compareDate) {
-          return { rate: pickBenchmarkRate(item), type: 'benchmark' }
+          const rate = pickBenchmarkRate(item)
+          return { rate: applyAdjustment ? this.applyAutoRateAdjustment(rate) : rate, type: 'benchmark' }
         }
       }
-      return { rate: pickBenchmarkRate(benchmarkData[benchmarkData.length - 1]), type: 'benchmark' }
+      const rate = pickBenchmarkRate(benchmarkData[benchmarkData.length - 1])
+      return { rate: applyAdjustment ? this.applyAutoRateAdjustment(rate) : rate, type: 'benchmark' }
     },
 
     // 按法规分段计算迟延履行利息：
@@ -609,7 +630,7 @@ export default {
       if (this.isLprPeriod(date)) {
         return this.getLprRateForDate(date)
       }
-      return this.getBenchmarkRateForDate(date)
+      return this.getBenchmarkRateForDate(date, true)
     },
 
     // 获取指定区间内的利率调整日期列表
@@ -618,10 +639,10 @@ export default {
       const start = new Date(startDate)
       const end = new Date(endDate)
 
-      // 分界点 2020-08-20
-      const boundaryDate = new Date('2020-08-20')
+      // 分界点 2019-08-20
+      const boundaryDate = new Date(LPR_START_DATE)
       if (start < boundaryDate && end >= boundaryDate) {
-        dates.push('2020-08-20')
+        dates.push(LPR_START_DATE)
       }
 
       // LPR调整日期
@@ -635,9 +656,9 @@ export default {
         }
       }
 
-      // 基准利率调整日期（2020-08-20前）
+      // 基准利率调整日期（2019-08-20前）
       if (start < boundaryDate) {
-        const bmEnd = end < boundaryDate ? end : new Date('2020-08-19')
+        const bmEnd = end < boundaryDate ? end : new Date('2019-08-19')
         for (const item of benchmarkData) {
           const itemDate = new Date(item.date)
           if (itemDate > start && itemDate <= bmEnd) {
