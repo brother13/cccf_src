@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-import msgrequest from '@/utils/msgrequest'
 
 export function postdata(url, data) {
   var temp = { 'action': '', 'data': [] }
@@ -50,6 +49,10 @@ export function Savecccf(data) {
 }
 export function cflist(data) {
   const action = '/data/cflist'
+  return postdata(action, data)
+}
+export function cflistGrouped(data) {
+  const action = '/data/cflist_grouped'
   return postdata(action, data)
 }
 export function cftype(data) {
