@@ -437,7 +437,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button class="ledger-dialog-cancel" @click="dialogFormVisible = false">取消</el-button>
-        <el-button v-if="canEdit(temp)" class="ledger-dialog-save" type="primary" @click="dialogStatus === 'create' ? createData() : updateData()">{{ dialogStatus === 'create' ? '确认登记' : '保存修改' }}</el-button>
+        <el-button v-if="dialogStatus === 'create' || canEdit(temp)" class="ledger-dialog-save" type="primary" @click="dialogStatus === 'create' ? createData() : updateData()">{{ dialogStatus === 'create' ? '确认登记' : '保存修改' }}</el-button>
       </div>
     </el-dialog>
     <el-dialog :visible.sync="imgdialogVisible">
