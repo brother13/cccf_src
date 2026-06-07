@@ -167,18 +167,29 @@
 
     <el-dialog
       v-dialogDrag
-      custom-class="saveAsDialog"
+      custom-class="saveAsDialog ledger-entry-dialog"
       :title="textMap[dialogStatus]"
       :visible.sync="dialogFormVisible"
       :close-on-click-modal="false"
+      width="900px"
+      top="5vh"
+      @close="handleDialogClose"
     >
+      <div slot="title" class="ledger-dialog-title">
+        <div class="ledger-dialog-title__icon">
+          <i class="el-icon-document-add" />
+        </div>
+        <div>
+          <div class="ledger-dialog-title__text">{{ textMap[dialogStatus] }}</div>
+          <div class="ledger-dialog-title__subtext">按案情、当事人、财产与说明分区登记台账信息</div>
+        </div>
+      </div>
       <el-form
         ref="dataForm"
         :rules="rules"
         :model="temp"
-        label-position="left"
-        label-width="80px"
-        style="margin-left: 50px; margin-right: 50px"
+        label-position="top"
+        class="ledger-entry-form"
       >
         <el-form-item label="办案人" prop="cbr">
           <el-input v-model="temp.cbr" />
@@ -350,11 +361,12 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button class="ledger-dialog-cancel" @click="handleDialogCancel">取消</el-button>
         <el-button
+          class="ledger-dialog-save"
           type="primary"
           @click="dialogStatus === 'create' ? createData() : updateData()"
-        >保存</el-button>
+        >{{ dialogStatus === 'create' ? '确认登记' : '保存修改' }}</el-button>
       </div>
     </el-dialog>
 
@@ -388,6 +400,7 @@
       :visible.sync="batchInfo.showWin"
       :close-on-click-modal="false"
       width="90%"
+      @close="handleBatchDialogClose"
     >
       <el-form
         ref="dataForm_batch"
@@ -435,6 +448,10 @@
           共有<el-tag>{{ batchInfo.data.ckList.length }}</el-tag>笔记录<template
             v-if="batchInfo.checkedList.length > 0"
           >，当前勾选<el-tag>{{ batchInfo.checkedList.length }}</el-tag>笔</template>
+        </el-form-item>
+        <el-form-item label="是否到期自动续封">
+          <el-switch v-model="batchInfo.data.autocf" active-color="#13ce66" :active-value="1" :inactive-value="0" />
+          <el-tag>{{ batchInfo.data.autocf === 1 ? "开启" : "关闭" }}</el-tag>
         </el-form-item>
         <div class="batch-table">
           <el-table
@@ -485,7 +502,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="batchInfo.showWin = false">取消</el-button>
+        <el-button @click="handleBatchDialogCancel">取消</el-button>
         <el-button
           type="primary"
           icon="el-icon-check"
@@ -697,6 +714,7 @@ export default {
           zxyjah: '',
           zxay: '',
           ajmc: '',
+          autocf: 1,
           ckList: []
         },
         data_empty: {
@@ -710,6 +728,7 @@ export default {
           zxyjah: '',
           zxay: '', // 案由
           ajmc: '',
+          autocf: 1,
           ckList: []
         },
         rules: {
@@ -767,6 +786,7 @@ export default {
           row.isvoid = 0 // 将临时数据修改为正式数据
           if (row.cbr == '' || row.cbr == null) { row.cbr = this.$store.getters.name } // 将临时数据修改为正式数据
           this.handleUpdate(row)
+          this.clearImportedRouteQuery(['id'])
         } else {
           this.$message({
             message: '数据加载异常',
@@ -795,6 +815,7 @@ export default {
       const batchid = this.$route.query.batchid || ''
       if (batchmode != '' && batchid != '') {
         this.batch_loadBatchinfo(batchid)
+        this.clearImportedRouteQuery(['batch', 'batchid'])
         // this.$route.push('/tz/xzjl')
       }
     },
@@ -994,6 +1015,40 @@ export default {
       this.$nextTick(() => {
         this.$refs['dataForm'].clearValidate()
       })
+    },
+    handleDialogCancel() {
+      this.dialogFormVisible = false
+      this.clearImportedRouteQuery(['id'])
+    },
+    handleDialogClose() {
+      this.clearImportedRouteQuery(['id'])
+    },
+    handleBatchDialogCancel() {
+      this.batchInfo.showWin = false
+      this.clearImportedRouteQuery(['batch', 'batchid'])
+    },
+    handleBatchDialogClose() {
+      this.clearImportedRouteQuery(['batch', 'batchid'])
+    },
+    clearImportedRouteQuery(keys) {
+      const query = Object.assign({}, this.$route.query)
+      let changed = false
+      keys.forEach((key) => {
+        if (query[key] !== undefined) {
+          delete query[key]
+          changed = true
+        }
+      })
+      if (!changed) {
+        return
+      }
+      const navigation = this.$router.replace({
+        path: this.$route.path,
+        query
+      })
+      if (navigation && navigation.catch) {
+        navigation.catch(() => {})
+      }
     },
     createData() {
       this.$refs['dataForm'].validate((valid) => {
@@ -1399,6 +1454,7 @@ export default {
       this.$alert('保存成功！')
       this.$nextTick(() => {
         this.batchInfo.showWin = false
+        this.clearImportedRouteQuery(['batch', 'batchid'])
         this.getList()
       })
 
@@ -1442,6 +1498,121 @@ export default {
 
 .saveAsDialog {
   min-width: 540px;
+}
+
+.ledger-entry-dialog {
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 22px 60px rgba(15, 23, 42, 0.22);
+}
+
+.ledger-entry-dialog .el-dialog__header {
+  padding: 0;
+  border-bottom: 1px solid #eef2f7;
+}
+
+.ledger-entry-dialog .el-dialog__headerbtn {
+  top: 24px;
+  right: 24px;
+}
+
+.ledger-entry-dialog .el-dialog__body {
+  max-height: calc(90vh - 152px);
+  padding: 0;
+  overflow-y: auto;
+  background: #fff;
+}
+
+.ledger-entry-dialog .el-dialog__footer {
+  padding: 18px 28px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.ledger-dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 22px 30px;
+}
+
+.ledger-dialog-title__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  color: #2563eb;
+  background: #eff6ff;
+  font-size: 22px;
+}
+
+.ledger-dialog-title__text {
+  color: #1f2937;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.ledger-dialog-title__subtext {
+  margin-top: 3px;
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.ledger-entry-form {
+  padding: 28px 30px 8px;
+}
+
+.ledger-entry-form .el-form-item {
+  margin-bottom: 18px;
+}
+
+.ledger-entry-form .el-form-item__label {
+  padding-bottom: 5px;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.ledger-entry-form .el-input__inner,
+.ledger-entry-form .el-textarea__inner {
+  border-color: #dbe3ee;
+  border-radius: 8px;
+  color: #1f2937;
+  background: #fff;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.ledger-entry-form .el-input__inner:focus,
+.ledger-entry-form .el-textarea__inner:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.12);
+}
+
+.ledger-dialog-cancel {
+  min-width: 92px;
+  border-color: #dbe3ee;
+  border-radius: 8px;
+  color: #64748b;
+  background: #fff;
+}
+
+.ledger-dialog-save {
+  min-width: 116px;
+  border-color: #2563eb;
+  border-radius: 8px;
+  background: #2563eb;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+}
+
+.ledger-dialog-save:hover,
+.ledger-dialog-save:focus {
+  border-color: #1d4ed8;
+  background: #1d4ed8;
 }
 
 .batch-table {

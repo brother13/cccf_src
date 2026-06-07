@@ -7,6 +7,7 @@ function resolve(dir) {
 }
 
 const name = defaultSettings.title || 'vue Element Admin' // page title
+const publicCopyIgnore = ['assets/word/**']
 
 // If your port is set to 80,
 // use administrator privileges to execute the command line.
@@ -84,6 +85,14 @@ module.exports = {
 
     // when there are many pages, it will cause too many meaningless requests
     config.plugins.delete('prefetch')
+
+    config.plugin('copy').tap(args => {
+      const patterns = args[0] || []
+      patterns.forEach(pattern => {
+        pattern.ignore = (pattern.ignore || []).concat(publicCopyIgnore)
+      })
+      return args
+    })
 
     // set svg-sprite-loader
     config.module

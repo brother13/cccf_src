@@ -71,26 +71,28 @@
           @click="handleFilter"
         >搜索</el-button>
 
-        <el-divider direction="vertical" />
+        <template v-if="canCalculateBalance">
+          <el-divider direction="vertical" />
 
-        <span class="filter-item">余额截止日期：</span>
-        <el-date-picker
-          v-model="listQuery.balance_endtime"
-          type="date"
-          placeholder="余额截止日期"
-          value-format="yyyy-MM-dd"
-          style="width: 150px"
-          class="filter-item"
-        />
+          <span class="filter-item">余额截止日期：</span>
+          <el-date-picker
+            v-model="listQuery.balance_endtime"
+            type="date"
+            placeholder="余额截止日期"
+            value-format="yyyy-MM-dd"
+            style="width: 150px"
+            class="filter-item"
+          />
 
-        <el-button
-          v-waves
-          class="filter-item"
-          type="danger"
-          icon="el-icon-refresh"
-          :loading="isRecalcing"
-          @click="handleRecalc"
-        >计算</el-button>
+          <el-button
+            v-waves
+            class="filter-item"
+            type="danger"
+            icon="el-icon-refresh"
+            :loading="isRecalcing"
+            @click="handleRecalc"
+          >计算</el-button>
+        </template>
 
         <el-button
           v-waves
@@ -268,6 +270,10 @@ export default {
     canQueryAll() {
       const roles = this.$store.getters.roles || []
       return roles.includes('ZXTZ_QUERY_ALL') || roles.includes('admin')
+    },
+    canCalculateBalance() {
+      const roles = this.$store.getters.roles || []
+      return roles.includes('ZXTZ_CALCULATE_LEDGER')
     }
   },
 
