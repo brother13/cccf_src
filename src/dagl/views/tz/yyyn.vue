@@ -60,132 +60,115 @@
         <el-option label="轮候" value="轮候" />
       </el-select>
       <el-button
-        v-waves
-        class="filter-item ledger-action-button ledger-action-button--query"
-        icon="el-icon-search"
-        @click="handleFilter"
-      >查询结果</el-button>
+        class="filter-item"
+        style="margin-left: 10px"
+        type="primary"
+        icon="el-icon-edit"
+        @click="handleCreate"
+      >新增</el-button>
+      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">搜索</el-button>
 
       <el-button
         v-waves
         :loading="downloadLoading"
-        class="filter-item ledger-action-button ledger-action-button--export"
+        class="filter-item"
+        type="primary"
         icon="el-icon-download"
         @click="handleDownload"
       >
-        导出报表
+        导出
       </el-button>
-      <el-button
-        class="filter-item ledger-action-button ledger-action-button--create"
-        icon="el-icon-plus"
-        @click="handleCreate"
-      >新增台账</el-button>
     </div>
 
-    <div v-loading="listLoading" class="ledger-card-list">
-      <el-empty v-if="!listLoading && (!list || list.length === 0)" description="暂无台账数据" />
-      <template v-else>
-        <div
-          v-for="(caseItem, caseIndex) in list"
-          :key="caseItem.case_key || caseIndex"
-          class="case-card"
-        >
-          <div class="case-card__header" @click="toggleCase(caseItem.case_key)">
-            <button class="case-card__toggle" type="button" @click.stop="toggleCase(caseItem.case_key)">
-              <i :class="isCaseExpanded(caseItem) ? 'el-icon-arrow-down' : 'el-icon-arrow-right'" />
-            </button>
-            <div class="case-card__main">
-              <div class="case-card__title-row">
-                <span class="case-card__index">{{ caseIndex + listQuery.pagesize * (listQuery.page - 1) + 1 }}</span>
-                <span class="case-card__title">{{ caseItem.ah || '未录入案号' }}</span>
-                <el-tag size="mini" type="info">{{ caseItem.item_count }} 条明细</el-tag>
-                <el-tag size="mini" :type="caseStatus(caseItem).type">{{ caseStatus(caseItem).text }}</el-tag>
-              </div>
-              <div class="case-card__meta">
-                <span>办案人：{{ caseItem.cbr || '-' }}</span>
-                <span>申请人：{{ caseItem.sqzxr || '-' }}</span>
-                <span>被执行人：{{ caseItem.bzxr || '-' }}</span>
-                <span>最早届满：{{ formatShortDate(caseItem.min_enddate) }}</span>
-              </div>
-            </div>
-          </div>
+    <el-table
+      :key="tableKey"
+      v-loading="listLoading"
+      :data="list"
+      border
+      fit
+      highlight-current-row
+      style="width: 100%"
+      @sort-change="sortChange"
+    >
+      <el-table-column type="index" align="center" label="序号">
+        <template slot-scope="{ $index }">
+          {{ $index + listQuery.pagesize * (listQuery.page - 1) + 1 }}
+        </template>
+      </el-table-column>
+      <el-table-column label="办案人" prop="cbr" align="center" type="width:40px" />
+      <el-table-column label="案号" prop="ah" align="center" />
+      <el-table-column label="申请人" prop="sqzxr" align="center" />
+      <el-table-column label="被执行人" prop="bzxr" align="center" />
+      <!--      <el-table-column label="手机号" prop="mobile" align="center" /> -->
+      <el-table-column label="开始日期" prop="startdate" align="center" />
 
-          <transition name="ledger-expand">
-            <div v-show="isCaseExpanded(caseItem)" class="case-card__details">
-              <div
-                v-for="row in caseItem.children"
-                :key="row.cflistid"
-                class="property-row"
-              >
-                <span class="property-row__dot" />
-                <div :class="['property-icon', propertyTypeClass(row.type)]">
-                  <i :class="propertyIcon(row.type)" />
-                </div>
-                <div class="property-row__content">
-                  <div class="property-row__top">
-                    <div class="property-row__name">
-                      <span class="property-row__type">{{ row.type || '其他财产' }}</span>
-                      <el-tag size="mini" :type="rowStatus(row).type">{{ rowStatus(row).text }}</el-tag>
-                      <el-tag v-if="row.cfsf" size="mini" effect="plain">{{ row.cfsf }}</el-tag>
-                    </div>
-                    <div class="property-row__limit" :class="remainingClass(row)">
-                      {{ remainingText(row) }}
-                    </div>
-                  </div>
-                  <div class="property-row__desc">
-                    <span v-if="row.ccqk && row.ccqk.length > 80">
-                      <span v-if="!expandedRows[row.cflistid]">{{ row.ccqk.substring(0, 80) }}...</span>
-                      <span v-else>{{ row.ccqk }}</span>
-                      <el-button type="text" size="mini" @click.stop="toggleExpand(row.cflistid)">
-                        {{ expandedRows[row.cflistid] ? '收起' : '更多' }}
-                      </el-button>
-                    </span>
-                    <span v-else>{{ row.ccqk || '暂无财产情况' }}</span>
-                  </div>
-                  <div v-if="row.note" class="property-row__note">
-                    <i class="el-icon-chat-line-square" />
-                    <span>备注：{{ row.note }}</span>
-                  </div>
-                  <div class="property-row__meta">
-                    <span><i class="el-icon-date" /> {{ formatDateRange(row) }}</span>
-                    <span v-if="row.account"><i class="el-icon-bank-card" /> {{ row.account }}</span>
-                    <span v-if="row.sjdjje"><i class="el-icon-money" /> 冻结金额：{{ formatMoney(row.sjdjje) }}</span>
-                    <span v-if="row.ycbr"><i class="el-icon-user" /> 原承办人：{{ row.ycbr }}</span>
-                  </div>
-                </div>
-                <div class="property-row__actions">
-                  <el-dropdown split-button type="primary" size="mini" @click.stop="handleUpdate(row)">
-                    <i class="el-icon-edit" />{{ canEdit(row) ? '编辑' : '查看' }}
-                    <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item icon="el-icon-edit" @click.native="handleUpdate(row)">{{ canEdit(row) ? '编辑' : '查看' }}</el-dropdown-item>
-                      <el-dropdown-item v-if="canEdit(row)" icon="el-icon-delete" @click.native="handleDelete(row)">删除</el-dropdown-item>
-                    </el-dropdown-menu>
-                  </el-dropdown>
+      <el-table-column label="届满日期" prop="enddate" align="center" />
+      <el-table-column label="财产类型" prop="type" align="center" />
+      <el-table-column label="财产情况" prop="ccqk" align="center" width="200">
+        <template slot-scope="{ row }">
+          <span v-if="row.ccqk && row.ccqk.length > 50">
+            <span v-if="!expandedRows[row.cflistid]">{{ row.ccqk.substring(0, 50) }}...</span>
+            <span v-else>{{ row.ccqk }}</span>
+            <el-button type="text" size="mini" @click="toggleExpand(row.cflistid)">
+              {{ expandedRows[row.cflistid] ? '收起' : '更多' }}
+            </el-button>
+          </span>
+          <span v-else>{{ row.ccqk }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column label="首封状态" prop="cfsf" align="center" />
+      <el-table-column label="原承办人" prop="ycbr" align="center" />
 
-                  <el-dropdown
-                    split-button
-                    type="warning"
-                    size="mini"
-                    @click.stop="downLoadWord(row)"
-                  >
-                    <i class="el-icon-download" />文书
-                    <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item icon="el-icon-download" @click.native="downLoadWord(row)">协执文书</el-dropdown-item>
-                      <el-dropdown-item
-                        v-for="item in templateList"
-                        :key="item.file || item.label"
-                        :icon="item.icon ? item.icon : 'el-icon-download'"
-                        @click.native="handleDownOtherDocx(row, item)"
-                      >{{ item.label }}</el-dropdown-item>
-                    </el-dropdown-menu>
-                  </el-dropdown>
-                </div>
-              </div>
-            </div>
-          </transition>
-        </div>
-      </template>
-    </div>
+      <!--      <el-table-column
+        label="查封状态"
+        prop="status"
+        align="center"
+      />
+      <el-table-column
+        label="备注"
+        prop="note"
+        align="center"
+      /> -->
+
+      <el-table-column label="状态" class-name="status-col" style="width: 50px">
+        <template slot-scope="{ row }">
+          <el-tag :type="row.isvoid == '0' ? 'success' : 'danger'">{{
+            row.isvoid == '0' ? '正常' : '停用'
+          }}</el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column min-width="229" label="操作" align="center">
+        <template slot-scope="{ row }">
+          <el-dropdown split-button type="primary" icon="el-icon-edit" size="mini" @click="handleUpdate(row)">
+            <i class="el-icon-edit" />{{ canEdit(row) ? '编辑' : '查看' }}
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item icon="el-icon-edit" @click.native="handleUpdate(row)">{{ canEdit(row) ? '编辑' : '查看' }}</el-dropdown-item>
+              <el-dropdown-item v-if="canEdit(row)" icon="el-icon-delete" @click.native="handleDelete(row)">删除</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+
+          <el-dropdown
+            split-button
+            type="warning"
+            icon="el-icon-edit"
+            style="margin-left:10px;"
+            size="mini"
+            @click="downLoadWord(row)"
+          >
+            <i class="el-icon-download" />文书
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item icon="el-icon-download" @click.native="downLoadWord(row)">协执文书</el-dropdown-item>
+              <el-dropdown-item
+                v-for="item in templateList"
+                :key="item.file || item.label"
+                :icon="item.icon ? item.icon : 'el-icon-download'"
+                @click.native="handleDownOtherDocx(row, item)"
+              >{{ item.label }}</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </template>
+      </el-table-column>
+    </el-table>
 
     <pagination
       v-show="total > 0"
@@ -588,7 +571,6 @@ import Pagination from '@/components/Pagination' // secondary package based on e
 import {
   postdata,
   cflist,
-  cflistGrouped,
   cflistadd,
   cflistdel,
   cflistupdate,
@@ -656,12 +638,11 @@ export default {
       fileList: [],
       filelistshow: false,
       tableKey: 0,
-      expandedCases: {},
       expandedRows: {}, // 记录展开状态的财产情况
       uploadurl: '/cccf/index.php/cccf/index/upload',
 
-      list: null,
-      alllist: null,
+      list: [],
+      alllist: [],
       total: 0,
       listLoading: true,
       cfsf: [{
@@ -882,92 +863,6 @@ export default {
     // 切换财产情况展开/收起
     toggleExpand(cflistid) {
       this.$set(this.expandedRows, cflistid, !this.expandedRows[cflistid])
-    },
-    toggleCase(caseKey) {
-      this.$set(this.expandedCases, caseKey, !this.expandedCases[caseKey])
-    },
-    isCaseExpanded(caseItem) {
-      return this.expandedCases[caseItem.case_key] !== false
-    },
-    initExpandedCases(items) {
-      items.forEach((item) => {
-        if (typeof this.expandedCases[item.case_key] === 'undefined') {
-          this.$set(this.expandedCases, item.case_key, true)
-        }
-      })
-    },
-    propertyIcon(type) {
-      if (type && type.indexOf('房') !== -1) return 'el-icon-office-building'
-      if (type && type.indexOf('车') !== -1) return 'el-icon-truck'
-      if (type && (type.indexOf('银行') !== -1 || type.indexOf('卡') !== -1 || type.indexOf('账户') !== -1 || type.indexOf('支付宝') !== -1)) return 'el-icon-bank-card'
-      if (type && type.indexOf('股') !== -1) return 'el-icon-suitcase'
-      return 'el-icon-box'
-    },
-    propertyTypeClass(type) {
-      if (type && type.indexOf('房') !== -1) return 'property-icon--house'
-      if (type && type.indexOf('车') !== -1) return 'property-icon--car'
-      if (type && (type.indexOf('银行') !== -1 || type.indexOf('卡') !== -1 || type.indexOf('账户') !== -1 || type.indexOf('支付宝') !== -1)) return 'property-icon--bank'
-      if (type && type.indexOf('股') !== -1) return 'property-icon--stock'
-      return 'property-icon--other'
-    },
-    parseDateOnly(value) {
-      if (!value) return null
-      const date = new Date(String(value).replace(/-/g, '/'))
-      if (isNaN(date.getTime())) return null
-      date.setHours(0, 0, 0, 0)
-      return date
-    },
-    remainingDays(row) {
-      const end = this.parseDateOnly(row.enddate)
-      if (!end) return null
-      const today = new Date()
-      today.setHours(0, 0, 0, 0)
-      return Math.ceil((end.getTime() - today.getTime()) / (24 * 60 * 60 * 1000))
-    },
-    rowStatus(row) {
-      if (String(row.isvoid) === '1') {
-        return { text: '已停用', type: 'info' }
-      }
-      const days = this.remainingDays(row)
-      if (days !== null && days < 0) {
-        return { text: '已到期', type: 'danger' }
-      }
-      if (days !== null && days <= 30) {
-        return { text: '即将到期', type: 'warning' }
-      }
-      return { text: '冻结中', type: 'success' }
-    },
-    caseStatus(caseItem) {
-      const rows = caseItem.children || []
-      const hasDanger = rows.some((row) => this.rowStatus(row).type === 'danger')
-      const hasWarning = rows.some((row) => this.rowStatus(row).type === 'warning')
-      const hasActive = rows.some((row) => String(row.isvoid) !== '1')
-      if (hasDanger) return { text: '存在到期', type: 'danger' }
-      if (hasWarning) return { text: '即将到期', type: 'warning' }
-      if (!hasActive) return { text: '已停用', type: 'info' }
-      return { text: '冻结中', type: 'success' }
-    },
-    remainingText(row) {
-      const days = this.remainingDays(row)
-      if (days === null) return '未设置届满日期'
-      if (days < 0) return '已到期 ' + Math.abs(days) + ' 天'
-      return '剩余 ' + days + ' 天'
-    },
-    remainingClass(row) {
-      const status = this.rowStatus(row)
-      return 'property-row__limit--' + status.type
-    },
-    formatShortDate(value) {
-      if (!value) return '-'
-      return String(value).substring(0, 10)
-    },
-    formatDateRange(row) {
-      return this.formatShortDate(row.startdate) + ' 至 ' + this.formatShortDate(row.enddate)
-    },
-    formatMoney(value) {
-      const num = parseFloat(value)
-      if (isNaN(num)) return value
-      return num.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     },
     handleKhljje() {
       if (parseFloat(this.temp.sjkhje) >= 0 && parseFloat(this.temp.khljjebck) >= 0) {
@@ -1194,11 +1089,10 @@ export default {
       if (!this.canFilterByDept) {
         this.listQuery.deptcode = []
       }
-      cflistGrouped(this.listQuery).then((response) => {
+      cflist(this.listQuery).then((response) => {
         this.list = response.data.items || []
         this.alllist = response.data.allitems || []
         this.total = response.data.total || 0
-        this.initExpandedCases(this.list)
 
         // Just to simulate the time of the request
         setTimeout(() => {
@@ -2027,317 +1921,6 @@ export default {
   margin-left: 10px;
 }
 
-.ledger-action-button {
-  min-width: 132px;
-  height: 44px;
-  margin-left: 12px;
-  padding: 0 24px;
-  border-radius: 14px;
-  font-size: 15px;
-  font-weight: 700;
-  letter-spacing: 0;
-  transition: all 0.2s ease;
-}
-
-.ledger-action-button i {
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.ledger-action-button--query,
-.ledger-action-button--query:focus {
-  color: #1d5fff;
-  border-color: #d5e6ff;
-  background: #edf6ff;
-}
-
-.ledger-action-button--query:hover {
-  color: #1553e8;
-  border-color: #bcd8ff;
-  background: #e4f1ff;
-}
-
-.ledger-action-button--export,
-.ledger-action-button--export:focus {
-  color: #1f2d3d;
-  border-color: #dce4f0;
-  background: #fff;
-}
-
-.ledger-action-button--export:hover {
-  color: #1d5fff;
-  border-color: #c8d6e8;
-  background: #f8fbff;
-}
-
-.ledger-action-button--create,
-.ledger-action-button--create:focus {
-  color: #fff;
-  border-color: #2563eb;
-  background: #2563eb;
-  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.26);
-}
-
-.ledger-action-button--create:hover {
-  color: #fff;
-  border-color: #1d4ed8;
-  background: #1d4ed8;
-  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.32);
-}
-
-.ledger-card-list {
-  min-height: 220px;
-}
-
-.case-card {
-  margin-bottom: 14px;
-  overflow: hidden;
-  border: 1px solid #e4e7ed;
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(31, 45, 61, 0.04);
-}
-
-.case-card__header {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 16px 18px;
-  cursor: pointer;
-  background: #fbfcff;
-  border-bottom: 1px solid #eef0f5;
-  transition: background 0.2s ease;
-}
-
-.case-card__header:hover {
-  background: #f5f9ff;
-}
-
-.case-card__toggle {
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  margin-top: 1px;
-  border: 1px solid #dcdfe6;
-  border-radius: 50%;
-  color: #409eff;
-  background: #fff;
-  cursor: pointer;
-}
-
-.case-card__main {
-  flex: 1;
-  min-width: 0;
-}
-
-.case-card__title-row {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.case-card__index {
-  min-width: 28px;
-  color: #909399;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.case-card__title {
-  color: #303133;
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.case-card__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 24px;
-  margin-top: 8px;
-  color: #606266;
-  font-size: 13px;
-}
-
-.case-card__details {
-  position: relative;
-  padding: 8px 18px 10px 58px;
-}
-
-.case-card__details::before {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 31px;
-  width: 2px;
-  background: #e9edf5;
-  content: "";
-}
-
-.property-row {
-  position: relative;
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 14px 0;
-  border-bottom: 1px solid #f0f2f5;
-}
-
-.property-row:last-child {
-  border-bottom: none;
-}
-
-.property-row__dot {
-  position: absolute;
-  top: 28px;
-  left: -31px;
-  width: 10px;
-  height: 10px;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  background: #c0c4cc;
-  box-shadow: 0 0 0 2px #e9edf5;
-}
-
-.property-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 38px;
-  width: 38px;
-  height: 38px;
-  border-radius: 8px;
-  font-size: 19px;
-}
-
-.property-icon--house {
-  color: #e6a23c;
-  background: #fdf6ec;
-}
-
-.property-icon--car {
-  color: #409eff;
-  background: #ecf5ff;
-}
-
-.property-icon--bank {
-  color: #67c23a;
-  background: #f0f9eb;
-}
-
-.property-icon--stock {
-  color: #9254de;
-  background: #f5f0ff;
-}
-
-.property-icon--other {
-  color: #909399;
-  background: #f4f4f5;
-}
-
-.property-row__content {
-  flex: 1;
-  min-width: 0;
-}
-
-.property-row__top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.property-row__name {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.property-row__type {
-  color: #303133;
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.property-row__limit {
-  flex: 0 0 auto;
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.property-row__limit--success {
-  color: #67c23a;
-}
-
-.property-row__limit--warning {
-  color: #e6a23c;
-}
-
-.property-row__limit--danger {
-  color: #f56c6c;
-}
-
-.property-row__limit--info {
-  color: #909399;
-}
-
-.property-row__desc {
-  margin-top: 7px;
-  color: #303133;
-  font-size: 13px;
-  line-height: 1.7;
-  word-break: break-all;
-}
-
-.property-row__note {
-  display: flex;
-  gap: 6px;
-  align-items: flex-start;
-  margin-top: 8px;
-  padding: 7px 10px;
-  color: #64748b;
-  font-size: 12px;
-  line-height: 1.6;
-  background: #f8fafc;
-  border: 1px solid #edf2f7;
-  border-radius: 6px;
-  word-break: break-all;
-}
-
-.property-row__note i {
-  flex: 0 0 auto;
-  margin-top: 2px;
-  color: #909399;
-}
-
-.property-row__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 18px;
-  margin-top: 8px;
-  color: #909399;
-  font-size: 12px;
-}
-
-.property-row__actions {
-  display: flex;
-  flex: 0 0 auto;
-  gap: 8px;
-  margin-left: 8px;
-}
-
-.ledger-expand-enter-active,
-.ledger-expand-leave-active {
-  transition: all 0.18s ease;
-}
-
-.ledger-expand-enter,
-.ledger-expand-leave-to {
-  opacity: 0;
-  transform: translateY(-4px);
-}
-
 @media (max-width: 900px) {
   .ledger-entry-dialog {
     width: calc(100% - 24px) !important;
@@ -2354,25 +1937,5 @@ export default {
     grid-template-columns: 1fr;
   }
 
-  .case-card__meta {
-    gap: 6px 14px;
-  }
-
-  .property-row {
-    flex-wrap: wrap;
-  }
-
-  .property-row__top {
-    display: block;
-  }
-
-  .property-row__limit {
-    margin-top: 6px;
-  }
-
-  .property-row__actions {
-    width: 100%;
-    margin-left: 50px;
-  }
 }
 </style>
