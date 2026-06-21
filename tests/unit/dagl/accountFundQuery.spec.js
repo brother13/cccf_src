@@ -1,8 +1,13 @@
 import {
   createAccountFundListQuery,
+  formatAccountFundAmount,
   getDefaultAccountFundDateRange,
   getAccountFundQueryConfig
 } from '@/dagl/utils/accountFundQuery'
+
+const fs = require('fs')
+
+const backendPath = '/Applications/MAMP/htdocs/cccf/app/cccf/model/Plugins.php'
 
 describe('account fund query config', () => {
   it('uses a date range with dzdate for income queries against shoukuan data', () => {
@@ -85,6 +90,83 @@ describe('account fund query config', () => {
     const outcomeFields = getAccountFundQueryConfig('outcome').columns.map(column => column.field)
 
     expect(incomeFields).not.toContain('sjy')
+    expect(incomeFields).not.toContain('cbbm')
     expect(outcomeFields).not.toContain('czdh')
+  })
+
+  it('shows account type, payee account name, and clerk note in outcome columns', () => {
+    const outcomeColumns = getAccountFundQueryConfig('outcome').columns.map(column => ({
+      field: column.field,
+      label: column.label
+    }))
+
+    expect(outcomeColumns).toEqual([
+      { field: 'czdate', label: '出账日期' },
+      { field: 'djcode', label: '来源票据号码' },
+      { field: 'ah', label: '案号' },
+      { field: 'yg', label: '申请人' },
+      { field: 'bg', label: '被执行人' },
+      { field: 'skr', label: '实际收款人' },
+      { field: 'ssdw', label: '诉讼地位' },
+      { field: 'skr_gx', label: '账户类型' },
+      { field: 'skr_accountname', label: '收款人户名' },
+      { field: 'je', label: '出账金额' },
+      { field: 'cbr', label: '承办人' },
+      { field: 'note', label: '承办人说明' }
+    ])
+  })
+
+  it('adds payout type options and query parameter for outcome queries', () => {
+    const config = getAccountFundQueryConfig('outcome')
+    const query = createAccountFundListQuery('outcome', {
+      dateRange: ['2026-06-15', '2026-06-21'],
+      keyword: '',
+      page: 1,
+      pagesize: 10,
+      payout_type: 'recovery'
+    })
+
+    expect(config.payoutTypeOptions).toEqual([
+      { value: 'execution_fee', label: '执行费' },
+      { value: 'fine', label: '罚金' },
+      { value: 'case_acceptance_fee', label: '案件受理费' },
+      { value: 'preservation_fee', label: '保全费' },
+      { value: 'recovery', label: '追缴' }
+    ])
+    expect(query.payout_type).toBe('recovery')
+  })
+
+  it('adds payee type options and query parameter for outcome queries', () => {
+    const config = getAccountFundQueryConfig('outcome')
+    const query = createAccountFundListQuery('outcome', {
+      dateRange: ['2026-06-15', '2026-06-21'],
+      keyword: '',
+      page: 1,
+      pagesize: 10,
+      payee_type: 'applicant'
+    })
+
+    expect(config.payeeTypeOptions).toEqual([
+      { value: 'applicant', label: '申请执行人' },
+      { value: 'respondent', label: '被执行人' },
+      { value: 'other', label: '其他' }
+    ])
+    expect(query.payee_type).toBe('applicant')
+  })
+
+  it('formats comma-separated amount strings without truncating them', () => {
+    expect(formatAccountFundAmount('1,234.56')).toBe('1,234.56')
+    expect(formatAccountFundAmount('2,000')).toBe('2,000.00')
+  })
+
+  it('uses comma-safe amount aggregation for income and outcome query totals', () => {
+    const backendSource = fs.readFileSync(backendPath, 'utf8')
+    const incomeQuery = backendSource.match(/protected function queryList_sk\(\$param = \[\]\)[\s\S]*?protected function queryList_tk\(\$param = \[\]\)/)[0]
+    const outcomeQuery = backendSource.match(/protected function queryList_tk\(\$param = \[\]\)[\s\S]*?protected function applyPayeeTypeWhere/)[0]
+
+    expect(incomeQuery).toContain('"SUM(CAST(REPLACE(IFNULL(jzje, \'0\'), \',\', \'\') AS DECIMAL(18,2)))" => "je"')
+    expect(incomeQuery).not.toContain('sum(jzje)')
+    expect(outcomeQuery).toContain('"SUM(CAST(REPLACE(IF(je=\'\' OR je IS NULL, \'0\', je), \',\', \'\') AS DECIMAL(18,2)))" => "je"')
+    expect(outcomeQuery).not.toContain('sum(je)')
   })
 })

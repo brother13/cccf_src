@@ -12,7 +12,6 @@ const CONFIG_MAP = {
       { field: 'yg', label: '申请人', width: 220 },
       { field: 'bg', label: '被执行人', width: 220 },
       { field: 'jzje', label: '进账金额', align: 'right', width: 120 },
-      { field: 'cbbm', label: '承办部门', width: 140 },
       { field: 'cbr', label: '承办人', width: 120 }
     ]
   },
@@ -22,6 +21,18 @@ const CONFIG_MAP = {
     dateField: 'czdate',
     amountField: 'je',
     amountLabel: '出账金额',
+    payoutTypeOptions: [
+      { value: 'execution_fee', label: '执行费' },
+      { value: 'fine', label: '罚金' },
+      { value: 'case_acceptance_fee', label: '案件受理费' },
+      { value: 'preservation_fee', label: '保全费' },
+      { value: 'recovery', label: '追缴' }
+    ],
+    payeeTypeOptions: [
+      { value: 'applicant', label: '申请执行人' },
+      { value: 'respondent', label: '被执行人' },
+      { value: 'other', label: '其他' }
+    ],
     columns: [
       { field: 'czdate', label: '出账日期', width: 120 },
       { field: 'djcode', label: '来源票据号码', width: 140 },
@@ -29,8 +40,12 @@ const CONFIG_MAP = {
       { field: 'yg', label: '申请人', width: 220 },
       { field: 'bg', label: '被执行人', width: 220 },
       { field: 'skr', label: '实际收款人', width: 180 },
+      { field: 'ssdw', label: '诉讼地位', width: 120 },
+      { field: 'skr_gx', label: '账户类型', width: 120 },
+      { field: 'skr_accountname', label: '收款人户名', width: 200 },
       { field: 'je', label: '出账金额', align: 'right', width: 120 },
-      { field: 'cbr', label: '承办人', width: 120 }
+      { field: 'cbr', label: '承办人', width: 120 },
+      { field: 'note', label: '承办人说明', width: 200 }
     ]
   }
 }
@@ -57,11 +72,22 @@ export function getDefaultAccountFundDateRange(now = new Date()) {
   ]
 }
 
+export function formatAccountFundAmount(value) {
+  const num = parseFloat(String(value).replace(/,/g, ''))
+  if (isNaN(num)) {
+    return '0.00'
+  }
+  return num.toLocaleString('zh-CN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })
+}
+
 export function createAccountFundListQuery(type, query) {
   const config = getAccountFundQueryConfig(type)
   const dateRange = query.dateRange || []
 
-  return {
+  const listQuery = {
     page: query.page || 1,
     pagesize: query.pagesize || 10,
     keyword: query.keyword,
@@ -70,4 +96,13 @@ export function createAccountFundListQuery(type, query) {
     starttime: dateRange[0] || '',
     endtime: dateRange[1] || ''
   }
+
+  if (type === 'outcome' && query.payout_type) {
+    listQuery.payout_type = query.payout_type
+  }
+  if (type === 'outcome' && query.payee_type) {
+    listQuery.payee_type = query.payee_type
+  }
+
+  return listQuery
 }

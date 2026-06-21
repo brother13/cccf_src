@@ -23,6 +23,38 @@
       >
         <i slot="prefix" class="el-input__icon el-icon-search" />
       </el-input>
+      <el-select
+        v-if="config.payoutTypeOptions"
+        v-model="listQuery.payout_type"
+        clearable
+        placeholder="发放类型"
+        style="width: 160px"
+        class="filter-item"
+        @change="handleFilter"
+      >
+        <el-option
+          v-for="option in config.payoutTypeOptions"
+          :key="option.value"
+          :label="option.label"
+          :value="option.value"
+        />
+      </el-select>
+      <el-select
+        v-if="config.payeeTypeOptions"
+        v-model="listQuery.payee_type"
+        clearable
+        placeholder="领款人类型"
+        style="width: 150px"
+        class="filter-item"
+        @change="handleFilter"
+      >
+        <el-option
+          v-for="option in config.payeeTypeOptions"
+          :key="option.value"
+          :label="option.label"
+          :value="option.value"
+        />
+      </el-select>
       <el-button
         v-waves
         class="filter-item"
@@ -88,6 +120,7 @@ import waves from '@/directive/waves'
 import caseapi from '@/courtcase/api'
 import {
   createAccountFundListQuery,
+  formatAccountFundAmount,
   getDefaultAccountFundDateRange,
   getAccountFundQueryConfig
 } from '@/dagl/utils/accountFundQuery'
@@ -112,7 +145,9 @@ export default {
         page: 1,
         pagesize: 10,
         dateRange: getDefaultAccountFundDateRange(),
-        keyword: ''
+        keyword: '',
+        payout_type: '',
+        payee_type: ''
       }
     }
   },
@@ -157,6 +192,8 @@ export default {
     },
     resetList() {
       this.listQuery.page = 1
+      this.listQuery.payout_type = ''
+      this.listQuery.payee_type = ''
       this.tableData = []
       this.count = {
         num: 0,
@@ -164,14 +201,7 @@ export default {
       }
     },
     formatNumber(value) {
-      const num = parseFloat(value)
-      if (isNaN(num)) {
-        return '0.00'
-      }
-      return num.toLocaleString('zh-CN', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      })
+      return formatAccountFundAmount(value)
     }
   }
 }
