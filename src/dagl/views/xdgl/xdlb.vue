@@ -32,12 +32,21 @@
         value-format="yyyy-MM-dd"
         @change="handleFilter"
       />
-      <el-option
-        v-for="item in DeptList"
-        :key="item.deptid"
-        :label="item.fullname"
-        :value="item.deptid"
-      >{{ item.deptname }}</el-option>
+      <el-select
+        v-model="listQuery.deptcode"
+        placeholder="请选择部门"
+        clearable
+        style="width: 0px"
+        multiple
+        class="filter-item"
+        @change="handleFilter"
+      >
+        <el-option
+          v-for="item in DeptList"
+          :key="item.deptid"
+          :label="item.fullname"
+          :value="item.deptid"
+        >{{ item.deptname }}</el-option>
       </el-select>
       <el-select
         v-model="listQuery.zt"
@@ -91,13 +100,14 @@
       </el-table-column>
       <el-table-column label="状态" prop="zt" align="center" />
       <el-table-column label="被控制对象" prop="bzxr" align="center" />
-      <el-table-column label="账户" prop="zhanghu" align="center" />
+      <el-table-column label="续冻账号" prop="zhanghu" align="center" />
       <el-table-column label="控制金额" prop="je" align="center" />
       <el-table-column label="新控制金额" prop="newje" align="center" />
       <el-table-column label="反馈单位" prop="danwei" align="center" />
       <!-- <el-table-column label="上次控制时间" prop="lastdate" align="center" /> -->
+      <el-table-column label="开始日期" prop="startdate" align="center" />
+      <el-table-column label="届满日期" prop="enddate" align="center" />
       <el-table-column label="本次控制时间" prop="thisdate" align="center" />
-      <el-table-column label="控制到期时间" prop="enddate" align="center" />
       <el-table-column label="承办人" prop="cbr" align="center" />
       <el-table-column label="失败原因" prop="reason" align="center" />
       <!-- <el-table-column label="提起控制时间" prop="querytime" align="center" /> -->
@@ -108,10 +118,17 @@
           }}</el-tag>
         </template>
       </el-table-column> -->
-      <el-table-column min-width="150" label="操作" align="center">
+      <el-table-column min-width="220" label="操作" align="center">
         <template slot-scope="{ row }">
-          <el-button type="primary" size="mini" icon="el-icon-edit" @click="handleUpdate(row)">编辑</el-button>
-          <el-button size="mini" type="danger" icon="el-icon-delete" @click="handleDelete(row)">删除</el-button>
+          <el-button v-if="row.zt === '继续冻结成功'" type="success" size="mini" icon="el-icon-refresh" @click="handleUpdateLedger(row)">
+            {{ isLedgerUpdated(row) ? '已更新' : '更新到台账' }}
+          </el-button>
+          <el-dropdown split-button type="primary" size="mini" @click="handleUpdate(row)" @command="handleActionCommand($event, row)">
+            编辑
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="delete" icon="el-icon-delete">删除</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </template>
       </el-table-column>
     </el-table>
@@ -161,22 +178,22 @@
         <el-form-item label="反馈单位">
           <el-input v-model="temp.danwei" />
         </el-form-item>
-        <el-form-item label="提起控制时间">
+        <el-form-item label="开始日期">
           <el-date-picker
-            v-model="temp.querytime"
-            label="提起控制时间"
-            type="datetime"
-            placeholder="提起控制时间"
-            value-format="yyyy-MM-dd HH:mm:ss"
+            v-model="temp.startdate"
+            label="开始日期"
+            type="date"
+            placeholder="开始日期"
+            value-format="yyyy-MM-dd"
           />
         </el-form-item>
-        <el-form-item label="控制到期时间">
+        <el-form-item label="届满日期">
           <el-date-picker
             v-model="temp.enddate"
-            label="控制到期时间"
-            type="datetime"
-            placeholder="控制到期时间"
-            value-format="yyyy-MM-dd HH:mm:ss"
+            label="届满日期"
+            type="date"
+            placeholder="届满日期"
+            value-format="yyyy-MM-dd"
           />
         </el-form-item>
         <el-form-item label="上次控制时间">
@@ -234,7 +251,6 @@ import {
   parseTime
 } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import md5 from 'js-md5'
 import {
   postdata,
   xdlist,
@@ -242,14 +258,14 @@ import {
   getajjbxx,
   dxmsg,
   xdlistupdate,
-  xdlistdel,
-  xdlistadd
+  xdlisttotz,
+  xdlistdel
 } from '@/dagl/api/common'
 import {
   mapGetters
 } from 'vuex'
 
-import docxtemplater from 'docxtemplater'
+import Docxtemplater from 'docxtemplater'
 import PizZip from 'pizzip'
 import JSZipUtils from 'jszip-utils'
 import {
@@ -377,6 +393,13 @@ export default {
     }
   },
   computed: {
+    ...mapGetters([
+      'sidebar',
+      'name',
+      'deptname',
+      // 'avatar',
+      'device'
+    ]),
     isvoid2: {
       get: function() {
         return (
@@ -392,6 +415,9 @@ export default {
   },
   created() {
     this.getBaseData()
+    if (this.$route.query.zt) {
+      this.listQuery.zt = this.$route.query.zt
+    }
     this.getList()
     if (this.$route.query.id > 0) {
       xdlist({
@@ -400,7 +426,7 @@ export default {
         id: this.$route.query.id
       }).then((response) => {
         const rows = response.data.items
-        if (rows.length == 1) {
+        if (rows.length === 1) {
           const row = rows[0]
           row.isvoid = 0
           this.handleUpdate(row)
@@ -412,15 +438,6 @@ export default {
         }
       })
     }
-  },
-  computed: {
-    ...mapGetters([
-      'sidebar',
-      'name',
-      'deptname',
-      // 'avatar',
-      'device'
-    ])
   },
   methods: {
     /*      handleCfsfChange() {
@@ -453,9 +470,9 @@ export default {
     handleDateChange() {
       var _this = this
       this.Cftype.forEach((item) => {
-        if (item.typename == _this.temp.type) {
+        if (item.typename === _this.temp.type) {
           var newdate = _this.addMonths(_this.temp.startdate, item.cfmounth‌)
-          if (_this.temp.startdate == null) {
+          if (_this.temp.startdate === null) {
             _this.temp.enddate = null
           } else {
             _this.temp.enddate = parseTime(newdate, '{y}-{m}-{d}')
@@ -642,6 +659,42 @@ export default {
         this.$refs['dataForm'].clearValidate()
       })
     },
+    handleActionCommand(command, row) {
+      if (command === 'delete') {
+        this.handleDelete(row)
+      }
+    },
+    isLedgerUpdated(row) {
+      return String(row.ledgerUpdated) === '1'
+    },
+    handleUpdateLedger(row) {
+      this.$confirm('将按当前行案号和续冻账号更新台账日期；开始日期为空时只更新届满日期，是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        xdlisttotz({
+          xdlistid: row.xdlistid,
+          ah: row.ah,
+          zhanghu: row.zhanghu,
+          startdate: row.startdate,
+          enddate: row.enddate
+        }).then((response) => {
+          const data = response
+          if (data.code === 20000) {
+            this.$set(row, 'ledgerUpdated', 1)
+            this.$notify({
+              title: '操作完成',
+              message: data.message,
+              type: 'success',
+              duration: 2000
+            })
+          } else {
+            this.$message.error(data.message || '更新失败')
+          }
+        })
+      })
+    },
     doupdateData() {
       this.$refs['dataForm'].validate((valid) => {
         const newtemp = Object.assign({}, this.temp) // 复制一个新组件出来，避免修改数据
@@ -668,8 +721,7 @@ export default {
       })
     },
     updateData() {
-      const flag = false
-      if (this.temp.cbr != this.$store.getters.name) {
+      if (this.temp.cbr !== this.$store.getters.name) {
         this.$confirm('此记录前承办人与登录用户不一致, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -787,7 +839,7 @@ export default {
           return
         }
         const zip = new PizZip(content)
-        const doc = new docxtemplater().loadZip(zip)
+        const doc = new Docxtemplater().loadZip(zip)
         // 设置模板变量的值
         doc.setData(detailData)
         try {

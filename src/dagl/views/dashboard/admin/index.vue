@@ -48,6 +48,34 @@
         </div>
       </div>
 
+      <div class="remind-group">
+        <div class="group-title">自动化执行提醒</div>
+        <div class="menu-items-wrapper">
+          <router-link
+            tag="div"
+            class="menu-item data-import"
+            :to="{ path: '/xdgl/xdlb', query: { zt: '继续冻结成功' } }"
+          >
+            <div class="icon-wrapper">
+              <i class="fas fa-robot" />
+            </div>
+            <div class="menu-text">继续冻结成功</div>
+            <span v-if="count.continueFreezeSuccess !== 0" class="badge">{{ count.continueFreezeSuccess }}</span>
+          </router-link>
+          <router-link
+            tag="div"
+            class="menu-item number-manage"
+            :to="{ path: '/xdgl/xdlb', query: { zt: '继续冻结失败' } }"
+          >
+            <div class="icon-wrapper">
+              <i class="fas fa-robot" />
+            </div>
+            <div class="menu-text">继续冻结失败</div>
+            <span v-if="count.continueFreezeFail !== 0" class="badge">{{ count.continueFreezeFail }}</span>
+          </router-link>
+        </div>
+      </div>
+
       <!-- 工具组 -->
       <!-- <div class="remind-group">
         <div class="group-title">实用工具</div>
@@ -112,7 +140,8 @@ import {
   cflist_total,
   updateNotice,
   zxklist,
-  xdlist
+  xdlist,
+  xdztcount
 } from '@/dagl/api/common'
 import { thqdList } from '@/dagl/api/thqd'
 import { dkpList } from '@/dagl/api/dkp'
@@ -156,7 +185,9 @@ export default {
         new10day: 0,
         akyh5day: 0,
         thqd: 0,
-        dkp: 0
+        dkp: 0,
+        continueFreezeSuccess: 0,
+        continueFreezeFail: 0
       },
       updateNotice: normalizeUpdateNotice({}),
       noticeClosed: false
@@ -207,6 +238,7 @@ export default {
       })
       this.getThqdCount()
       this.getDkpCount()
+      this.getXdZtCount()
     },
     getThqdCount() {
       thqdList({ page: 1, pagesize: 1 }).then((res) => {
@@ -222,6 +254,18 @@ export default {
         this.count.dkp = data.total || 0
       }).catch(() => {
         this.count.dkp = 0
+      })
+    },
+    getXdZtCount() {
+      xdztcount({
+        myusername: this.$store.getters.name
+      }).then((res) => {
+        const data = res.data || {}
+        this.count.continueFreezeSuccess = data.continueFreezeSuccess || 0
+        this.count.continueFreezeFail = data.continueFreezeFail || 0
+      }).catch(() => {
+        this.count.continueFreezeSuccess = 0
+        this.count.continueFreezeFail = 0
       })
     },
     goToPage(type) {
@@ -334,20 +378,20 @@ body {
 
 .header {
   text-align: center;
-  margin-bottom: 20px;
-  padding: 10px;
+  margin-bottom: 8px;
+  padding: 4px 10px 6px;
   color: #495060;
 }
 
 .logo {
-  width: 80px;
-  height: 80px;
-  margin-bottom: 10px;
+  width: 54px;
+  height: 54px;
+  margin-bottom: 2px;
 }
 
 .platform-title {
-  font-size: 28px;
-  margin-top: 5px;
+  font-size: 22px;
+  margin-top: 0;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }
 

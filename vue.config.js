@@ -7,6 +7,7 @@ function resolve(dir) {
 }
 
 const name = defaultSettings.title || 'vue Element Admin' // page title
+const publicCopyIgnore = ['assets/word/**']
 
 // If your port is set to 80,
 // use administrator privileges to execute the command line.
@@ -24,7 +25,7 @@ module.exports = {
    * In most cases please use '/' !!!
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
-  //publicPath: '/',
+  // publicPath: '/',
   publicPath: process.env.VUE_APP_BASE_API,
   outputDir: 'dist',
   assetsDir: 'static',
@@ -48,16 +49,16 @@ module.exports = {
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''
         }
-      },
+      }
       // ['/uploadfile']: {
       //   target: `http://localhost/cccf/public/index.php/cccf/file/upload`,
       //   changeOrigin: true,
       //   pathRewrite: {
       //     ['^' + '/qcloudsms']: ''
       //   }
-      // },
-    },
-    //before: require('./mock/mock-server.js')
+      // }
+    }
+    // before: require('./mock/mock-server.js')
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
@@ -84,6 +85,14 @@ module.exports = {
 
     // when there are many pages, it will cause too many meaningless requests
     config.plugins.delete('prefetch')
+
+    config.plugin('copy').tap(args => {
+      const patterns = args[0] || []
+      patterns.forEach(pattern => {
+        pattern.ignore = (pattern.ignore || []).concat(publicCopyIgnore)
+      })
+      return args
+    })
 
     // set svg-sprite-loader
     config.module

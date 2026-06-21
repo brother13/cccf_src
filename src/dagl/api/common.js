@@ -149,6 +149,10 @@ export function xdlistupdate(data) {
   const action = '/data/xdlistupdate'
   return postdata(action, data)
 }
+export function xdlisttotz(data) {
+  const action = '/data/xdlisttotz'
+  return postdata(action, data)
+}
 export function xdlistadd(data) {
   const action = '/data/xdlistadd'
   return postdata(action, data)
@@ -160,6 +164,10 @@ export function xdlistdel(xdlistid) {
 }
 export function xdlist(data) {
   const action = '/data/xdlist'
+  return postdata(action, data)
+}
+export function xdztcount(data) {
+  const action = '/data/xdztcount'
   return postdata(action, data)
 }
 export function zxklist(data) {
