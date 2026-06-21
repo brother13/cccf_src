@@ -79,103 +79,106 @@
       </el-button>
     </div>
 
-    <el-table
-      :key="tableKey"
-      v-loading="listLoading"
-      :data="list"
-      border
-      fit
-      highlight-current-row
-      style="width: 100%"
-      @sort-change="sortChange"
-    >
-      <el-table-column type="index" align="center" label="序号">
-        <template slot-scope="{ $index }">
-          {{ $index + listQuery.pagesize * (listQuery.page - 1) + 1 }}
-        </template>
-      </el-table-column>
-      <el-table-column label="办案人" prop="cbr" align="center" type="width:40px" />
-      <el-table-column label="案号" prop="ah" align="center" />
-      <el-table-column label="申请人" prop="sqzxr" align="center" />
-      <el-table-column label="被执行人" prop="bzxr" align="center" />
-      <!--      <el-table-column label="手机号" prop="mobile" align="center" /> -->
-      <el-table-column label="开始日期" prop="startdate" align="center" />
+    <div v-loading="listLoading" class="ledger-card-list">
+      <el-empty v-if="!listLoading && (!list || list.length === 0)" description="暂无台账数据" />
+      <template v-else>
+        <div
+          v-for="(caseItem, caseIndex) in list"
+          :key="caseItem.case_key || caseIndex"
+          class="case-card"
+        >
+          <div class="case-card__header" @click="toggleCase(caseItem.case_key)">
+            <button class="case-card__toggle" type="button" @click.stop="toggleCase(caseItem.case_key)">
+              <i :class="isCaseExpanded(caseItem) ? 'el-icon-arrow-down' : 'el-icon-arrow-right'" />
+            </button>
+            <div class="case-card__main">
+              <div class="case-card__title-row">
+                <span class="case-card__index">{{ caseIndex + listQuery.pagesize * (listQuery.page - 1) + 1 }}</span>
+                <span class="case-card__title">{{ caseItem.ah || '未录入案号' }}</span>
+                <el-tag size="mini" type="info">{{ caseItem.item_count }} 条明细</el-tag>
+                <el-tag size="mini" :type="caseStatus(caseItem).type">{{ caseStatus(caseItem).text }}</el-tag>
+              </div>
+              <div class="case-card__meta">
+                <span>办案人：{{ caseItem.cbr || '-' }}</span>
+                <span>申请人：{{ caseItem.sqzxr || '-' }}</span>
+                <span>被执行人：{{ caseItem.bzxr || '-' }}</span>
+                <span>最早届满：{{ formatShortDate(caseItem.min_enddate) }}</span>
+              </div>
+            </div>
+          </div>
 
-      <el-table-column label="届满日期" prop="enddate" align="center" />
-      <el-table-column label="财产类型" prop="type" align="center" />
-      <el-table-column label="财产情况" prop="ccqk" align="center" width="200">
-        <template slot-scope="{ row }">
-          <span v-if="row.ccqk && row.ccqk.length > 50">
-            <span v-if="!expandedRows[row.cflistid]">{{ row.ccqk.substring(0, 50) }}...</span>
-            <span v-else>{{ row.ccqk }}</span>
-            <el-button type="text" size="mini" @click="toggleExpand(row.cflistid)">
-              {{ expandedRows[row.cflistid] ? '收起' : '更多' }}
-            </el-button>
-          </span>
-          <span v-else>{{ row.ccqk }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="首封状态" prop="cfsf" align="center" />
-      <el-table-column label="原承办人" prop="ycbr" align="center" />
+          <transition name="ledger-expand">
+            <div v-show="isCaseExpanded(caseItem)" class="case-card__details">
+              <div
+                v-for="row in caseItem.children"
+                :key="row.cflistid"
+                class="property-row"
+              >
+                <span class="property-row__dot" />
+                <div :class="['property-icon', propertyTypeClass(row.type)]">
+                  <i :class="propertyIcon(row.type)" />
+                </div>
+                <div class="property-row__content">
+                  <div class="property-row__top">
+                    <div class="property-row__name">
+                      <span class="property-row__type">{{ row.type || '其他财产' }}</span>
+                      <el-tag size="mini" :type="rowStatus(row).type">{{ rowStatus(row).text }}</el-tag>
+                      <el-tag v-if="row.cfsf" size="mini" effect="plain">{{ row.cfsf }}</el-tag>
+                    </div>
+                    <div class="property-row__limit" :class="remainingClass(row)">
+                      {{ remainingText(row) }}
+                    </div>
+                  </div>
+                  <div class="property-row__desc">
+                    <span v-if="row.ccqk && row.ccqk.length > 80">
+                      <span v-if="!expandedRows[row.cflistid]">{{ row.ccqk.substring(0, 80) }}...</span>
+                      <span v-else>{{ row.ccqk }}</span>
+                      <el-button type="text" size="mini" @click.stop="toggleExpand(row.cflistid)">
+                        {{ expandedRows[row.cflistid] ? '收起' : '更多' }}
+                      </el-button>
+                    </span>
+                    <span v-else>{{ row.ccqk || '暂无财产情况' }}</span>
+                  </div>
+                  <div class="property-row__meta">
+                    <span><i class="el-icon-date" /> {{ formatDateRange(row) }}</span>
+                    <span v-if="row.account"><i class="el-icon-bank-card" /> {{ row.account }}</span>
+                    <span v-if="row.sjdjje"><i class="el-icon-money" /> 冻结金额：{{ formatMoney(row.sjdjje) }}</span>
+                    <span v-if="row.ycbr"><i class="el-icon-user" /> 原承办人：{{ row.ycbr }}</span>
+                  </div>
+                </div>
+                <div class="property-row__actions">
+                  <el-dropdown split-button type="primary" size="mini" @click.stop="handleUpdate(row)">
+                    <i class="el-icon-edit" />{{ canEdit(row) ? '编辑' : '查看' }}
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item icon="el-icon-edit" @click.native="handleUpdate(row)">{{ canEdit(row) ? '编辑' : '查看' }}</el-dropdown-item>
+                      <el-dropdown-item v-if="canEdit(row)" icon="el-icon-delete" @click.native="handleDelete(row)">删除</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
 
-      <!--      <el-table-column
-        label="查封状态"
-        prop="status"
-        align="center"
-      />
-      <el-table-column
-        label="备注"
-        prop="note"
-        align="center"
-      /> -->
-
-      <el-table-column label="状态" class-name="status-col" style="width: 50px">
-        <template slot-scope="{ row }">
-          <el-tag :type="row.isvoid == '0' ? 'success' : 'danger'">{{
-            row.isvoid == '0' ? '正常' : '停用'
-          }}</el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column min-width="229" label="操作" align="center">
-        <template slot-scope="{ row }">
-          <el-dropdown split-button type="primary" icon="el-icon-edit" size="mini" @click="handleUpdate(row)">
-            <i class="el-icon-edit" />{{ canEdit(row) ? '编辑' : '查看' }}</el-dropdown-button>
-
-            <el-dropdown-menu>
-              <el-dropdown-item icon="el-icon-edit" @click.native="handleUpdate(row)">{{ canEdit(row) ? '编辑' : '查看' }}</el-dropdown-item>
-              <el-dropdown-item v-if="canEdit(row)" icon="el-icon-delete" @click.native="handleDelete(row)">删除</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-
-          <el-dropdown
-            split-button
-            type="warning"
-            icon="el-icon-edit"
-            style="margin-left:10px;"
-            size="mini"
-            @click="downLoadWord(row)"
-          >
-            <i class="el-icon-download" />文书
-            <el-dropdown-menu>
-              <el-dropdown-item icon="el-icon-download" @click.native="downLoadWord(row)">协执文书</el-dropdown-item>
-              <template v-for="item in templateList">
-                <el-dropdown-item
-                  :icon="item.icon ? item.icon : 'el-icon-download'"
-                  @click.native="handleDownOtherDocx(row, item)"
-                >{{ item.label }}</el-dropdown-item>
-              </template>
-            </el-dropdown-menu>
-          </el-dropdown>
-
-          <!-- <el-button style="margin-left:5px;margin-top:1px;" type="warning" icon="el-icon-download"
-            @click="downLoadWord(row)">文书</el-button> -->
-          <!--          <el-button type="primary" size="mini" icon="el-icon-edit" @click="handleUpdate(row)">编辑</el-button>
-          <el-button size="mini" type="primary" icon="el-icon-download" @click="downLoadWord(row)">文书</el-button>
-          <el-button size="mini" type="danger" icon="el-icon-delete" @click="handleDelete(row)">删除</el-button> -->
-
-        </template>
-      </el-table-column>
-    </el-table>
+                  <el-dropdown
+                    split-button
+                    type="warning"
+                    size="mini"
+                    @click.stop="downLoadWord(row)"
+                  >
+                    <i class="el-icon-download" />文书
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item icon="el-icon-download" @click.native="downLoadWord(row)">协执文书</el-dropdown-item>
+                      <el-dropdown-item
+                        v-for="item in templateList"
+                        :key="item.file || item.label"
+                        :icon="item.icon ? item.icon : 'el-icon-download'"
+                        @click.native="handleDownOtherDocx(row, item)"
+                      >{{ item.label }}</el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                </div>
+              </div>
+            </div>
+          </transition>
+        </div>
+      </template>
+    </div>
 
     <pagination
       v-show="total > 0"
@@ -351,7 +354,7 @@
           >
             <i slot="default" class="el-icon-plus" />
             <div slot="file" slot-scope="{file}">
-              <embed v-if="isPdfFile(file)" :src="file.url" width="100%"></embed>
+              <embed v-if="isPdfFile(file)" :src="file.url" width="100%">
               <img v-else class="el-upload-list__item-thumbnail" :src="file.url" :alt="file.filename">
               <span class="el-upload-list__item-actions">
                 <span
@@ -378,7 +381,7 @@
       </div>
     </el-dialog>
     <el-dialog :visible.sync="imgdialogVisible">
-      <embed v-if="prvpdf" :src="dialogImageUrl" width="100%" height="600px"></embed>
+      <embed v-if="prvpdf" :src="dialogImageUrl" width="100%" height="600px">
       <img v-else width="100%" :src="dialogImageUrl" alt="">
     </el-dialog>
 
@@ -406,10 +409,10 @@ import {
   parseTime
 } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
-import md5 from 'js-md5'
 import {
   postdata,
   cflist,
+  cflistGrouped,
   cflistadd,
   cflistdel,
   cflistupdate,
@@ -423,20 +426,18 @@ import {
 import {
   mapGetters
 } from 'vuex'
-import docxtemplater from 'docxtemplater'
+import Docxtemplater from 'docxtemplater'
 import PizZip from 'pizzip'
 import JSZipUtils from 'jszip-utils'
 import {
   saveAs
 } from 'file-saver'
 // const DeptList = [{ deptid: '', deptcode: '', deptname: '' }]
-import pdf from 'vue-pdf'
 
 export default {
   name: 'UserTable',
   components: {
-    Pagination,
-    pdf
+    Pagination
   },
   directives: {
     waves
@@ -465,6 +466,7 @@ export default {
       fileList: [],
       filelistshow: false,
       tableKey: 0,
+      expandedCases: {},
       expandedRows: {}, // 记录展开状态的财产情况
       uploadurl: '/cccf/index.php/cccf/index/upload',
 
@@ -586,10 +588,17 @@ export default {
       set: function(newvalue) {
         this.temp.isvoid = newvalue ? '0' : '1'
       }
-    }
+    },
+    ...mapGetters([
+      'sidebar',
+      'name',
+      'deptname',
+      // 'avatar',
+      'device'
+    ])
   },
   created() {
-    if (this.$route.query.ah != undefined) { // 写入其他页面传递的案号参数
+    if (this.$route.query.ah !== undefined) { // 写入其他页面传递的案号参数
       this.listQuery.keyword = this.$route.query.ah
     }
     if (process.env.NODE_ENV === 'development') {
@@ -609,19 +618,96 @@ export default {
     this.getBaseData()
     this.getList()
   },
-  computed: {
-    ...mapGetters([
-      'sidebar',
-      'name',
-      'deptname',
-      // 'avatar',
-      'device'
-    ])
-  },
   methods: {
     // 切换财产情况展开/收起
     toggleExpand(cflistid) {
       this.$set(this.expandedRows, cflistid, !this.expandedRows[cflistid])
+    },
+    toggleCase(caseKey) {
+      this.$set(this.expandedCases, caseKey, !this.expandedCases[caseKey])
+    },
+    isCaseExpanded(caseItem) {
+      return this.expandedCases[caseItem.case_key] !== false
+    },
+    initExpandedCases(items) {
+      items.forEach((item) => {
+        if (typeof this.expandedCases[item.case_key] === 'undefined') {
+          this.$set(this.expandedCases, item.case_key, true)
+        }
+      })
+    },
+    propertyIcon(type) {
+      if (type && type.indexOf('房') !== -1) return 'el-icon-office-building'
+      if (type && type.indexOf('车') !== -1) return 'el-icon-truck'
+      if (type && (type.indexOf('银行') !== -1 || type.indexOf('卡') !== -1 || type.indexOf('账户') !== -1 || type.indexOf('支付宝') !== -1)) return 'el-icon-bank-card'
+      if (type && type.indexOf('股') !== -1) return 'el-icon-suitcase'
+      return 'el-icon-box'
+    },
+    propertyTypeClass(type) {
+      if (type && type.indexOf('房') !== -1) return 'property-icon--house'
+      if (type && type.indexOf('车') !== -1) return 'property-icon--car'
+      if (type && (type.indexOf('银行') !== -1 || type.indexOf('卡') !== -1 || type.indexOf('账户') !== -1 || type.indexOf('支付宝') !== -1)) return 'property-icon--bank'
+      if (type && type.indexOf('股') !== -1) return 'property-icon--stock'
+      return 'property-icon--other'
+    },
+    parseDateOnly(value) {
+      if (!value) return null
+      const date = new Date(String(value).replace(/-/g, '/'))
+      if (isNaN(date.getTime())) return null
+      date.setHours(0, 0, 0, 0)
+      return date
+    },
+    remainingDays(row) {
+      const end = this.parseDateOnly(row.enddate)
+      if (!end) return null
+      const today = new Date()
+      today.setHours(0, 0, 0, 0)
+      return Math.ceil((end.getTime() - today.getTime()) / (24 * 60 * 60 * 1000))
+    },
+    rowStatus(row) {
+      if (String(row.isvoid) === '1') {
+        return { text: '已停用', type: 'info' }
+      }
+      const days = this.remainingDays(row)
+      if (days !== null && days < 0) {
+        return { text: '已到期', type: 'danger' }
+      }
+      if (days !== null && days <= 30) {
+        return { text: '即将到期', type: 'warning' }
+      }
+      return { text: '冻结中', type: 'success' }
+    },
+    caseStatus(caseItem) {
+      const rows = caseItem.children || []
+      const hasDanger = rows.some((row) => this.rowStatus(row).type === 'danger')
+      const hasWarning = rows.some((row) => this.rowStatus(row).type === 'warning')
+      const hasActive = rows.some((row) => String(row.isvoid) !== '1')
+      if (hasDanger) return { text: '存在到期', type: 'danger' }
+      if (hasWarning) return { text: '即将到期', type: 'warning' }
+      if (!hasActive) return { text: '已停用', type: 'info' }
+      return { text: '冻结中', type: 'success' }
+    },
+    remainingText(row) {
+      const days = this.remainingDays(row)
+      if (days === null) return '未设置届满日期'
+      if (days < 0) return '已到期 ' + Math.abs(days) + ' 天'
+      return '剩余 ' + days + ' 天'
+    },
+    remainingClass(row) {
+      const status = this.rowStatus(row)
+      return 'property-row__limit--' + status.type
+    },
+    formatShortDate(value) {
+      if (!value) return '-'
+      return String(value).substring(0, 10)
+    },
+    formatDateRange(row) {
+      return this.formatShortDate(row.startdate) + ' 至 ' + this.formatShortDate(row.enddate)
+    },
+    formatMoney(value) {
+      const num = parseFloat(value)
+      if (isNaN(num)) return value
+      return num.toLocaleString('zh-CN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
     },
     handleKhljje() {
       if (parseFloat(this.temp.sjkhje) >= 0 && parseFloat(this.temp.khljjebck) >= 0) {
@@ -649,7 +735,7 @@ export default {
       console.log(file)
     },
     handlePictureCardPreview(file) {
-      if (this.isPdfFile(file) == true) {
+      if (this.isPdfFile(file) === true) {
         this.prvpdf = true
       } else {
         this.prvpdf = false
@@ -687,7 +773,6 @@ export default {
     // 上传成功
     handleFileSuccess(ret, file, fileList) {
       uploadfile(ret).then((response) => {
-        const data = response
         this.$message({
           message: '上传成功',
           type: 'success'
@@ -725,7 +810,7 @@ export default {
     },
 
     handleCfsfChange() {
-      if (this.temp.cfsf == '轮候') {
+      if (this.temp.cfsf === '轮候') {
         this.temp.cfsfpro = ''
       } else {
         this.temp.cfsfpro = 'enddate'
@@ -737,10 +822,10 @@ export default {
       return date
     },
     addMonths(dateString, months, days) {
-      if (dateString == null) return null
+      if (dateString === null) return null
       const date = new Date(dateString)
       date.setMonth(date.getMonth() + months)
-      if (days == undefined) days = 1
+      if (days === undefined) days = 1
       date.setDate(date.getDate() - days)
       return date.toISOString().split('T')[0]
     },
@@ -754,9 +839,9 @@ export default {
     handleDateChange() {
       var _this = this
       this.Cftype.forEach((item) => {
-        if (item.typename == _this.temp.type) {
+        if (item.typename === _this.temp.type) {
           var newdate = _this.addMonths(_this.temp.startdate, item.cfmounth‌)
-          if (_this.temp.startdate == null) {
+          if (_this.temp.startdate === null) {
             _this.temp.enddate = null
           } else {
             _this.temp.enddate = parseTime(newdate, '{y}-{m}-{d}')
@@ -844,10 +929,11 @@ export default {
     getList() {
       this.listLoading = true
       this.listQuery.myusername = this.$store.getters.name
-      cflist(this.listQuery).then((response) => {
-        this.list = response.data.items
-        this.alllist = response.data.allitems
-        this.total = response.data.total
+      cflistGrouped(this.listQuery).then((response) => {
+        this.list = response.data.items || []
+        this.alllist = response.data.allitems || []
+        this.total = response.data.total || 0
+        this.initExpandedCases(this.list)
 
         // Just to simulate the time of the request
         setTimeout(() => {
@@ -1099,7 +1185,7 @@ export default {
           return
         }
         const zip = new PizZip(content)
-        const doc = new docxtemplater().loadZip(zip)
+        const doc = new Docxtemplater().loadZip(zip)
         // 设置模板变量的值
         doc.setData(detailData)
         try {
@@ -1150,7 +1236,7 @@ export default {
       return jsonData.map((v) =>
         filterVal.map((j) => {
           if (j === 'isvoid') {
-            return v[j] == '0' ? '正常' : '停用'
+            return String(v[j]) === '0' ? '正常' : '停用'
           } else {
             return v[j]
           }
@@ -1260,7 +1346,7 @@ export default {
       if (roles && roles.includes(rule)) {
         return true
       }
-      if (cbr == username) {
+      if (cbr === username) {
         return true
       }
       return false
@@ -1303,5 +1389,260 @@ export default {
 
 .saveAsDialog {
   min-width: 540px;
+}
+
+.ledger-card-list {
+  min-height: 220px;
+}
+
+.case-card {
+  margin-bottom: 14px;
+  overflow: hidden;
+  border: 1px solid #e4e7ed;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(31, 45, 61, 0.04);
+}
+
+.case-card__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 18px;
+  cursor: pointer;
+  background: #fbfcff;
+  border-bottom: 1px solid #eef0f5;
+  transition: background 0.2s ease;
+}
+
+.case-card__header:hover {
+  background: #f5f9ff;
+}
+
+.case-card__toggle {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  margin-top: 1px;
+  border: 1px solid #dcdfe6;
+  border-radius: 50%;
+  color: #409eff;
+  background: #fff;
+  cursor: pointer;
+}
+
+.case-card__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.case-card__title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.case-card__index {
+  min-width: 28px;
+  color: #909399;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.case-card__title {
+  color: #303133;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.case-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin-top: 8px;
+  color: #606266;
+  font-size: 13px;
+}
+
+.case-card__details {
+  position: relative;
+  padding: 8px 18px 10px 58px;
+}
+
+.case-card__details::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 31px;
+  width: 2px;
+  background: #e9edf5;
+  content: "";
+}
+
+.property-row {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px 0;
+  border-bottom: 1px solid #f0f2f5;
+}
+
+.property-row:last-child {
+  border-bottom: none;
+}
+
+.property-row__dot {
+  position: absolute;
+  top: 28px;
+  left: -31px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: #c0c4cc;
+  box-shadow: 0 0 0 2px #e9edf5;
+}
+
+.property-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 38px;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  font-size: 19px;
+}
+
+.property-icon--house {
+  color: #e6a23c;
+  background: #fdf6ec;
+}
+
+.property-icon--car {
+  color: #409eff;
+  background: #ecf5ff;
+}
+
+.property-icon--bank {
+  color: #67c23a;
+  background: #f0f9eb;
+}
+
+.property-icon--stock {
+  color: #9254de;
+  background: #f5f0ff;
+}
+
+.property-icon--other {
+  color: #909399;
+  background: #f4f4f5;
+}
+
+.property-row__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.property-row__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.property-row__name {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.property-row__type {
+  color: #303133;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.property-row__limit {
+  flex: 0 0 auto;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.property-row__limit--success {
+  color: #67c23a;
+}
+
+.property-row__limit--warning {
+  color: #e6a23c;
+}
+
+.property-row__limit--danger {
+  color: #f56c6c;
+}
+
+.property-row__limit--info {
+  color: #909399;
+}
+
+.property-row__desc {
+  margin-top: 7px;
+  color: #303133;
+  font-size: 13px;
+  line-height: 1.7;
+  word-break: break-all;
+}
+
+.property-row__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 8px;
+  color: #909399;
+  font-size: 12px;
+}
+
+.property-row__actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+  margin-left: 8px;
+}
+
+.ledger-expand-enter-active,
+.ledger-expand-leave-active {
+  transition: all 0.18s ease;
+}
+
+.ledger-expand-enter,
+.ledger-expand-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+@media (max-width: 900px) {
+  .case-card__meta {
+    gap: 6px 14px;
+  }
+
+  .property-row {
+    flex-wrap: wrap;
+  }
+
+  .property-row__top {
+    display: block;
+  }
+
+  .property-row__limit {
+    margin-top: 6px;
+  }
+
+  .property-row__actions {
+    width: 100%;
+    margin-left: 50px;
+  }
 }
 </style>

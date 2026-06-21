@@ -1,5 +1,4 @@
 import request from '@/utils/request'
-import msgrequest from '@/utils/msgrequest'
 
 export function postdata(url, data) {
   var temp = { 'action': '', 'data': [] }
@@ -52,6 +51,10 @@ export function cflist(data) {
   const action = '/data/cflist'
   return postdata(action, data)
 }
+export function cflistGrouped(data) {
+  const action = '/data/cflist_grouped'
+  return postdata(action, data)
+}
 export function cftype(data) {
   const action = '/data/cftype'
   return postdata(action, data)
@@ -60,6 +63,11 @@ export function cftype(data) {
 export function cflist_total(data) {
   const action = '/data/cflist_total'
   return postdata(action, data)
+}
+
+export function updateNotice() {
+  const action = '/sys/updateNotice'
+  return postdata(action, {})
 }
 
 export function cflistupdate(data) {
