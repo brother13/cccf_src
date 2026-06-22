@@ -90,31 +90,31 @@
       </div> -->
 
       <!-- 执行款台账组 -->
-      <div class="remind-group">
+      <div v-if="canShowExecutionFundReminders" class="remind-group">
         <div class="group-title">案款相关提醒</div>
         <div class="menu-items-wrapper">
-          <div v-if="hasRole('XZTZ')" class="menu-item number-manage">
+          <div v-if="canShowRefundReturnList" class="menu-item number-manage">
             <div class="icon-wrapper">
               <i class="fas fa-undo" />
             </div>
             <div class="menu-text" @click="goToPage('thqdlist')">发还失败退回清单</div>
             <span v-if="count.thqd !== 0" class="badge">{{ count.thqd }}</span>
           </div>
-          <div v-if="hasRole('XZTZ')" class="menu-item data-import">
+          <div v-if="canShowReceiptPendingList" class="menu-item data-import">
             <div class="icon-wrapper">
               <i class="fas fa-receipt" />
             </div>
             <div class="menu-text" @click="goToPage('dkplist')">到账待开收据</div>
             <span v-if="count.dkp !== 0" class="badge">{{ count.dkp }}</span>
           </div>
-          <div class="menu-item sys-settings">
+          <div v-if="canShowUnreturnedReport" class="menu-item sys-settings">
             <div class="icon-wrapper">
               <i class="fas fa-bell" />
             </div>
             <div class="menu-text" @click="goToPage('new10day')">新到账的10天未发还</div>
             <span v-if="count.new10day !== 0" class="badge">{{ count.new10day }}</span>
           </div>
-          <div v-if="hasRole('XZTZ')" class="menu-item size-stats">
+          <div v-if="canShowUnreturnedReport" class="menu-item size-stats">
             <div class="icon-wrapper">
               <i class="fas fa-file-alt" />
             </div>
@@ -200,6 +200,23 @@ export default {
     },
     showUpdateNotice() {
       return isUpdateNoticeVisible(this.updateNotice, this.noticeClosed)
+    },
+    canShowUnreturnedReport() {
+      return this.hasRole('ZXTZ_UNRETURNED_REPORT')
+    },
+    canShowSummaryReport() {
+      return this.hasRole('ZXTZ_SUMMARY_REPORT')
+    },
+    canShowRefundReturnList() {
+      return this.hasRole('ZXTZ_REFUND_RETURN_LIST')
+    },
+    canShowReceiptPendingList() {
+      return this.hasRole('ZXTZ_RECEIPT_PENDING_LIST')
+    },
+    canShowExecutionFundReminders() {
+      return this.canShowUnreturnedReport ||
+        this.canShowRefundReturnList ||
+        this.canShowReceiptPendingList
     }
   },
 
@@ -232,12 +249,18 @@ export default {
       })
     },
     getcount() {
-      caseapi.plugins.countCasenum().then((res) => {
-        this.count.new10day = res.new10day
-        this.count.akyh5day = res.akyh5day
-      })
-      this.getThqdCount()
-      this.getDkpCount()
+      if (this.canShowUnreturnedReport) {
+        caseapi.plugins.countCasenum().then((res) => {
+          this.count.new10day = res.new10day
+          this.count.akyh5day = res.akyh5day
+        })
+      }
+      if (this.canShowRefundReturnList) {
+        this.getThqdCount()
+      }
+      if (this.canShowReceiptPendingList) {
+        this.getDkpCount()
+      }
       this.getXdZtCount()
     },
     getThqdCount() {

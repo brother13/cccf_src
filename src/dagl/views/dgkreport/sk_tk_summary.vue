@@ -37,6 +37,12 @@
           class="filter-item"
         />
 
+        <span class="filter-item">计算方式：</span>
+        <el-select v-model="listQuery.summary_mode" style="width: 140px" class="filter-item" @change="handleFilter">
+          <el-option label="案号+收据号" value="bill_case" />
+          <el-option label="只按案号" value="case_only" />
+        </el-select>
+
         <span class="filter-item">停留时间：</span>
         <el-select v-model="listQuery.days_range" style="width: 130px" class="filter-item" clearable placeholder="全部">
           <el-option label="全部" value="" />
@@ -234,6 +240,7 @@ export default {
         datetype: 'dzdate',
         days_range: '',
         balance_filter: '',
+        summary_mode: 'bill_case',
         sort: '',
         balance_endtime: new Date().toISOString().slice(0, 10),
         force_recalc: false,
