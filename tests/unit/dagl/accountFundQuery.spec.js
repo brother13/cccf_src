@@ -1,13 +1,17 @@
 import {
   createAccountFundListQuery,
+  createAccountFundExportData,
   formatAccountFundAmount,
   getDefaultAccountFundDateRange,
-  getAccountFundQueryConfig
+  getDefaultNotaxPayoutTypeOptions,
+  getAccountFundQueryConfig,
+  normalizeNotaxPayoutTypeOptions
 } from '@/dagl/utils/accountFundQuery'
 
 const fs = require('fs')
 
 const backendPath = '/Applications/MAMP/htdocs/cccf/app/cccf/model/Plugins.php'
+const backendConfigPath = '/Applications/MAMP/htdocs/cccf/app/cccf/config.php'
 
 describe('account fund query config', () => {
   it('uses a date range with dzdate for income queries against shoukuan data', () => {
@@ -116,8 +120,38 @@ describe('account fund query config', () => {
     ])
   })
 
-  it('adds payout type options and query parameter for outcome queries', () => {
-    const config = getAccountFundQueryConfig('outcome')
+  it('normalizes payout type options from backend config', () => {
+    const options = normalizeNotaxPayoutTypeOptions({
+      types: {
+        execution_fee: {
+          label: '执行费',
+          keywords: ['执行费', '执费']
+        },
+        confiscation: {
+          label: '罚没',
+          keywords: ['罚没']
+        }
+      }
+    })
+
+    expect(options).toEqual([
+      { value: 'execution_fee', label: '执行费' },
+      { value: 'confiscation', label: '罚没' }
+    ])
+  })
+
+  it('keeps default payout type options as a fallback', () => {
+    expect(getDefaultNotaxPayoutTypeOptions()).toEqual([
+      { value: 'execution_fee', label: '执行费' },
+      { value: 'fine', label: '罚金' },
+      { value: 'case_acceptance_fee', label: '案件受理费' },
+      { value: 'preservation_fee', label: '保全费' },
+      { value: 'recovery', label: '追缴' },
+      { value: 'confiscation', label: '罚没' }
+    ])
+  })
+
+  it('adds payout type query parameter for outcome queries', () => {
     const query = createAccountFundListQuery('outcome', {
       dateRange: ['2026-06-15', '2026-06-21'],
       keyword: '',
@@ -126,13 +160,6 @@ describe('account fund query config', () => {
       payout_type: 'recovery'
     })
 
-    expect(config.payoutTypeOptions).toEqual([
-      { value: 'execution_fee', label: '执行费' },
-      { value: 'fine', label: '罚金' },
-      { value: 'case_acceptance_fee', label: '案件受理费' },
-      { value: 'preservation_fee', label: '保全费' },
-      { value: 'recovery', label: '追缴' }
-    ])
     expect(query.payout_type).toBe('recovery')
   })
 
@@ -159,6 +186,40 @@ describe('account fund query config', () => {
     expect(formatAccountFundAmount('2,000')).toBe('2,000.00')
   })
 
+  it('builds export headers and rows from visible columns', () => {
+    const columns = getAccountFundQueryConfig('income').columns
+    const exportData = createAccountFundExportData(columns, [{
+      dzdate: '2026-06-10',
+      djcode: 'ZXYJ001',
+      ah: '（2026）辽0804执1号',
+      yg: '张三',
+      bg: '李四',
+      jzje: '1,234.56',
+      cbr: '王五'
+    }])
+
+    expect(exportData.header).toEqual([
+      '序号',
+      '到账日期',
+      '进账票号',
+      '案号',
+      '申请人',
+      '被执行人',
+      '进账金额',
+      '承办人'
+    ])
+    expect(exportData.data[0]).toEqual([
+      1,
+      '2026-06-10',
+      'ZXYJ001',
+      '（2026）辽0804执1号',
+      '张三',
+      '李四',
+      1234.56,
+      '王五'
+    ])
+  })
+
   it('uses comma-safe amount aggregation for income and outcome query totals', () => {
     const backendSource = fs.readFileSync(backendPath, 'utf8')
     const incomeQuery = backendSource.match(/protected function queryList_sk\(\$param = \[\]\)[\s\S]*?protected function queryList_tk\(\$param = \[\]\)/)[0]
@@ -168,5 +229,16 @@ describe('account fund query config', () => {
     expect(incomeQuery).not.toContain('sum(jzje)')
     expect(outcomeQuery).toContain('"SUM(CAST(REPLACE(IF(je=\'\' OR je IS NULL, \'0\', je), \',\', \'\') AS DECIMAL(18,2)))" => "je"')
     expect(outcomeQuery).not.toContain('sum(je)')
+  })
+
+  it('exposes notax payout type config from backend without duplicate recovery key', () => {
+    const backendSource = fs.readFileSync(backendPath, 'utf8')
+    const backendConfig = fs.readFileSync(backendConfigPath, 'utf8')
+
+    expect(backendSource).toContain("case 'notaxPayoutTypes':")
+    expect(backendSource).toContain('protected function notaxPayoutTypes()')
+    expect(backendConfig).toContain("'recovery'=>[")
+    expect(backendConfig).toContain("'confiscation'=>[")
+    expect(backendConfig.match(/'recovery'=>\[/g)).toHaveLength(1)
   })
 })

@@ -3,7 +3,6 @@
 /**
  * 增强功能
  */
-import store from './store'
 import {
   postdata
 } from './common'
@@ -32,7 +31,8 @@ var report = {
     queryList_sk_direct: '/plugins/queryList_sk_direct',
 
     // 执行款台账汇总表
-    queryList_sk_tk_summary: '/plugins/queryList_sk_tk_summary'
+    queryList_sk_tk_summary: '/plugins/queryList_sk_tk_summary',
+    notaxPayoutTypes: '/plugins/notaxPayoutTypes'
 
   },
 
@@ -92,6 +92,11 @@ var report = {
 
   async queryList_sk_tk_summary(query) {
     const res = await postdata(this.ACTION.queryList_sk_tk_summary, query)
+    return res.data
+  },
+
+  async notaxPayoutTypes() {
+    const res = await postdata(this.ACTION.notaxPayoutTypes)
     return res.data
   }
 }

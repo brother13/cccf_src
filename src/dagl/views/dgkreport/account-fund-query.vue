@@ -24,7 +24,7 @@
         <i slot="prefix" class="el-input__icon el-icon-search" />
       </el-input>
       <el-select
-        v-if="config.payoutTypeOptions"
+        v-if="queryType === 'outcome'"
         v-model="listQuery.payout_type"
         clearable
         placeholder="发放类型"
@@ -33,7 +33,7 @@
         @change="handleFilter"
       >
         <el-option
-          v-for="option in config.payoutTypeOptions"
+          v-for="option in payoutTypeOptions"
           :key="option.value"
           :label="option.label"
           :value="option.value"
@@ -62,6 +62,14 @@
         icon="el-icon-search"
         @click="handleFilter"
       >搜索</el-button>
+      <el-button
+        v-waves
+        class="filter-item"
+        type="primary"
+        :disabled="isExporting"
+        :icon="isExporting ? 'el-icon-loading' : 'el-icon-download'"
+        @click="handleExport"
+      >导出</el-button>
     </div>
 
     <div v-if="count.num" class="courtcase-countinfo">
@@ -119,10 +127,13 @@ import Pagination from '@/components/Pagination'
 import waves from '@/directive/waves'
 import caseapi from '@/courtcase/api'
 import {
+  createAccountFundExportData,
   createAccountFundListQuery,
   formatAccountFundAmount,
   getDefaultAccountFundDateRange,
-  getAccountFundQueryConfig
+  getDefaultNotaxPayoutTypeOptions,
+  getAccountFundQueryConfig,
+  normalizeNotaxPayoutTypeOptions
 } from '@/dagl/utils/accountFundQuery'
 
 export default {
@@ -136,11 +147,13 @@ export default {
   data() {
     return {
       listLoading: false,
+      isExporting: false,
       tableData: [],
       count: {
         num: 0,
         je: 0
       },
+      payoutTypeOptions: getDefaultNotaxPayoutTypeOptions(),
       listQuery: {
         page: 1,
         pagesize: 10,
@@ -162,10 +175,12 @@ export default {
   watch: {
     queryType() {
       this.resetList()
+      this.loadPayoutTypeOptions()
       this.getList()
     }
   },
   created() {
+    this.loadPayoutTypeOptions()
     this.getList()
   },
   methods: {
@@ -175,6 +190,17 @@ export default {
     handleFilter() {
       this.listQuery.page = 1
       this.getList()
+    },
+    async loadPayoutTypeOptions() {
+      if (this.queryType !== 'outcome') {
+        return
+      }
+      try {
+        const config = await caseapi.plugins.notaxPayoutTypes()
+        this.payoutTypeOptions = normalizeNotaxPayoutTypeOptions(config)
+      } catch (error) {
+        this.payoutTypeOptions = getDefaultNotaxPayoutTypeOptions()
+      }
     },
     getList() {
       if (!caseapi.plugins[this.config.apiName]) {
@@ -189,6 +215,59 @@ export default {
       }).finally(() => {
         this.listLoading = false
       })
+    },
+    async handleExport() {
+      const total = Number(this.count.num || 0)
+      if (total === 0) {
+        this.$message.warning('没有数据可导出')
+        return
+      }
+
+      try {
+        await this.$confirm(
+          `当前列表共 ${total} 笔记录，是否确认导出？`,
+          '提示',
+          {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }
+        )
+      } catch (e) {
+        return
+      }
+
+      this.isExporting = true
+      this.$message.info('正在准备导出数据...')
+
+      try {
+        const query = {
+          ...this.buildQuery(),
+          page: 1,
+          pagesize: Math.max(total, this.listQuery.pagesize)
+        }
+        const res = await caseapi.plugins[this.config.apiName](query)
+        const allData = res.items || []
+        const excel = await import('@/vendor/Export2Excel')
+        const exportData = createAccountFundExportData(this.config.columns, allData)
+        const now = new Date()
+        const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`
+
+        excel.export_json_to_excel({
+          header: exportData.header,
+          data: exportData.data,
+          filename: `${this.config.title}_${dateStr}`,
+          autoWidth: true,
+          bookType: 'xlsx'
+        })
+
+        this.$message.success('导出成功')
+      } catch (error) {
+        console.error('导出失败:', error)
+        this.$message.error('导出失败')
+      } finally {
+        this.isExporting = false
+      }
     },
     resetList() {
       this.listQuery.page = 1

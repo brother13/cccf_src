@@ -21,13 +21,6 @@ const CONFIG_MAP = {
     dateField: 'czdate',
     amountField: 'je',
     amountLabel: '出账金额',
-    payoutTypeOptions: [
-      { value: 'execution_fee', label: '执行费' },
-      { value: 'fine', label: '罚金' },
-      { value: 'case_acceptance_fee', label: '案件受理费' },
-      { value: 'preservation_fee', label: '保全费' },
-      { value: 'recovery', label: '追缴' }
-    ],
     payeeTypeOptions: [
       { value: 'applicant', label: '申请执行人' },
       { value: 'respondent', label: '被执行人' },
@@ -52,6 +45,29 @@ const CONFIG_MAP = {
 
 export function getAccountFundQueryConfig(type) {
   return CONFIG_MAP[type] || CONFIG_MAP.income
+}
+
+export function getDefaultNotaxPayoutTypeOptions() {
+  return [
+    { value: 'execution_fee', label: '执行费' },
+    { value: 'fine', label: '罚金' },
+    { value: 'case_acceptance_fee', label: '案件受理费' },
+    { value: 'preservation_fee', label: '保全费' },
+    { value: 'recovery', label: '追缴' },
+    { value: 'confiscation', label: '罚没' }
+  ]
+}
+
+export function normalizeNotaxPayoutTypeOptions(config) {
+  const types = config && config.types ? config.types : {}
+  const options = Object.keys(types)
+    .map(key => ({
+      value: key,
+      label: types[key].label || key
+    }))
+    .filter(option => option.value && option.label)
+
+  return options.length ? options : getDefaultNotaxPayoutTypeOptions()
 }
 
 function formatDate(date) {
@@ -81,6 +97,34 @@ export function formatAccountFundAmount(value) {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   })
+}
+
+function formatExportValue(column, row, index) {
+  if (column.field === '_index') {
+    return index + 1
+  }
+
+  const value = row[column.field]
+  if (column.align === 'right') {
+    const num = parseFloat(String(value || '').replace(/,/g, ''))
+    return isNaN(num) ? '' : num
+  }
+
+  return value || ''
+}
+
+export function createAccountFundExportData(columns, rows) {
+  const exportColumns = [
+    { field: '_index', label: '序号' },
+    ...columns
+  ]
+
+  return {
+    header: exportColumns.map(column => column.label),
+    data: rows.map((row, index) =>
+      exportColumns.map(column => formatExportValue(column, row, index))
+    )
+  }
 }
 
 export function createAccountFundListQuery(type, query) {
