@@ -644,6 +644,7 @@ export default {
       list: [],
       alllist: [],
       total: 0,
+      cflistFilterByUsername: false,
       listLoading: true,
       cfsf: [{
         'id': 1,
@@ -1090,6 +1091,7 @@ export default {
         this.listQuery.deptcode = []
       }
       cflist(this.listQuery).then((response) => {
+        this.cflistFilterByUsername = response.data.cflist_filter_by_username === true
         this.list = response.data.items || []
         this.alllist = response.data.allitems || []
         this.total = response.data.total || 0
@@ -1164,6 +1166,7 @@ export default {
         pagesize: 10,
         id
       }).then((response) => {
+        this.cflistFilterByUsername = response.data.cflist_filter_by_username === true
         const rows = response.data.items
         if (rows.length === 1) {
           const row = rows[0]
@@ -1631,6 +1634,9 @@ export default {
       const rule = 'CFTZ_EDIT_OTHER'
 
       if (roles && roles.includes(rule)) {
+        return true
+      }
+      if (this.cflistFilterByUsername) {
         return true
       }
       if (cbr === username) {
