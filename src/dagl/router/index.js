@@ -12,6 +12,7 @@ import Router_dashboard from './dashboard'
 // import Router_logs from './logs'
 // import Router_ywcl from './ywcl'
 import Router_tz from './tz'
+import Router_pmjl from './pmjl'
 import Router_xdgl from './xdgl'
 import Router_zxktz from './zxktz'
 // import Router_pz from './pz'
@@ -22,6 +23,7 @@ const webRouter = [
   Router_dashboard,
   // Router_ywcl,
   Router_tz,
+  Router_pmjl,
   Router_zxktz,
   Router_lixijs,
   Router_xdgl,
