@@ -1,3 +1,7 @@
+jest.mock('@/dagl/api/lpr', () => ({
+  getLprList: jest.fn()
+}))
+
 import repayment from '@/dagl/views/lixijs/repayment.vue'
 
 function createContext(formOverrides = {}) {

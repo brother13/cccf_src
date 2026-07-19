@@ -318,11 +318,11 @@
 </template>
 
 <script>
-// 数据直接使用前端缓存，如需从后端获取可取消注释
 import { syncBenchmarkRates } from '@/dagl/api/benchmark'
+import { getLprList } from '@/dagl/api/lpr'
 
-// LPR数据缓存
-const lprData = [
+// 数据库不可用时使用的历史数据兜底；页面加载后会被数据库数据替换
+let lprData = [
   { date: '2026-05-20', rate_1y: 3.00, rate_5y: 3.50 },
   { date: '2026-04-20', rate_1y: 3.00, rate_5y: 3.50 },
   { date: '2026-03-20', rate_1y: 3.00, rate_5y: 3.50 },
@@ -512,9 +512,28 @@ export default {
     }
   },
   created() {
+    this.loadLprRates()
     this.syncLegacyBenchmarkRatesToDb()
   },
   methods: {
+    async loadLprRates() {
+      try {
+        const response = await getLprList({ page: 1, pagesize: 500 })
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          lprData = response.data.map(item => ({
+            date: item.publish_date,
+            rate_1y: Number(item.rate_1y),
+            rate_5y: Number(item.rate_5y)
+          })).sort((a, b) => b.date.localeCompare(a.date))
+          if (this.form.startDate && this.form.endDate && this.form.rateSourceType === 'benchmark_lpr') {
+            this.generateRateSegments()
+          }
+        }
+      } catch (e) {
+        console.error('加载LPR利率失败，使用内置历史数据：', e)
+      }
+    },
+
     async syncLegacyBenchmarkRatesToDb() {
       const syncFlag = 'benchmark_rate_sync_legacy_20260522'
       if (window.localStorage.getItem(syncFlag) === 'done') return

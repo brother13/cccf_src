@@ -267,10 +267,12 @@
 </template>
 
 <script>
+import { getLprList } from '@/dagl/api/lpr'
+
 const LPR_START_DATE = '2019-08-20'
 
-// LPR数据缓存（从新到旧排序）
-const lprData = [
+// 数据库不可用时使用的历史数据兜底；页面加载后会被数据库数据替换
+let lprData = [
   { date: '2026-04-20', rate_1y: 3.00, rate_5y: 3.50 },
   { date: '2026-03-20', rate_1y: 3.00, rate_5y: 3.50 },
   { date: '2026-02-24', rate_1y: 3.00, rate_5y: 3.50 },
@@ -479,7 +481,25 @@ export default {
       return merged
     }
   },
+  created() {
+    this.loadLprRates()
+  },
   methods: {
+    async loadLprRates() {
+      try {
+        const response = await getLprList({ page: 1, pagesize: 500 })
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          lprData = response.data.map(item => ({
+            date: item.publish_date,
+            rate_1y: Number(item.rate_1y),
+            rate_5y: Number(item.rate_5y)
+          })).sort((a, b) => b.date.localeCompare(a.date))
+        }
+      } catch (e) {
+        console.error('加载LPR利率失败，使用内置历史数据：', e)
+      }
+    },
+
     // 格式化日期
     formatDate(date) {
       if (!date) return ''
