@@ -22,7 +22,7 @@ jest.mock('@/dagl/api/dkp', () => ({
 
 jest.mock('@/courtcase/api', () => ({
   plugins: {
-    countCasenum: jest.fn(() => Promise.resolve({ new10day: 0, akyh5day: 0 }))
+    countCasenum: jest.fn(() => Promise.resolve({ new5day: 0, new10day: 0, akyh5day: 0 }))
   }
 }))
 
@@ -57,6 +57,7 @@ describe('dashboard admin execution fund reminders permissions', () => {
 
     expect(wrapper.text()).not.toContain('发还失败退回清单')
     expect(wrapper.text()).not.toContain('到账待开收据')
+    expect(wrapper.text()).not.toContain('新到账的5天未发还')
     expect(wrapper.text()).not.toContain('新到账的10天未发还')
     expect(wrapper.text()).not.toContain('延缓5天内到期提醒')
     expect(thqdList).not.toHaveBeenCalled()
@@ -74,7 +75,19 @@ describe('dashboard admin execution fund reminders permissions', () => {
 
     expect(wrapper.text()).toContain('发还失败退回清单')
     expect(wrapper.text()).toContain('到账待开收据')
+    expect(wrapper.text()).toContain('新到账的5天未发还')
     expect(wrapper.text()).toContain('新到账的10天未发还')
     expect(wrapper.text()).toContain('延缓5天内到期提醒')
+  })
+
+  it('opens the unreturned report with the five-day reminder type', () => {
+    const wrapper = mountDashboard(['ZXTZ_UNRETURNED_REPORT'])
+
+    wrapper.vm.goToPage('new5day')
+
+    expect(wrapper.vm.$router.push).toHaveBeenCalledWith({
+      path: '/zxktz/zxkreport',
+      query: { type: 'new5day' }
+    })
   })
 })

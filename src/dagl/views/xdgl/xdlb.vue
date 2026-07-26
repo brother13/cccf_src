@@ -668,7 +668,20 @@ export default {
       return String(row.ledgerUpdated) === '1'
     },
     handleUpdateLedger(row) {
-      this.$confirm('将按当前行案号和续冻账号更新台账日期；开始日期为空时只更新届满日期，是否继续?', '提示', {
+      const h = this.$createElement
+      const displayValue = (value) => {
+        return value === null || value === undefined || value === '' ? '（空）' : String(value)
+      }
+      const confirmMessage = h('div', [
+        h('div', '将按以下信息更新台账日期：'),
+        h('div', [h('strong', '案号：'), displayValue(row.ah)]),
+        h('div', [h('strong', '账号：'), displayValue(row.zhanghu)]),
+        h('div', [h('strong', '开始日期：'), displayValue(row.startdate)]),
+        h('div', [h('strong', '届满日期：'), displayValue(row.enddate)]),
+        h('div', { style: { marginTop: '8px' }}, '开始日期为空时只更新届满日期，是否继续？')
+      ])
+
+      this.$confirm(confirmMessage, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'

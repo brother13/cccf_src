@@ -162,7 +162,8 @@ export default {
         pagesize: 10,
         keyword: '',
         yhstatus: 0,
-        cqstatus: 0
+        cqstatus: 0,
+        type: this.$route.query.type || ''
       },
 
       count: {
@@ -186,6 +187,14 @@ export default {
         totalpage: 0,
         pagesize: 5000
       }
+    }
+  },
+
+  watch: {
+    '$route.query.type'(type) {
+      this.listQuery.type = type || ''
+      this.listQuery.page = 1
+      this.getList()
     }
   },
 
@@ -325,13 +334,17 @@ export default {
     showProgress(title, num, total) {
       try {
         this.$refs.progress.showInfo(title, num, total)
-      } catch (e) {}
+      } catch (e) {
+        // 进度组件尚未挂载时无需处理
+      }
     },
 
     hideProgress() {
       try {
         this.$refs.progress.close()
-      } catch (e) {}
+      } catch (e) {
+        // 进度组件尚未挂载时无需处理
+      }
     },
 
     stopExport() {
