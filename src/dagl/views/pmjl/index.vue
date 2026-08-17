@@ -53,6 +53,15 @@
       <el-button class="filter-item" icon="el-icon-refresh-left" @click="handleReset">
         重置
       </el-button>
+      <el-tag
+        v-if="listQuery.secondAuctionOverdue"
+        class="filter-item"
+        type="warning"
+        closable
+        @close="clearSecondAuctionOverdueFilter"
+      >
+        提醒筛选：二拍结束超过 7 天
+      </el-tag>
     </div>
 
     <div v-if="total > 0" class="courtcase-countinfo">
@@ -131,7 +140,8 @@ export default {
         keyword: '',
         status: '',
         pmjd: '',
-        cbr: ''
+        cbr: '',
+        secondAuctionOverdue: this.$route.query.reminder === 'secondAuctionOverdue'
       }
     }
   },
@@ -142,6 +152,18 @@ export default {
     },
     currentUser() {
       return this.$store.getters.name || ''
+    }
+  },
+  watch: {
+    '$route.query.reminder'(reminder) {
+      if (reminder === 'secondAuctionOverdue') {
+        this.listQuery.page = 1
+        this.listQuery.keyword = ''
+        this.listQuery.status = ''
+        this.listQuery.pmjd = ''
+        this.listQuery.secondAuctionOverdue = true
+        this.getList()
+      }
     }
   },
   created() {
@@ -179,6 +201,7 @@ export default {
     },
     handleFilter() {
       this.listQuery.page = 1
+      this.listQuery.secondAuctionOverdue = false
       this.getList()
     },
     handleReset() {
@@ -188,8 +211,14 @@ export default {
         keyword: '',
         status: '',
         pmjd: '',
-        cbr: this.currentUser
+        cbr: this.currentUser,
+        secondAuctionOverdue: false
       }
+      this.getList()
+    },
+    clearSecondAuctionOverdueFilter() {
+      this.listQuery.page = 1
+      this.listQuery.secondAuctionOverdue = false
       this.getList()
     },
     formatMoney(value) {

@@ -13,7 +13,10 @@
 
       <main
         class="menu-container"
-        :class="{ 'menu-container--without-fund': !canShowExecutionFundReminders }"
+        :class="{
+          'menu-container--without-fund': !canShowExecutionFundReminders,
+          'menu-container--with-auction': canShowAuctionReminders
+        }"
       >
         <section v-if="canShowExecutionFundReminders" class="remind-group fund-reminders">
           <header class="group-header">
@@ -103,6 +106,34 @@
                 <span class="menu-title-row">
                   <span class="menu-text">延缓5天内到期提醒</span>
                   <span v-if="count.akyh5day !== 0" class="badge">{{ count.akyh5day }}</span>
+                </span>
+              </span>
+              <i class="menu-chevron el-icon-arrow-right" />
+            </button>
+          </div>
+        </section>
+
+        <section v-if="canShowAuctionReminders" class="remind-group auction-reminders">
+          <header class="group-header">
+            <span class="group-bar" />
+            <h2 class="group-title">拍卖相关提醒</h2>
+            <span class="group-count">1 项</span>
+          </header>
+          <div class="menu-items-wrapper">
+            <button
+              class="menu-item"
+              type="button"
+              @click="goToPage('secondAuctionOverdue')"
+            >
+              <span class="icon-wrapper icon-danger">
+                <i class="fas fa-gavel" />
+              </span>
+              <span class="menu-copy">
+                <span class="menu-title-row">
+                  <span class="menu-text">二拍结束超过 7 天</span>
+                  <span v-if="count.secondAuctionOverdue !== 0" class="badge">
+                    {{ count.secondAuctionOverdue }}
+                  </span>
                 </span>
               </span>
               <i class="menu-chevron el-icon-arrow-right" />
@@ -214,6 +245,7 @@ import {
 } from '@/dagl/api/common'
 import { thqdList } from '@/dagl/api/thqd'
 import { dkpList } from '@/dagl/api/dkp'
+import { getPmjlList } from '@/dagl/api/pmjl'
 // import GithubCorner from '@/components/GithubCorner'
 // import PanelGroup from './components/PanelGroup'
 // import LineChart from './components/LineChart'
@@ -256,6 +288,7 @@ export default {
         akyh5day: 0,
         thqd: 0,
         dkp: 0,
+        secondAuctionOverdue: 0,
         continueFreezeSuccess: 0,
         continueFreezeFail: 0
       },
@@ -286,6 +319,9 @@ export default {
       return this.canShowUnreturnedReport ||
         this.canShowRefundReturnList ||
         this.canShowReceiptPendingList
+    },
+    canShowAuctionReminders() {
+      return this.hasRole('PMTZ')
     },
     executionFundReminderItemCount() {
       let count = 0
@@ -341,6 +377,9 @@ export default {
       if (this.canShowReceiptPendingList) {
         this.getDkpCount()
       }
+      if (this.canShowAuctionReminders) {
+        this.getSecondAuctionOverdueCount()
+      }
       this.getXdZtCount()
     },
     getThqdCount() {
@@ -357,6 +396,19 @@ export default {
         this.count.dkp = data.total || 0
       }).catch(() => {
         this.count.dkp = 0
+      })
+    },
+    getSecondAuctionOverdueCount() {
+      getPmjlList({
+        page: 1,
+        pagesize: 1,
+        cbr: this.$store.getters.name,
+        secondAuctionOverdue: true
+      }).then((res) => {
+        const data = res.data || {}
+        this.count.secondAuctionOverdue = data.total || 0
+      }).catch(() => {
+        this.count.secondAuctionOverdue = 0
       })
     },
     getXdZtCount() {
@@ -412,6 +464,11 @@ export default {
       } else if (type === 'dkplist') {
         this.$router.push({
           path: '/zxktz/dkplist'
+        })
+      } else if (type === 'secondAuctionOverdue') {
+        this.$router.push({
+          path: '/pmjl/list',
+          query: { reminder: 'secondAuctionOverdue' }
         })
       } else if (type === 'lixijs') {
         this.$router.push({
@@ -512,6 +569,19 @@ body {
   min-height: 0;
 }
 
+.menu-container--with-auction {
+  grid-template-rows: minmax(0, 1fr) auto;
+}
+
+.auction-reminders {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.menu-container--with-auction .side-reminders {
+  grid-row: 1 / span 2;
+}
+
 .menu-container--without-fund {
   grid-template-columns: minmax(0, 1fr);
 }
@@ -519,8 +589,12 @@ body {
 .menu-container--without-fund .side-reminders {
   display: grid;
   grid-column: 1;
-  grid-row: auto;
+  grid-row: 1;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.menu-container--without-fund .auction-reminders {
+  grid-column: 1;
 }
 
 .side-reminders {
@@ -703,6 +777,10 @@ body {
 }
 
 .fund-reminders .menu-item:nth-last-child(-n+2) {
+  border-bottom: 0;
+}
+
+.auction-reminders .menu-item {
   border-bottom: 0;
 }
 
@@ -924,7 +1002,8 @@ body {
   }
 
   .side-reminders,
-  .fund-reminders {
+  .fund-reminders,
+  .auction-reminders {
     grid-column: 1;
     grid-row: auto;
   }
@@ -936,6 +1015,10 @@ body {
   .fund-reminders {
     height: auto;
     order: 2;
+  }
+
+  .auction-reminders {
+    order: 3;
   }
 
   .side-reminders .remind-group {

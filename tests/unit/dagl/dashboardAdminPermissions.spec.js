@@ -2,6 +2,7 @@ import { shallowMount } from '@vue/test-utils'
 import DashboardAdmin from '@/dagl/views/dashboard/admin/index.vue'
 import { thqdList } from '@/dagl/api/thqd'
 import { dkpList } from '@/dagl/api/dkp'
+import { getPmjlList } from '@/dagl/api/pmjl'
 import caseapi from '@/courtcase/api'
 
 jest.mock('@/dagl/api/common', () => ({
@@ -18,6 +19,10 @@ jest.mock('@/dagl/api/thqd', () => ({
 
 jest.mock('@/dagl/api/dkp', () => ({
   dkpList: jest.fn(() => Promise.resolve({ data: { total: 0 }}))
+}))
+
+jest.mock('@/dagl/api/pmjl', () => ({
+  getPmjlList: jest.fn(() => Promise.resolve({ data: { total: 0 }}))
 }))
 
 jest.mock('@/courtcase/api', () => ({
@@ -88,6 +93,42 @@ describe('dashboard admin execution fund reminders permissions', () => {
     expect(wrapper.vm.$router.push).toHaveBeenCalledWith({
       path: '/zxktz/zxkreport',
       query: { type: 'new5day' }
+    })
+  })
+
+  it('hides auction reminders without auction ledger permission', () => {
+    const wrapper = mountDashboard(['XZTZ'])
+
+    expect(wrapper.text()).not.toContain('拍卖相关提醒')
+    expect(wrapper.text()).not.toContain('二拍结束超过 7 天')
+    expect(getPmjlList).not.toHaveBeenCalled()
+  })
+
+  it('loads second-auction overdue reminders for auction ledger users', async() => {
+    getPmjlList.mockResolvedValueOnce({ data: { total: 3 }})
+
+    const wrapper = mountDashboard(['PMTZ'])
+    await wrapper.vm.$nextTick()
+
+    expect(wrapper.text()).toContain('拍卖相关提醒')
+    expect(wrapper.text()).toContain('二拍结束超过 7 天')
+    expect(getPmjlList).toHaveBeenCalledWith({
+      page: 1,
+      pagesize: 1,
+      cbr: 'tester',
+      secondAuctionOverdue: true
+    })
+    expect(wrapper.vm.count.secondAuctionOverdue).toBe(3)
+  })
+
+  it('opens the auction ledger with the second-auction overdue filter', () => {
+    const wrapper = mountDashboard(['PMTZ'])
+
+    wrapper.vm.goToPage('secondAuctionOverdue')
+
+    expect(wrapper.vm.$router.push).toHaveBeenCalledWith({
+      path: '/pmjl/list',
+      query: { reminder: 'secondAuctionOverdue' }
     })
   })
 })
