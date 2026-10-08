@@ -14,6 +14,7 @@ describe('auction ledger reminder filter', () => {
     })
 
     expect(data.listQuery.secondAuctionOverdue).toBe(true)
+    expect(data.listQuery.viewMode).toBe('case')
   })
 
   it('reapplies the reminder filter when returning to a cached ledger page', () => {
@@ -53,6 +54,21 @@ describe('auction ledger reminder filter', () => {
 
     expect(context.listQuery.page).toBe(1)
     expect(context.listQuery.secondAuctionOverdue).toBe(false)
+    expect(context.getList).toHaveBeenCalledTimes(1)
+  })
+
+  it('returns to the first page when switching list views', () => {
+    const context = {
+      listQuery: {
+        page: 3,
+        viewMode: 'asset'
+      },
+      getList: jest.fn()
+    }
+
+    PmjlList.methods.handleViewModeChange.call(context)
+
+    expect(context.listQuery.page).toBe(1)
     expect(context.getList).toHaveBeenCalledTimes(1)
   })
 })
